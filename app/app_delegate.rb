@@ -1,8 +1,9 @@
-class AppDelegate < PM::Delegate
-  status_bar true, animation: :none
+class AppDelegate
+  def application(application, didFinishLaunchingWithOptions:launchOptions)
+    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @window.rootViewController = HomeController.alloc.init
+    @window.makeKeyAndVisible
 
-  def on_load(app, options)
-    open HomeScreen.new#(nav_bar: true)
+    true
   end
-
 end
