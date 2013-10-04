@@ -5,21 +5,23 @@ class SittersController < UIViewController
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       subview TimeSelector, styleId: :time_selector do
         now = Time.now
-        subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
+        now_label = subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
 
         day_highlighter = subview UIButton, styleClass: :selected_day
 
-        initials = (0...7).map do |d| (now + d * 24 * 3600).strftime('%A')[0] end
         x = 15
         overlays = []
-        initials.each_with_index do |day, i|
-          day_view = subview UILabel, text: day, styleClass: :day_of_week, left: x
-          overlay = subview UILabel, text: day, styleClass: 'day_of_week disabled_overlay', left: x
+        days = (0...7).map do |d| now + d * 24 * 3600 end
+        days.each_with_index do |time, i|
+          abbr = time.strftime('%A')[0]
+          day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
+          overlay = subview UILabel, text: abbr, styleClass: 'day_of_week overlay', left: x
           x += 44
           [day_view, overlay].each do |view|
             view.when_tapped do
               UIView.animateWithDuration 0.3,
                 animations: lambda {
+                  now_label.text = time.strftime('%A, %B %-e')
                   day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
                   overlays.map do |v| v.alpha = 0 end
                   overlay.alpha = 1
@@ -28,6 +30,8 @@ class SittersController < UIViewController
           end
           overlays << overlay
         end
+        overlays.map do |v| v.alpha = 0 end
+        overlays[0].alpha = 1
 
         [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
           subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
