@@ -7,9 +7,25 @@ class SittersController < UIViewController
         now = Time.now
         subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
 
+        day_highlighter = subview UIButton, styleClass: :selected_day
+
         initials = (0...7).map do |d| (now + d * 24 * 3600).strftime('%A')[0] end
-        initials.each_with_index do |day, i|
-          subview UILabel, text: day, styleClass: :day_of_week, left: 15 + i * 44
+        x = 15
+        day_views = initials.map do |day|
+          view = subview UILabel, text: day, styleClass: :day_of_week, left: x
+          x += 44
+          view
+        end
+        day_views.each do |day_view|
+          day_view.when_tapped do
+            UIView.animateWithDuration 0.5,
+              animations: lambda {
+                day_highlighter.origin = day_view.origin
+                # day_view.textColor = UIColor.whiteColor
+                day_views.map do |v| v.styleClass = 'day_of_week' end
+                day_view.styleClass = 'selected_day day_of_week'
+              }
+          end
         end
 
         [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
@@ -20,8 +36,7 @@ class SittersController < UIViewController
           end
         end
 
-        subview UIButton, styleClass: :selected_day
-        subview UILabel, text: 'F', styleClass: :selected_day
+        # subview UILabel, text: 'F', styleClass: :selected_day
         subview UIButton, styleClass: :hour_range
         subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
       end

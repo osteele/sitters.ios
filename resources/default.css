@@ -27,8 +27,8 @@
 }
 
 #time_selector .selected_day {
-  left: 8px;
-  top: 30px;
+  /*left: 8px;*/
+  /*top: 30px;*/
   width: 35px;
   height: 35px;
   color: #5481C9;
@@ -36,6 +36,8 @@
   font-weight: bold;
 }
 #time_selector button.selected_day {
+  left: 8px;
+  top: 30px;
   background-color: white;
   border-radius: 18px;
   box-shadow: 0 1 1 #226;
