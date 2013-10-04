@@ -1,8 +1,6 @@
 class SittersController < UIViewController
-  stylesheet :sitters
-
   layout :root do
-    subview UIScrollView, :scroll_view do
+    @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       subview TimeSelector, styleId: 'time_selector'
 
       subview UIView, styleId: 'avatars' do
@@ -26,6 +24,12 @@ class SittersController < UIViewController
       subview UILabel, styleId: 'add_sitters', text: 'Add five more sitters'
       subview UILabel, styleId: 'add_sitters_caption', text: 'to enjoy complete freedom and spontaneity.'
     end
+  end
+
+  def viewDidLoad
+    super
+    @scroll.frame = self.view.bounds
+    @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + 20)
   end
 
   def initWithNibName(name, bundle:bundle)
