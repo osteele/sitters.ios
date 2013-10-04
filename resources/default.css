@@ -9,6 +9,10 @@
   background-color: #5582C3;
 }
 
+#avatars {
+  top: 153px;
+}
+
 .sitter {
   width: 90px;
   height: 90px;

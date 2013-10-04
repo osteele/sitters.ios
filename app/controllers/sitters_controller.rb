@@ -5,9 +5,11 @@ class SittersController < UIViewController
     subview UIScrollView, :scroll_view do
       subview TimeSelector, styleId: 'time_selector'
 
-      for i in 0...7
-        subview SitterCircle, origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i, styleClass: 'sitter' do
-          subview UILabel, text: (i+1).to_s
+      subview UIView, styleId: 'avatars' do
+        for i in 0...7
+          subview SitterCircle, origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i, styleClass: 'sitter' do
+            subview UILabel, text: (i+1).to_s
+          end
         end
       end
 
@@ -37,7 +39,7 @@ class SittersController < UIViewController
   private
 
   def sitter_positions
-    top = 153
+    top = 0
     left1 = 70
     left2 = left1 - 48
     width = 96
