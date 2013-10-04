@@ -6,25 +6,35 @@ class HomeController < UIViewController
     subview UILabel, :add_sitters
     subview UILabel, :add_sitters_caption
     for i in 0...7
-      subview SitterCircle.new(Sitter.all[i]), { frame: circle_positions[i], backgroundColor: UIColor.blueColor }
+      subview SitterCircle.new(i, Sitter.all[i]), :sitter, { frame: circle_positions[i] }
     end
-    # subview SquareButton.new("View Recommended", "14 connected sitters")
-    # subview SquareButton.new("Invite a Sitter", "to add a sitter you know")
+
+    subview UIView, :home_square, :recommended_square do
+      subview UILabel, :square_label, :view_recommended
+      subview UILabel, :square_caption, :recommended_caption
+    end
+
+    subview UIView, :home_square, :invite_square do
+      subview UILabel, :square_label, :invite
+      subview UILabel, :square_caption, :invite_caption
+    end
   end
 
   def circle_positions
-    left = 80
+    left1 = 60
+    left2 = 108 - 96
     top = 153
-    dx = 80
-    dy = 80
+    dx = 96
+    dy = 84
+    side = 90
     [
-      CGRectMake(left, top, 80, 80),
-      CGRectMake(left + dx, top, 80, 80),
-      CGRectMake(left - 80/2, top + dy, 80, 80),
-      CGRectMake(left - 80/2 + dx, top + dy, 80, 80),
-      CGRectMake(left - 80/2 + 2 * dx, top + dy, 80, 80),
-      CGRectMake(left, top + 2 * dy, 80, 80),
-      CGRectMake(left + dx, top + 2 * dy, 80, 80),
+      CGRectMake(left1, top, side, side),
+      CGRectMake(left1 + dx, top, side, 80),
+      CGRectMake(left2, top + dy, side, side),
+      CGRectMake(left2 + dx, top + dy, side, side),
+      CGRectMake(left2 + 2 * dx, top + dy, side, side),
+      CGRectMake(left1, top + 2 * dy, side, side),
+      CGRectMake(left1 + dx, top + 2 * dy, side, side),
     ]
   end
 end
