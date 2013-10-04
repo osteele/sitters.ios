@@ -2,7 +2,7 @@ class SearchController < UITableViewController
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Search', image:UIImage.imageNamed('search.png'), tag:2)
+      self.tabBarItem = UITabBarItem.alloc.initWithTabBarSystemItem(UITabBarSystemItemSearch, tag:2)
     end
   end
 
