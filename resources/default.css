@@ -1,5 +1,6 @@
 #sitters {
   background-color: #F9F9F9;
+  font-family: "Helvetica Neue"
 }
 
 #time_selector {
@@ -23,7 +24,7 @@
   height: 34px;
   top: 30px;
   font-size: 18px;
-  font-weight: bold;
+  font-weight: medium;
 }
 #time_selector .day_of_week.overlay {
   color: #5481C9;
@@ -31,10 +32,7 @@
 #time_selector .selected_day {
   width: 35px;
   height: 35px;
-/*  color: #5481C9;
-  font-size: 18px;
-  font-weight: bold;
-*/}
+}
 #time_selector button.selected_day {
   left: 8px;
   top: 30px;
@@ -49,7 +47,7 @@
   width: 195px;
   height: 35px;
   color: #5481C9;
-  font-weight: bold;
+  font-weight: medium;
 }
 #time_selector button.hour_range {
   background-color: white;
@@ -96,10 +94,10 @@
 }
 
 .sitter button, .sitter label {
-  top: 67px;
-  left: 35px;
-  width: 20px;
-  height: 20px;
+  top: 66px;
+  left: 34px;
+  width: 22px;
+  height: 22px;
   color: gray;
   font-size: 14px;
   text-align: center;
@@ -125,11 +123,12 @@
   height: 45px;
   color: #5481C9;
   font-size: 13px;
+  font-weight: bold;
   text-align: center;
 }
 
 #add_sitters_caption {
-  top: 415px;
+  top: 416px;
   left: 10px;
   width: 320px;
   height: 45px;
@@ -140,33 +139,33 @@
 
 button {
   top: 450px;
-  width: 150px;
+  width: 152px;
   height: 45px;
   border-radius: 3px;
 }
 
 button#recommended {
-  left: 5px;
+  left: 6px;
   background-color: #5582C3;
 }
 
 button#invite {
-  left: 164px;
+  left: 163px;
   background-color: #A6A6A6;
 }
 
 button label {
   left: 0;
-  top: -10px;
+  top: -9px;
   width: 150px;
   height: 50px;
   color: white;
-  font-size: 14px;
+  font-size: 13px;
   text-align: center;
 }
 
 button .caption {
-  top: 6px;
+  top: 4px;
   color: white;
-  font-size: 10px;
+  font-size: 11px;
 }
