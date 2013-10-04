@@ -1,7 +1,7 @@
-class HomeController < UIViewController
-  stylesheet :main
+class SittersController < UIViewController
+  stylesheet :sitters
 
-  layout :home do
+  layout :sitters do
     subview TimeSelector, :time_selector
     subview UILabel, :add_sitters
     subview UILabel, :add_sitters_caption

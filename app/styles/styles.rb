@@ -1,5 +1,5 @@
-Teacup::Stylesheet.new :main do
-  style :home,
+Teacup::Stylesheet.new :sitters do
+  style :sitters,
     backgroundColor: "#F9F9F9".uicolor
 
   style :time_selector,

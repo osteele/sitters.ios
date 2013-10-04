@@ -4,7 +4,7 @@ class AppDelegate
 
     tab_controller = UITabBarController.alloc.initWithNibName(nil, bundle:nil)
     tab_controller.viewControllers = [
-      HomeController.alloc.init,
+      SittersController.alloc.init,
       SearchController.alloc.init,
       UpdatesController.alloc.init,
       ChatController.alloc.init,
