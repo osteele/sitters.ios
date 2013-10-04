@@ -1,12 +1,3 @@
-class UpdatesController < UIViewController
-  def initWithNibName(name, bundle:bundle)
-    super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Updates', image:UIImage.imageNamed('updates.png'), tag:3)
-    end
-  end
-end
-
 class ChatController < UIViewController
   def initWithNibName(name, bundle:bundle)
     super

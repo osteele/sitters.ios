@@ -27,7 +27,6 @@ class SearchController < UITableViewController
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    Sitter.all.length
     @sitters ||= Sitter.all
     @sitters.length
   end
@@ -35,9 +34,10 @@ class SearchController < UITableViewController
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) ||
-      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier:cellIdentifier)
+      UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
     sitter = Sitter.all[indexPath.row]
     cell.textLabel.text = sitter.name
+    cell.detailTextLabel.text = sitter.description
     cell
   end
 end
