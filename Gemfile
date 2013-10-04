@@ -9,3 +9,4 @@ gem 'sugarcube', :require => [
   'sugarcube-repl',
 ]
 gem "motion-testflight"
+gem 'motion-pixate'

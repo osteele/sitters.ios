@@ -1,0 +1,78 @@
+#sitters {
+  background-color: #F9F9F9;
+}
+
+#time_selector {
+  top: 20px;
+  width: 320px;
+  height: 120px;
+  background-color: #5582C3;
+}
+
+.sitter {
+  width: 90px;
+  height: 90px;
+  background-color: transparent;
+}
+
+.sitter label {
+  top: 67px;
+  left: 0px;
+  width: 90px;
+  height: 20px;
+  color: gray;
+  font-size: 14px;
+  text-align: center;
+}
+
+#add_sitters {
+  top: 405px;
+  width: 320px;
+  height: 45px;
+  color: #5481C9;
+  font-size: 13px;
+  text-align: center;
+}
+
+#add_sitters_caption {
+  top: 415px;
+  left: 10px;
+  width: 320px;
+  height: 45px;
+  color: #969696;
+  font-size: 12px;
+  text-align: center;
+}
+
+button {
+  top: 450px;
+  width: 150px;
+  height: 45px;
+  border-radius: 3px;
+}
+
+button#recommended {
+  left: 5px;
+  background-color: #5582C3;
+}
+
+button#invite {
+  left: 164px;
+  background-color: #A6A6A6;
+}
+
+button label {
+  left: 0;
+  top: -10px;
+  width: 150px;
+  height: 50px;
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+
+button .caption {
+  top: 6px;
+  color: white;
+  font-size: 10px;
+}

@@ -12,8 +12,14 @@ class AppDelegate
     ]
 
     @window.rootViewController = tab_controller
-    @window.makeKeyAndVisible
+    @window.styleMode = PXStylingNormal
 
+    if Device.simulator?
+      PXStylesheet.styleSheetFromFilePath ENV['PX_STYLESHEET_PATH'], withOrigin:0 if ENV['PX_STYLESHEET_PATH']
+      PXStylesheet.currentApplicationStylesheet.monitorChanges = true
+    end
+
+    @window.makeKeyAndVisible
     true
   end
 end
