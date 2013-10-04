@@ -11,7 +11,7 @@ Motion::Project::App.setup do |app|
   # Use `rake config' to see complete project settings.
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.short_version = app.version = '0.1.0'
+  app.short_version = app.version = '0.1.2'
   # app.device_family = :iphone
   app.icons = ['icon-120.png']
   app.interface_orientations = [:portrait]
