@@ -10,14 +10,20 @@ class HomeController < UIViewController
     end
 
     subview UIButton, :home_square, :recommended_square do
-      subview UILabel, :square_label, :big_button_label, { text: "View Recommended" }
-      subview UILabel, :square_caption, :big_button_caption, { text: "14 connected sitters" }
+      subview UILabel, :square_label, :big_button_label, { text: 'View Recommended' }
+      subview UILabel, :square_caption, :big_button_caption, { text: '14 connected sitters' }
     end
 
     subview UIButton, :home_square, :invite_square do
-      subview UILabel, :square_label, :big_button_label, { text: "Invite a Sitter" }
-      subview UILabel, :square_caption, :big_button_caption, { text: "to add a sitter you know" }
+      subview UILabel, :square_label, :big_button_label, { text: 'Invite a Sitter' }
+      subview UILabel, :square_caption, :big_button_caption, { text: 'to add a sitter you know' }
     end
+  end
+
+  def initWithNibName(name, bundle:bundle)
+    super
+    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('sitters.png'), tag:1)
+    self
   end
 
   def circle_positions
