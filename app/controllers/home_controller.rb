@@ -6,35 +6,37 @@ class HomeController < UIViewController
     subview UILabel, :add_sitters
     subview UILabel, :add_sitters_caption
     for i in 0...7
-      subview SitterCircle.new(i, Sitter.all[i]), :sitter, { frame: circle_positions[i] }
+      subview SitterCircle, :sitter, { origin: circle_positions[i], dataSource: Sitter.all[i], dataIndex: i }
     end
 
-    subview UIView, :home_square, :recommended_square do
-      subview UILabel, :square_label, :view_recommended
-      subview UILabel, :square_caption, :recommended_caption
+    subview UIButton, :home_square, :recommended_square do
+      subview UILabel, :square_label, :big_button_label, { text: "View Recommended" }
+      subview UILabel, :square_caption, :big_button_caption, { text: "14 connected sitters" }
     end
 
-    subview UIView, :home_square, :invite_square do
-      subview UILabel, :square_label, :invite
-      subview UILabel, :square_caption, :invite_caption
+    subview UIButton, :home_square, :invite_square do
+      subview UILabel, :square_label, :big_button_label, { text: "Invite a Sitter" }
+      subview UILabel, :square_caption, :big_button_caption, { text: "to add a sitter you know" }
     end
   end
 
   def circle_positions
-    left1 = 60
-    left2 = 108 - 96
     top = 153
-    dx = 96
-    dy = 84
-    side = 90
+    left1 = 70
+    left2 = left1 - 48
+    width = 96
+    height = 84
     [
-      CGRectMake(left1, top, side, side),
-      CGRectMake(left1 + dx, top, side, 80),
-      CGRectMake(left2, top + dy, side, side),
-      CGRectMake(left2 + dx, top + dy, side, side),
-      CGRectMake(left2 + 2 * dx, top + dy, side, side),
-      CGRectMake(left1, top + 2 * dy, side, side),
-      CGRectMake(left1 + dx, top + 2 * dy, side, side),
-    ]
+      [0, 0],
+      [1, 0],
+      [0, 1],
+      [1, 1],
+      [2, 1],
+      [0, 2],
+      [1, 2],
+    ].map do |x, y|
+      left = (if y == 1 then left2 else left1 end)
+      [left + x * width, top + y * height]
+    end
   end
 end

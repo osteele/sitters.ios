@@ -14,54 +14,34 @@ Teacup::Stylesheet.new :main do
     backgroundColor: UIColor.clearColor
 
 
-  style :recommended_square,
+  style :big_button,
     origin: [5, 450],
     width: 150,
-    height: 45,
+    height: 45
+
+  style :big_button_label,
+    origin: [0, -10],
+    width: 150,
+    height: 50,
+    font: UIFont.systemFontOfSize(14.0),
+    textAlignment: UITextAlignmentCenter,
+    textColor: UIColor.whiteColor
+
+  style :big_button_caption,
+    origin: [0, 2],
+    width: 150,
+    height: 50,
+    font: UIFont.systemFontOfSize(10.0),
+    textAlignment: UITextAlignmentCenter,
+    textColor: UIColor.whiteColor
+
+  style :recommended_square, extends: :big_button,
+    origin: [5, 450],
     backgroundColor: "#5582C3".uicolor
 
-  style :view_recommended,
-    origin: [0, -10],
-    width: 150,
-    height: 50,
-    font: UIFont.systemFontOfSize(14.0),
-    textAlignment: UITextAlignmentCenter,
-    textColor: UIColor.whiteColor,
-    text: "View Recommended"
-
-  style :recommended_caption,
-    origin: [0, 2],
-    width: 150,
-    height: 50,
-    font: UIFont.systemFontOfSize(10.0),
-    textAlignment: UITextAlignmentCenter,
-    textColor: UIColor.whiteColor,
-    text: "14 connected sitters"
-
-
-  style :invite_square,
+  style :invite_square, extends: :big_button,
     origin: [164, 450],
-    width: 150,
-    height: 45,
     backgroundColor: "#A6A6A6".uicolor
-
-  style :invite,
-    origin: [0, -10],
-    width: 150,
-    height: 50,
-    font: UIFont.systemFontOfSize(14.0),
-    textAlignment: UITextAlignmentCenter,
-    textColor: UIColor.whiteColor,
-    text: "Invite a Sitter"
-
-  style :invite_caption,
-    origin: [0, 2],
-    width: 150,
-    height: 50,
-    font: UIFont.systemFontOfSize(10.0),
-    textAlignment: UITextAlignmentCenter,
-    textColor: UIColor.whiteColor,
-    text: "to add a sitter you know"
 
 
   style :add_sitters,

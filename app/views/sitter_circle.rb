@@ -1,13 +1,18 @@
 class SitterCircle < UIView
-  # attr_accessor :number
+  attr_accessor :dataSource
+  attr_accessor :dataIndex
 
-  def self.new(number, model)
-    # self.number = number
+  def self.new
     view = alloc.initWithFrame(CGRectZero)
     view
   end
 
+  # layout do
+  #   subview UILabel, text: 'ok', width: 100, height: 20, left: 0, top: 0
+  # end
+
   # def initWithFrame(frame)
+  #     # subview UILabel, :square_label, :view_recommended
   #   self
   # end
 
@@ -15,6 +20,7 @@ class SitterCircle < UIView
     context = UIGraphicsGetCurrentContext()
 
     radius = cx = cy = 90 / 2
+    radius -= 1
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
