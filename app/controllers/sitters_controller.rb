@@ -17,6 +17,8 @@ class SittersController < UIViewController
           end
         end
 
+        subview UIButton, styleClass: :selected_day
+        subview UILabel, text: 'F', styleClass: :selected_day
         subview UIButton, styleClass: :hour_range
         subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
       end
