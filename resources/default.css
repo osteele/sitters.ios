@@ -15,7 +15,7 @@
 #time_selector .date {
   width: 320px;
   height: 20px;
-  top: 3px;
+  top: 5px;
   font-size: 12px;
 }
 #time_selector .day_of_week {

@@ -4,9 +4,12 @@ class SittersController < UIViewController
 
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       subview TimeSelector, styleId: :time_selector do
-        subview UILabel, text: 'Sunday, October 6', styleClass: :date
-        ['F', 'S', 'S', 'M', 'T', 'W', 'T'].each_with_index do |day, i|
-          subview UILabel, text: day, styleClass: :day_of_week, left: 15 + i * 43
+        now = Time.now
+        subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
+
+        initials = (0...7).map do |d| (now + d * 24 * 3600).strftime('%A')[0] end
+        initials.each_with_index do |day, i|
+          subview UILabel, text: day, styleClass: :day_of_week, left: 15 + i * 44
         end
 
         [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
@@ -34,7 +37,7 @@ class SittersController < UIViewController
             maskedImage = UIImage.imageWithCGImage(cgImage)
             subview UIImageView.alloc.initWithImage(maskedImage)
             subview UIButton
-            subview UILabel, label: (i+1).to_s, text: (i+1).to_s
+            subview UILabel, text: (i+1).to_s
           end
         end
       end
