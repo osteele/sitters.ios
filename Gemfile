@@ -8,3 +8,4 @@ gem 'sugarcube', :require => [
   'sugarcube-color',
   'sugarcube-repl',
 ]
+gem "motion-testflight"
