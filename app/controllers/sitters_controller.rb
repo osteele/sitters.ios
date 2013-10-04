@@ -11,7 +11,7 @@ class SittersController < UIViewController
 
         x = 15
         overlays = []
-        days = (0...7).map do |d| now + d * 24 * 3600 end
+        @days = days = (0...7).map do |d| now + d * 24 * 3600 end
         days.each_with_index do |time, i|
           abbr = time.strftime('%A')[0]
           day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
@@ -19,6 +19,7 @@ class SittersController < UIViewController
           x += 44
           [day_view, overlay].each do |view|
             view.when_tapped do
+              show_date time, i
               UIView.animateWithDuration 0.3,
                 animations: lambda {
                   now_label.text = time.strftime('%A, %B %-e')
@@ -47,10 +48,11 @@ class SittersController < UIViewController
 
       cgMask = SitterCircle.maskImage
 
+      @sitter_views = []
       subview UIView, styleId: :avatars do
         for i in 0...7
           sitter = Sitter.all[i]
-          subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+          sitter_view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
             cgImage = sitter.image.CGImage
             cgImage = CGImageCreateWithMask(cgImage, cgMask)
             maskedImage = UIImage.imageWithCGImage(cgImage)
@@ -58,8 +60,11 @@ class SittersController < UIViewController
             subview UIButton
             subview UILabel, text: (i+1).to_s
           end
+          @sitter_views << sitter_view
         end
       end
+
+      show_date(@days[0], 0)
 
       subview UIButton, styleId: :recommended do
         subview UILabel, text: 'View Recommended'
@@ -74,6 +79,16 @@ class SittersController < UIViewController
       subview UILabel, styleId: :add_sitters, text: 'Add five more sitters'
       subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
     end
+  end
+
+  def show_date(time, i)
+    UIView.animateWithDuration 0.3,
+      animations: lambda {
+        @sitter_views.map do |v| v.alpha = 0.5 end
+        @sitter_views[i * 3 % 7].alpha = 1
+        @sitter_views[i * 5 % 7].alpha = 1
+        @sitter_views[i * 6 % 7].alpha = 1
+      }
   end
 
   def viewDidLoad
