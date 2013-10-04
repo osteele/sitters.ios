@@ -13,6 +13,11 @@ Teacup::Stylesheet.new :sitters do
     height: 90,
     backgroundColor: UIColor.clearColor
 
+  style :sitter_number,
+    width: 90, height: 20, left: 0, bottom: 87,
+    font: UIFont.systemFontOfSize(14.0),
+    textColor: UIColor.grayColor,
+    textAlignment: UITextAlignmentCenter
 
   style :big_button,
     origin: [5, 450],

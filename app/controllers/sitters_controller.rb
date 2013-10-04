@@ -6,7 +6,9 @@ class SittersController < UIViewController
     subview UILabel, :add_sitters
     subview UILabel, :add_sitters_caption
     for i in 0...7
-      subview SitterCircle, :sitter, { origin: circle_positions[i], dataSource: Sitter.all[i], dataIndex: i }
+      subview SitterCircle, :sitter, { origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i } do
+        subview UILabel, :sitter_number, text: (i+1).to_s
+      end
     end
 
     subview UIButton, :home_square, :recommended_square do
@@ -22,11 +24,14 @@ class SittersController < UIViewController
 
   def initWithNibName(name, bundle:bundle)
     super
-    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('sitters.png'), tag:1)
-    self
+    self.tap do
+      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('sitters.png'), tag:1)
+    end
   end
 
-  def circle_positions
+  private
+
+  def sitter_positions
     top = 153
     left1 = 70
     left2 = left1 - 48

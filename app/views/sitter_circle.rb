@@ -37,5 +37,14 @@ class SitterCircle < UIView
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
+
+    radius = 11
+    CGContextAddArc context, cx, 90 - 3 - radius, radius, 0, 2 * Math::PI, 0
+    CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
+    CGContextFillPath context
+
+    CGContextAddArc context, cx, 90 - 2 - radius, radius, 0, 2 * Math::PI, 0
+    CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
+    CGContextFillPath context
   end
 end
