@@ -1,6 +1,12 @@
 Teacup::Stylesheet.new :sitters do
-  style :sitters,
+  style :root,
     backgroundColor: "#F9F9F9".uicolor
+
+  style :scroll_view,
+    constraints: [:top, :full]
+    # width: '100%',
+    # height: '100%'
+    # autoresizingMask: UIAutoResizingFlexibleWidth | UIAutoResizingFlexibleHeight
 
   style :time_selector,
     origin: [0, 20],
@@ -23,6 +29,7 @@ Teacup::Stylesheet.new :sitters do
     origin: [5, 450],
     width: 150,
     height: 45
+    # cornerRadius: 8
 
   style :big_button_label,
     origin: [0, -10],
@@ -41,11 +48,11 @@ Teacup::Stylesheet.new :sitters do
     textColor: UIColor.whiteColor
 
   style :recommended_square, extends: :big_button,
-    origin: [5, 450],
+    left: 5,
     backgroundColor: "#5582C3".uicolor
 
   style :invite_square, extends: :big_button,
-    origin: [164, 450],
+    left: 164,
     backgroundColor: "#A6A6A6".uicolor
 
 

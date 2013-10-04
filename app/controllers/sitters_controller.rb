@@ -1,24 +1,26 @@
 class SittersController < UIViewController
   stylesheet :sitters
 
-  layout :sitters do
-    subview TimeSelector, :time_selector
-    subview UILabel, :add_sitters
-    subview UILabel, :add_sitters_caption
-    for i in 0...7
-      subview SitterCircle, :sitter, { origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i } do
-        subview UILabel, :sitter_number, text: (i+1).to_s
+  layout :root do
+    subview UIScrollView, :scroll_view do
+      subview TimeSelector, :time_selector
+      subview UILabel, :add_sitters
+      subview UILabel, :add_sitters_caption
+      for i in 0...7
+        subview SitterCircle, :sitter, { origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i } do
+          subview UILabel, :sitter_number, text: (i+1).to_s
+        end
       end
-    end
 
-    subview UIButton, :home_square, :recommended_square do
-      subview UILabel, :square_label, :big_button_label, { text: 'View Recommended' }
-      subview UILabel, :square_caption, :big_button_caption, { text: '14 connected sitters' }
-    end
+      subview UIButton, :home_square, :recommended_square do
+        subview UILabel, :square_label, :big_button_label, { text: 'View Recommended' }
+        subview UILabel, :square_caption, :big_button_caption, { text: '14 connected sitters' }
+      end
 
-    subview UIButton, :home_square, :invite_square do
-      subview UILabel, :square_label, :big_button_label, { text: 'Invite a Sitter' }
-      subview UILabel, :square_caption, :big_button_caption, { text: 'to add a sitter you know' }
+      subview UIButton, :home_square, :invite_square do
+        subview UILabel, :square_label, :big_button_label, { text: 'Invite a Sitter' }
+        subview UILabel, :square_caption, :big_button_caption, { text: 'to add a sitter you know' }
+      end
     end
   end
 
