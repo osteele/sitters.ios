@@ -25,16 +25,21 @@
   font-size: 18px;
   font-weight: bold;
 }
-
+#time_selector .day_of_week.disabled_overlay {
+  opacity: 0.2;
+  color: #5481C9;
+}
+#time_selector .day_of_week.selected_overlay {
+  opacity: 0.8;
+  color: #5481C9;
+}
 #time_selector .selected_day {
-  /*left: 8px;*/
-  /*top: 30px;*/
   width: 35px;
   height: 35px;
-  color: #5481C9;
+/*  color: #5481C9;
   font-size: 18px;
   font-weight: bold;
-}
+*/}
 #time_selector button.selected_day {
   left: 8px;
   top: 30px;

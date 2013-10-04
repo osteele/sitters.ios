@@ -11,21 +11,22 @@ class SittersController < UIViewController
 
         initials = (0...7).map do |d| (now + d * 24 * 3600).strftime('%A')[0] end
         x = 15
-        day_views = initials.map do |day|
-          view = subview UILabel, text: day, styleClass: :day_of_week, left: x
+        overlays = []
+        initials.each_with_index do |day, i|
+          day_view = subview UILabel, text: day, styleClass: :day_of_week, left: x
+          overlay = subview UILabel, text: day, styleClass: 'day_of_week disabled_overlay', left: x
           x += 44
-          view
-        end
-        day_views.each do |day_view|
-          day_view.when_tapped do
-            UIView.animateWithDuration 0.5,
-              animations: lambda {
-                day_highlighter.origin = day_view.origin
-                # day_view.textColor = UIColor.whiteColor
-                day_views.map do |v| v.styleClass = 'day_of_week' end
-                day_view.styleClass = 'selected_day day_of_week'
-              }
+          [day_view, overlay].each do |view|
+            view.when_tapped do
+              UIView.animateWithDuration 0.3,
+                animations: lambda {
+                  day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
+                  overlays.map do |v| v.alpha = 0 end
+                  overlay.alpha = 1
+                }
+              end
           end
+          overlays << overlay
         end
 
         [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
@@ -36,7 +37,6 @@ class SittersController < UIViewController
           end
         end
 
-        # subview UILabel, text: 'F', styleClass: :selected_day
         subview UIButton, styleClass: :hour_range
         subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
       end
