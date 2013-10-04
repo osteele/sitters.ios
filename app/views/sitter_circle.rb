@@ -46,6 +46,27 @@ class SitterCircle < UIView
     # CGContextAddArc context, cx, 90 - 2 - radius, radius, 0, 2 * Math::PI, 0
     # CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     # CGContextFillPath context
+
+    # r = 36
+    # name = dataSource.first_name.upcase
+    # font = UIFont.fontWithName("Helvetica Neue Bold", size:10)
+    # CGContextSelectFont context, "Helvetica Neue Bold", 10, KCGEncodingMacRoman
+    # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+    # text_width = name.sizeWithFont(font, constrainedToSize:Float::MAX, lineBreakMode:UILineBreakModeWordWrap)
+    # cursor = -Math::PI / 2 - text_width / r / Math::PI
+    # for i in 0...name.length
+    #   letter_width = name[i].sizeWithFont(font, constrainedToSize:Float::MAX, lineBreakMode:UILineBreakModeWordWrap)
+    #   # angle = -Math::PI / 2 + 11 * (i - name.length / 2) * Math::PI / 180
+    #   letter_angle = letter_width / r / Math::PI
+    #   angle = cursor + letter_angle / 2
+    #   cursor += letter_angle
+    #   dx = r * Math.cos(angle)
+    #   dy = r * Math.sin(angle)
+    #   xf = CGAffineTransformMakeRotation(angle + Math::PI / 2)
+    #   xf = CGAffineTransformScale(xf, 1, -1)
+    #   CGContextSetTextMatrix context, xf
+    #   CGContextShowTextAtPoint context, cx + dx, cy + dy, name[i], 1
+    # end
   end
 
   def self.maskImage
