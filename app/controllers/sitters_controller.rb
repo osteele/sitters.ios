@@ -1,12 +1,21 @@
 class SittersController < UIViewController
-  layout :root do
+  layout do
+    view.styleId = 'sitters'
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       subview TimeSelector, styleId: 'time_selector'
 
+      cgMask = SitterCircle.maskImage
+
       subview UIView, styleId: 'avatars' do
         for i in 0...7
-          subview SitterCircle, origin: sitter_positions[i], dataSource: Sitter.all[i], dataIndex: i, styleClass: 'sitter' do
-            subview UILabel, text: (i+1).to_s
+          sitter = Sitter.all[i]
+          subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+            cgImage = sitter.image.CGImage
+            cgImage = CGImageCreateWithMask(cgImage, cgMask)
+            maskedImage = UIImage.imageWithCGImage(cgImage)
+            subview UIImageView.alloc.initWithImage(maskedImage)
+            subview UIButton, label: (i+1).to_s, text: (i+1).to_s
+            subview UILabel, label: (i+1).to_s, text: (i+1).to_s
           end
         end
       end
@@ -36,7 +45,6 @@ class SittersController < UIViewController
     super
     self.tap do
       self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('sitters.png'), tag:1)
-      view.styleId = 'sitters'
     end
   end
 

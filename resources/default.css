@@ -19,14 +19,28 @@
   background-color: transparent;
 }
 
-.sitter label {
+.sitter button, .sitter label {
   top: 67px;
-  left: 0px;
-  width: 90px;
+  left: 35px;
+  width: 20px;
   height: 20px;
   color: gray;
   font-size: 14px;
   text-align: center;
+}
+
+.sitter button {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 -1 .5 gray;
+}
+
+.sitter image-view {
+  width: 70px;
+  height: 70px;
+  left: 10px;
+  top: 10px;
+  opacity: 1;
 }
 
 #add_sitters {
