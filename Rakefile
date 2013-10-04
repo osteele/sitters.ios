@@ -13,7 +13,7 @@ Motion::Project::App.setup do |app|
   app.name = 'Seven Sitters'
   app.short_version = app.version = '0.1.0'
   # app.device_family = :iphone
-  # app.icons = ['']
+  app.icons = ['icon-120.png']
   app.interface_orientations = [:portrait]
 
   app.pixate.user = 'steele@osteele.com'
