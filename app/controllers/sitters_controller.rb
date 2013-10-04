@@ -1,12 +1,29 @@
 class SittersController < UIViewController
   layout do
-    view.styleId = 'sitters'
+    view.styleId = :sitters
+
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      subview TimeSelector, styleId: 'time_selector'
+      subview TimeSelector, styleId: :time_selector do
+        subview UILabel, text: 'Sunday, October 6', styleClass: :date
+        ['F', 'S', 'S', 'M', 'T', 'W', 'T'].each_with_index do |day, i|
+          subview UILabel, text: day, styleClass: :day_of_week, left: 15 + i * 43
+        end
+
+        [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
+          subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
+            subview UILabel, text: hour.to_s, styleClass: :hour
+            subview UILabel, text: 'PM', styleClass: :am_pm
+            subview UILabel, text: ':30', styleClass: :half_past
+          end
+        end
+
+        subview UIButton, styleClass: :hour_range
+        subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
+      end
 
       cgMask = SitterCircle.maskImage
 
-      subview UIView, styleId: 'avatars' do
+      subview UIView, styleId: :avatars do
         for i in 0...7
           sitter = Sitter.all[i]
           subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
@@ -14,24 +31,24 @@ class SittersController < UIViewController
             cgImage = CGImageCreateWithMask(cgImage, cgMask)
             maskedImage = UIImage.imageWithCGImage(cgImage)
             subview UIImageView.alloc.initWithImage(maskedImage)
-            subview UIButton, label: (i+1).to_s, text: (i+1).to_s
+            subview UIButton
             subview UILabel, label: (i+1).to_s, text: (i+1).to_s
           end
         end
       end
 
-      subview UIButton, styleId: 'recommended' do
+      subview UIButton, styleId: :recommended do
         subview UILabel, text: 'View Recommended'
-        subview UILabel, text: '14 connected sitters', styleClass: 'caption'
+        subview UILabel, styleClass: :caption, text: '14 connected sitters'
       end
 
-      subview UIButton, left: 164, styleId: 'invite' do
+      subview UIButton, left: 164, styleId: :invite do
         subview UILabel, text: 'Invite a Sitter'
-        subview UILabel, text: 'to add a sitter you know', styleClass: 'caption'
+        subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
       end
 
-      subview UILabel, styleId: 'add_sitters', text: 'Add five more sitters'
-      subview UILabel, styleId: 'add_sitters_caption', text: 'to enjoy complete freedom and spontaneity.'
+      subview UILabel, styleId: :add_sitters, text: 'Add five more sitters'
+      subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
     end
   end
 

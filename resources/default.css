@@ -8,6 +8,64 @@
   height: 120px;
   background-color: #5582C3;
 }
+#time_selector label {
+  color: white;
+  text-align: center;
+}
+#time_selector .date {
+  width: 320px;
+  height: 20px;
+  top: 3px;
+  font-size: 12px;
+}
+#time_selector .day_of_week {
+  width: 20px;
+  height: 34px;
+  top: 30px;
+  font-size: 18px;
+  font-weight: bold;
+}
+#time_selector .hour_range {
+  left: 12px;
+  top: 75px;
+  width: 195px;
+  height: 35px;
+  color: #5481C9;
+  font-weight: bold;
+}
+#time_selector button.hour_range {
+  background-color: white;
+  border-radius: 18px;
+}
+
+#time_selector .hour_blob {
+  top: 70px;
+  width: 40px;
+  height: 40px;
+}
+#time_selector .hour_blob .hour {
+  top: 8px;
+  width: 20px;
+  height: 20px;
+  font-size: 14px;
+  text-align: center;
+}
+#time_selector .hour_blob .am_pm {
+  top: 20px;
+  width: 20px;
+  height: 20px;
+  font-size: 9px;
+  text-align: center;
+}
+#time_selector .hour_blob .half_past {
+  left: 26px;
+  top: 13px;
+  width: 20px;
+  height: 20px;
+  color: #A8C1E5;
+  font-size: 13px;
+  text-align: right;
+}
 
 #avatars {
   top: 153px;
