@@ -62,6 +62,7 @@ class SittersController < UIViewController
         x += 44
         [label, overlay].each do |view|
           view.when_tapped do
+            TestFlight.passCheckpoint "Tap day: #{name}"
             self.selectedTimespan = Timespan.new(time)
           end
         end
@@ -88,8 +89,10 @@ class SittersController < UIViewController
         end
       end
 
-      subview UIButton, styleClass: :hour_range
-      subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
+      range_button = subview UIButton, styleClass: :hour_range
+      range_label = subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
+      range_button.when_tapped { TestFlight.passCheckpoint "Tap hour range: ##{i+1}" }
+      range_label.when_tapped { TestFlight.passCheckpoint "Tap hour range: ##{i+1}" }
     end
   end
 
@@ -100,7 +103,7 @@ class SittersController < UIViewController
     subview UIView, styleId: :avatars do
       for i in 0...7
         sitter = Sitter.all[i]
-        sitter_view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+        view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
           cgImage = sitter.image.CGImage
           cgImage = CGImageCreateWithMask(cgImage, cgMask)
           maskedImage = UIImage.imageWithCGImage(cgImage)
@@ -108,7 +111,8 @@ class SittersController < UIViewController
           subview UIButton
           subview UILabel, text: (i+1).to_s
         end
-        sitterViews << sitter_view
+        view.when_tapped { TestFlight.passCheckpoint "Tap sitter: ##{i+1}" }
+        sitterViews << view
       end
     end
 
