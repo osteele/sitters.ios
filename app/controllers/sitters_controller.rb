@@ -32,19 +32,18 @@ class SittersController < UIViewController
       subview UILabel, styleId: :add_sitters, text: 'Add five more sitters'
       subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
 
-      show_date @days[0], 0
+      show_date @days[0]
     end
   end
 
   private
 
-  def show_date(time, i)
+  def show_date(time)
     UIView.animateWithDuration 0.3,
       animations: lambda {
-        @sitter_views.map do |v| v.alpha = 0.5 end
-        @sitter_views[i * 3 % 7].alpha = 1
-        @sitter_views[i * 5 % 7].alpha = 1
-        @sitter_views[i * 6 % 7].alpha = 1
+        @sitter_views.map do |view|
+          view.alpha = if view.dataSource.available_at(time) then 1 else 0.5 end
+        end
       }
   end
 
@@ -65,7 +64,7 @@ class SittersController < UIViewController
         x += 44
         [day_view, overlay].each do |view|
           view.when_tapped do
-            show_date time, i
+            show_date time
             UIView.animateWithDuration 0.3,
               animations: lambda {
                 now_label.text = time.strftime('%A, %B %-e')

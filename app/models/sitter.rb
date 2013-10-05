@@ -27,6 +27,11 @@ class Sitter
     self.name.split[0]
   end
 
+  def available_at(time)
+    # pseudorandom, for reproducible debugging
+    [self.name, self.age, time].hash % 100 < 30
+  end
+
   def image
     @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.png")
   end
