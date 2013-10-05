@@ -1,70 +1,23 @@
 class SittersController < UIViewController
+  def initWithNibName(name, bundle:bundle)
+    super
+    self.tap do
+      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters.png'), tag:1)
+    end
+  end
+
+  def viewDidLoad
+    super
+    @scroll.frame = self.view.bounds
+    @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + 20)
+  end
+
   layout do
     view.styleId = :sitters
 
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      subview TimeSelector, styleId: :time_selector do
-        now = Time.now
-        now_label = subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
-
-        day_highlighter = subview UIButton, styleClass: :selected_day
-
-        x = 15
-        overlays = []
-        @days = days = (0...7).map do |d| now + d * 24 * 3600 end
-        days.each_with_index do |time, i|
-          abbr = time.strftime('%A')[0]
-          day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
-          overlay = subview UILabel, text: abbr, styleClass: 'day_of_week overlay', left: x
-          x += 44
-          [day_view, overlay].each do |view|
-            view.when_tapped do
-              show_date time, i
-              UIView.animateWithDuration 0.3,
-                animations: lambda {
-                  now_label.text = time.strftime('%A, %B %-e')
-                  day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
-                  overlays.map do |v| v.alpha = 0 end
-                  overlay.alpha = 1
-                }
-              end
-          end
-          overlays << overlay
-        end
-        overlays.map do |v| v.alpha = 0 end
-        overlays[0].alpha = 1
-
-        [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
-          subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
-            subview UILabel, text: hour.to_s, styleClass: :hour
-            subview UILabel, text: 'PM', styleClass: :am_pm
-            subview UILabel, text: ':30', styleClass: :half_past
-          end
-        end
-
-        subview UIButton, styleClass: :hour_range
-        subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
-      end
-
-      cgMask = SitterCircle.maskImage
-
-      @sitter_views = []
-      subview UIView, styleId: :avatars do
-        for i in 0...7
-          sitter = Sitter.all[i]
-          sitter_view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
-            cgImage = sitter.image.CGImage
-            cgImage = CGImageCreateWithMask(cgImage, cgMask)
-            maskedImage = UIImage.imageWithCGImage(cgImage)
-            subview UIImageView.alloc.initWithImage(maskedImage)
-            subview UIButton
-            subview UILabel, text: (i+1).to_s
-          end
-          @sitter_views << sitter_view
-        end
-      end
-
-      show_date(@days[0], 0)
+      create_time_selector
+      create_sitter_avatars
 
       subview UIButton, styleId: :recommended do
         subview UILabel, text: 'View Recommended'
@@ -78,8 +31,12 @@ class SittersController < UIViewController
 
       subview UILabel, styleId: :add_sitters, text: 'Add five more sitters'
       subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+
+      show_date @days[0], 0
     end
   end
+
+  private
 
   def show_date(time, i)
     UIView.animateWithDuration 0.3,
@@ -91,20 +48,70 @@ class SittersController < UIViewController
       }
   end
 
-  def viewDidLoad
-    super
-    @scroll.frame = self.view.bounds
-    @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + 20)
-  end
+  def create_time_selector
+    subview TimeSelector, styleId: :time_selector do
+      now = Time.now
+      now_label = subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
 
-  def initWithNibName(name, bundle:bundle)
-    super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters.png'), tag:1)
+      day_highlighter = subview UIButton, styleClass: :selected_day
+
+      x = 15
+      overlays = []
+      @days = days = (0...7).map do |d| now + d * 24 * 3600 end
+      days.each_with_index do |time, i|
+        abbr = time.strftime('%A')[0]
+        day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
+        overlay = subview UILabel, text: abbr, styleClass: 'day_of_week overlay', left: x
+        x += 44
+        [day_view, overlay].each do |view|
+          view.when_tapped do
+            show_date time, i
+            UIView.animateWithDuration 0.3,
+              animations: lambda {
+                now_label.text = time.strftime('%A, %B %-e')
+                day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
+                overlays.map do |v| v.alpha = 0 end
+                overlay.alpha = 1
+              }
+            end
+        end
+        overlays << overlay
+      end
+      overlays.map do |v| v.alpha = 0 end
+      overlays[0].alpha = 1
+
+      [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
+        subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
+          subview UILabel, text: hour.to_s, styleClass: :hour
+          subview UILabel, text: 'PM', styleClass: :am_pm
+          subview UILabel, text: ':30', styleClass: :half_past
+        end
+      end
+
+      subview UIButton, styleClass: :hour_range
+      subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
     end
   end
 
-  private
+  def create_sitter_avatars
+    cgMask = SitterCircle.maskImage
+
+    @sitter_views = []
+    subview UIView, styleId: :avatars do
+      for i in 0...7
+        sitter = Sitter.all[i]
+        sitter_view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+          cgImage = sitter.image.CGImage
+          cgImage = CGImageCreateWithMask(cgImage, cgMask)
+          maskedImage = UIImage.imageWithCGImage(cgImage)
+          subview UIImageView.alloc.initWithImage(maskedImage)
+          subview UIButton
+          subview UILabel, text: (i+1).to_s
+        end
+        @sitter_views << sitter_view
+      end
+    end
+  end
 
   def sitter_positions
     top = 0
