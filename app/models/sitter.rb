@@ -27,9 +27,9 @@ class Sitter
     self.name.split[0]
   end
 
-  def available_at(time)
+  def availableAt(time)
     # pseudorandom, for reproducible debugging
-    [self.name, self.age, time].hash % 100 < 30
+    [self.name, self.age, time].hash % 1000 > 600
   end
 
   def image

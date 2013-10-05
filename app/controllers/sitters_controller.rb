@@ -1,4 +1,6 @@
 class SittersController < UIViewController
+  attr_accessor :selectedTimespan
+
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do
@@ -16,8 +18,8 @@ class SittersController < UIViewController
     view.styleId = :sitters
 
     @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      create_time_selector
-      create_sitter_avatars
+      createTimeSelector
+      createSitterAvatars
 
       subview UIButton, styleId: :recommended do
         subview UILabel, text: 'View Recommended'
@@ -41,24 +43,25 @@ class SittersController < UIViewController
   def show_date(time)
     UIView.animateWithDuration 0.3,
       animations: lambda {
-        @sitter_views.map do |view|
-          view.alpha = if view.dataSource.available_at(time) then 1 else 0.5 end
+        @sitterViews.map do |view|
+          view.alpha = if view.dataSource.availableAt(time) then 1 else 0.5 end
         end
       }
   end
 
-  def create_time_selector
+  def createTimeSelector
+    self.selectedTimespan = Timespan.new(NSDate.date.dateAtStartOfDay)
+
     subview TimeSelector, styleId: :time_selector do
-      today = NSDate.date.dateAtStartOfDay
-      day_label_formatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
-      day_label = subview UILabel, styleClass: :date,
-        text: day_label_formatter.stringFromDate(today)
+      dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
+      dayLabel = subview UILabel, styleClass: :date,
+        text: dayLabelFormatter.stringFromDate(selectedTimespan.beginTime)
 
       day_highlighter = subview UIButton, styleClass: :selected_day
 
       x = 15
       overlays = []
-      @days = days = (0...7).map do |d| today.dateByAddingDays(d) end
+      @days = days = (0...7).map do |d| selectedTimespan.beginTime.dateByAddingDays(d) end
       days.each_with_index do |time, i|
         abbr = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
         day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
@@ -69,7 +72,7 @@ class SittersController < UIViewController
             show_date time
             UIView.animateWithDuration 0.3,
               animations: lambda {
-                day_label.text = day_label_formatter.stringFromDate(time)
+                dayLabel.text = dayLabelFormatter.stringFromDate(time)
                 day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
                 overlays.map do |v| v.alpha = 0 end
                 overlay.alpha = 1
@@ -94,10 +97,10 @@ class SittersController < UIViewController
     end
   end
 
-  def create_sitter_avatars
+  def createSitterAvatars
     cgMask = SitterCircle.maskImage
 
-    @sitter_views = []
+    @sitterViews = []
     subview UIView, styleId: :avatars do
       for i in 0...7
         sitter = Sitter.all[i]
@@ -109,7 +112,7 @@ class SittersController < UIViewController
           subview UIButton
           subview UILabel, text: (i+1).to_s
         end
-        @sitter_views << sitter_view
+        @sitterViews << sitter_view
       end
     end
   end
@@ -132,5 +135,14 @@ class SittersController < UIViewController
       left = (if y == 1 then left2 else left1 end)
       [left + x * width, top + y * height]
     end
+  end
+end
+
+class Timespan
+  attr_reader :beginTime, :endTime
+
+  def initialize(beginTime, endTime=nil)
+    @beginTime = beginTime
+    @endTime = endTime || beginTime
   end
 end
