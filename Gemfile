@@ -10,3 +10,5 @@ gem 'sugarcube', :require => [
 ]
 gem "motion-testflight"
 gem 'motion-pixate'
+gem 'motion-cocoapods'
+

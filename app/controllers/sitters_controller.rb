@@ -49,16 +49,18 @@ class SittersController < UIViewController
 
   def create_time_selector
     subview TimeSelector, styleId: :time_selector do
-      now = Time.now
-      now_label = subview UILabel, text: now.strftime('%A, %B %-e'), styleClass: :date
+      today = NSDate.date.dateAtStartOfDay
+      day_label_formatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
+      day_label = subview UILabel, styleClass: :date,
+        text: day_label_formatter.stringFromDate(today)
 
       day_highlighter = subview UIButton, styleClass: :selected_day
 
       x = 15
       overlays = []
-      @days = days = (0...7).map do |d| now + d * 24 * 3600 end
+      @days = days = (0...7).map do |d| today.dateByAddingDays(d) end
       days.each_with_index do |time, i|
-        abbr = time.strftime('%A')[0]
+        abbr = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
         day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
         overlay = subview UILabel, text: abbr, styleClass: 'day_of_week overlay', left: x
         x += 44
@@ -67,7 +69,7 @@ class SittersController < UIViewController
             show_date time
             UIView.animateWithDuration 0.3,
               animations: lambda {
-                now_label.text = time.strftime('%A, %B %-e')
+                day_label.text = day_label_formatter.stringFromDate(time)
                 day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
                 overlays.map do |v| v.alpha = 0 end
                 overlay.alpha = 1
