@@ -8,7 +8,5 @@ gem 'sugarcube', :require => [
   'sugarcube-color',
   'sugarcube-repl',
 ]
-gem "motion-testflight"
 gem 'motion-pixate'
 gem 'motion-cocoapods'
-
