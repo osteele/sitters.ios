@@ -20,24 +20,23 @@
   font-size: 12px;
 }
 #time_selector .day_of_week {
-  width: 20px;
+  width: 44px;
   height: 34px;
   top: 30px;
   font-size: 18px;
-  font-weight: medium;
 }
 #time_selector .day_of_week.overlay {
   color: #5481C9;
 }
 #time_selector .selected_day {
-  width: 35px;
-  height: 35px;
+  width: 34px;
+  height: 34px;
 }
 #time_selector button.selected_day {
   left: 8px;
   top: 30px;
   background-color: white;
-  border-radius: 18px;
+  border-radius: 17px;
   box-shadow: 0 1 1 #226;
 }
 
@@ -47,7 +46,6 @@
   width: 195px;
   height: 35px;
   color: #5481C9;
-  font-weight: medium;
 }
 #time_selector button.hour_range {
   background-color: white;

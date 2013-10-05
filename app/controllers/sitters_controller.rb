@@ -52,14 +52,13 @@ class SittersController < UIViewController
 
       dayHighlighter = subview UIButton, styleClass: :selected_day
 
-      x = 15
       overlays = []
       weekDayTimes = (0...7).map do |d| weekStartDay.dateByAddingDays(d) end
       weekDayTimes.each_with_index do |time, i|
+        x = 3 + i * 44
         name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
         label = subview UILabel, text: name, styleClass: :day_of_week, left: x
         overlay = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
-        x += 44
         [label, overlay].each do |view|
           view.when_tapped do
             TestFlight.passCheckpoint "Tap day: #{name}"
@@ -75,7 +74,7 @@ class SittersController < UIViewController
         selectedOverlay = overlays[currentWeekDayIndex]
         UIView.animateWithDuration 0.3,
           animations: lambda {
-            dayHighlighter.origin = [selectedOverlay.origin[0] - 7, selectedOverlay.origin[1]]
+            dayHighlighter.origin = [selectedOverlay.origin[0] + 5, selectedOverlay.origin[1]]
             overlays.map do |v| v.alpha = 0 end
             selectedOverlay.alpha = 1
           }

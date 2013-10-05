@@ -28,8 +28,8 @@ class AppDelegate
   private
 
   def registerWithTestFlight
+    return unless Device.simulator?
     return unless Object.const_defined?('TestFlight')
-    return if UIDevice.currentDevice.model.include?('Simulator')
     app_token = NSBundle.mainBundle.objectForInfoDictionaryKey('TF_APP_TOKEN')
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
