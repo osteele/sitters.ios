@@ -1,4 +1,6 @@
 class SittersController < UIViewController
+  include BW::KVO
+
   attr_accessor :selectedTimespan
 
   def initWithNibName(name, bundle:bundle)
@@ -12,6 +14,9 @@ class SittersController < UIViewController
     super
     @scroll.frame = self.view.bounds
     @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + 20)
+
+    today = NSDate.date.dateAtStartOfDay
+    self.selectedTimespan = Timespan.new(today)
   end
 
   layout do
@@ -33,56 +38,47 @@ class SittersController < UIViewController
 
       subview UILabel, styleId: :add_sitters, text: 'Add five more sitters'
       subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
-
-      show_date @days[0]
     end
   end
 
   private
 
-  def show_date(time)
-    UIView.animateWithDuration 0.3,
-      animations: lambda {
-        @sitterViews.map do |view|
-          view.alpha = if view.dataSource.availableAt(time) then 1 else 0.5 end
-        end
-      }
-  end
-
   def createTimeSelector
-    self.selectedTimespan = Timespan.new(NSDate.date.dateAtStartOfDay)
+    weekStartDay = NSDate.date.dateAtStartOfDay
 
     subview TimeSelector, styleId: :time_selector do
       dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
-      dayLabel = subview UILabel, styleClass: :date,
-        text: dayLabelFormatter.stringFromDate(selectedTimespan.beginTime)
+      dayLabel = subview UILabel, styleClass: :date
 
-      day_highlighter = subview UIButton, styleClass: :selected_day
+      dayHighlighter = subview UIButton, styleClass: :selected_day
 
       x = 15
       overlays = []
-      @days = days = (0...7).map do |d| selectedTimespan.beginTime.dateByAddingDays(d) end
-      days.each_with_index do |time, i|
-        abbr = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
-        day_view = subview UILabel, text: abbr, styleClass: :day_of_week, left: x
-        overlay = subview UILabel, text: abbr, styleClass: 'day_of_week overlay', left: x
+      weekDayTimes = (0...7).map do |d| weekStartDay.dateByAddingDays(d) end
+      weekDayTimes.each_with_index do |time, i|
+        name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
+        label = subview UILabel, text: name, styleClass: :day_of_week, left: x
+        overlay = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
         x += 44
-        [day_view, overlay].each do |view|
+        [label, overlay].each do |view|
           view.when_tapped do
-            show_date time
-            UIView.animateWithDuration 0.3,
-              animations: lambda {
-                dayLabel.text = dayLabelFormatter.stringFromDate(time)
-                day_highlighter.origin = [day_view.origin[0] - 7, day_view.origin[1]]
-                overlays.map do |v| v.alpha = 0 end
-                overlay.alpha = 1
-              }
-            end
+            self.selectedTimespan = Timespan.new(time)
+          end
         end
         overlays << overlay
       end
-      overlays.map do |v| v.alpha = 0 end
-      overlays[0].alpha = 1
+
+      observe(self, :selectedTimespan) do |_, value|
+        dayLabel.text = dayLabelFormatter.stringFromDate(value.endTime)
+        currentWeekDayIndex = weekDayTimes.index(value.endTime)
+        selectedOverlay = overlays[currentWeekDayIndex]
+        UIView.animateWithDuration 0.3,
+          animations: lambda {
+            dayHighlighter.origin = [selectedOverlay.origin[0] - 7, selectedOverlay.origin[1]]
+            overlays.map do |v| v.alpha = 0 end
+            selectedOverlay.alpha = 1
+          }
+      end
 
       [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
         subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
@@ -100,7 +96,7 @@ class SittersController < UIViewController
   def createSitterAvatars
     cgMask = SitterCircle.maskImage
 
-    @sitterViews = []
+    sitterViews = []
     subview UIView, styleId: :avatars do
       for i in 0...7
         sitter = Sitter.all[i]
@@ -112,9 +108,19 @@ class SittersController < UIViewController
           subview UIButton
           subview UILabel, text: (i+1).to_s
         end
-        @sitterViews << sitter_view
+        sitterViews << sitter_view
       end
     end
+
+    observe(self, :selectedTimespan) do |_, value|
+      time = value.endTime
+      UIView.animateWithDuration 0.3,
+        animations: lambda {
+          sitterViews.map do |view|
+            view.alpha = if view.dataSource.availableAt(time) then 1 else 0.5 end
+          end
+        }
+      end
   end
 
   def sitter_positions
