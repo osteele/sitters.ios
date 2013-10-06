@@ -6,6 +6,7 @@ require 'bundler'
 Bundler.require
 
 ENV['PX_STYLESHEET_PATH'] = File.join(File.dirname(__FILE__), 'resources/default.css')
+require File.join(File.dirname(__FILE__), 'config/settings.rb')
 
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'

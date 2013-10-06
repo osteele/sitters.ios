@@ -20,6 +20,7 @@ class SitterCircle < UIView
     context = UIGraphicsGetCurrentContext()
     CGContextSaveGState context
 
+    # Outer circle: fill and frame
     radius = cx = cy = rect.size.width / 2
     radius -= 1
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
@@ -30,6 +31,7 @@ class SitterCircle < UIView
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
 
+    # Inner circle: fill and frame
     radius -= 10
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, "#A6A6A6".uicolor.CGColor
@@ -48,7 +50,9 @@ class SitterCircle < UIView
     # CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     # CGContextFillPath context
 
-    drawArcText context, dataSource.first_name.upcase, cx, cy, 36 if false
+    # Sitter name
+    radius = 26
+    drawArcText context, dataSource.first_name.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text]
 
     CGContextRestoreGState context
   end
@@ -89,7 +93,7 @@ class SitterCircle < UIView
     CGContextRestoreGState context
   end
 
-  def drawArcText2(context, string, cx, cy, radius)
+  def drawArcText(context, string, cx, cy, radius)
     kern = true
     radius += 10
     fontName = "HelveticaNeue"
@@ -99,7 +103,7 @@ class SitterCircle < UIView
     if kern
       text_width = string.sizeWithAttributes({}).width
       text_angle = text_width * 2 * Math::PI / (radius * 2 * Math::PI)
-      puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
+      # puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
       next_angle = -Math::PI / 2 - text_angle / 2
     end
     for i in 0...string.length
@@ -108,14 +112,13 @@ class SitterCircle < UIView
         letter_width = string[i].sizeWithAttributes({}).width
         letter_angle = letter_width / text_width * text_angle
         angle = next_angle + letter_angle / 2
-        puts "#{string[i]} (width=#{letter_width}, angle=#{letter_angle * 360}) at angle=#{angle}"
+        # puts "#{string[i]} (width=#{letter_width}, angle=#{letter_angle * 360}) at angle=#{angle}"
         next_angle += letter_angle
       end
       dx = radius * Math.cos(angle)
       dy = radius * Math.sin(angle)
       xform = CGAffineTransformMakeRotation(angle + Math::PI / 2)
-      # xform = CGAffineTransformMakeRotation(0)
-      # xform = CGAffineTransformScale(xform, 1, -1)
+      xform = CGAffineTransformScale(xform, 1, -1)
       CGContextSetTextMatrix context, xform
       CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
     end
