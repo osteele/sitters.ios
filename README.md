@@ -5,6 +5,9 @@ Install these:
 - XCode
 - [RubyMotion](http://www.rubymotion.com/developer-center/guides/getting-started/)
 - [CocoaPods](http://cocoapods.org/): `gem install cocoapods && pod setup`
+- [Homebrew]
+- `brew install npm`
+- `npm install`
 
 Download the TestFlight SDK into `./vendor`. It should be called `./vendor/TestFlight`:
 

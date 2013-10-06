@@ -18,8 +18,9 @@ class SitterCircle < UIView
 
   def drawRect(rect)
     context = UIGraphicsGetCurrentContext()
+    CGContextSaveGState context
 
-    radius = cx = cy = 90 / 2
+    radius = cx = cy = rect.size.width / 2
     radius -= 1
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
@@ -48,6 +49,8 @@ class SitterCircle < UIView
     # CGContextFillPath context
 
     drawArcText context, dataSource.first_name.upcase, cx, cy, 36 if false
+
+    CGContextRestoreGState context
   end
 
   def newDrawArcText(context, string, cx, cy, radius)
