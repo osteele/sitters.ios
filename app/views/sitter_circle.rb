@@ -47,31 +47,74 @@ class SitterCircle < UIView
     # CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     # CGContextFillPath context
 
-    return
-    name = dataSource.first_name.upcase
-    r = 36
-    kern = false
-    CGContextSelectFont context, "Helvetica Neue Bold", 10, KCGEncodingMacRoman
+    drawArcText context, dataSource.first_name.upcase, cx, cy, 36 if false
+  end
+
+  def newDrawArcText(context, string, cx, cy, radius)
+    kern = true
+    radius += 10
+    fontName = "HelveticaNeue"
+    fontSize = 10
+
+    CGContextSaveGState context
+    CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
+    CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+
+    line = CTLineCreateWithAttributedString
+    glyphCount = CTLineGetGlyphCount(line)
+    PrepareGlyphArcInfo(line, glyphCount, glyphArcInfo)
+    runArray = CTLineGetGlyphRuns(line)
+    puts "runArray = #{runArray}"
+    puts "runArray.length = #{CFArrayGetCount(runArray)}"
+    run = runArray[0]
+    runGlyphCount = CTRunGetGlyphCount(run)
+    puts "runGlyphCount = #{runGlyphCount}"
+    glyphOffset = 0
+
+    CGContextSetTextPosition(context, cx, 10)
+    for runGlyphIndex in 0...runGlyphCount
+      CGContextRotateCTM(context, -(glyphArcInfo[runGlyphIndex + glyphOffset].angle))
+      glyphWidth = glyphArcInfo[runGlyphIndex + glyphOffset].width
+      positionForThisGlyph = CGPointMake(textPosition.x - glyphWidth / 2, textPosition.y)
+      textPosition.x -= glyphWidth
+      CGAffineTransform textMatrix = CTRunGetTextMatrix(run)
+      textMatrix.tx = positionForThisGlyph.x
+      textMatrix.ty = positionForThisGlyph.y
+      CGContextSetTextMatrix context, textMatrix
+      CTRunDraw run, context, CFRangeMake(runGlyphIndex, 1)
+    end
+    CGContextRestoreGState context
+  end
+
+  def drawArcText2(context, string, cx, cy, radius)
+    kern = true
+    radius += 10
+    fontName = "HelveticaNeue"
+    fontSize = 10
+    CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
     if kern
-      font = UIFont.fontWithName("Helvetica Neue Bold", size:10)
-      text_width = name.sizeWithFont(font, constrainedToSize:Float::MAX, lineBreakMode:UILineBreakModeWordWrap)
-      cursor = -Math::PI / 2 - text_width / r / Math::PI
+      text_width = string.sizeWithAttributes({}).width
+      text_angle = text_width * 2 * Math::PI / (radius * 2 * Math::PI)
+      puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
+      next_angle = -Math::PI / 2 - text_angle / 2
     end
-    for i in 0...name.length
+    for i in 0...string.length
+      # angle = -Math::PI / 2 + 11 * (i - string.length / 2) * Math::PI / 180
       if kern
-        letter_width = name[i].sizeWithFont(font, constrainedToSize:Float::MAX, lineBreakMode:UILineBreakModeWordWrap)
-        letter_angle = letter_width / r / Math::PI
-        angle = cursor + letter_angle / 2
-        cursor += letter_angle
+        letter_width = string[i].sizeWithAttributes({}).width
+        letter_angle = letter_width / text_width * text_angle
+        angle = next_angle + letter_angle / 2
+        puts "#{string[i]} (width=#{letter_width}, angle=#{letter_angle * 360}) at angle=#{angle}"
+        next_angle += letter_angle
       end
-      angle = -Math::PI / 2 + 11 * (i - name.length / 2) * Math::PI / 180
-      dx = r * Math.cos(angle)
-      dy = r * Math.sin(angle)
-      xf = CGAffineTransformMakeRotation(angle + Math::PI / 2)
-      xf = CGAffineTransformScale(xf, 1, -1)
-      CGContextSetTextMatrix context, xf
-      CGContextShowTextAtPoint context, cx + dx, cy + dy, name[i], 1
+      dx = radius * Math.cos(angle)
+      dy = radius * Math.sin(angle)
+      xform = CGAffineTransformMakeRotation(angle + Math::PI / 2)
+      # xform = CGAffineTransformMakeRotation(0)
+      # xform = CGAffineTransformScale(xform, 1, -1)
+      CGContextSetTextMatrix context, xform
+      CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
     end
   end
 
