@@ -8,6 +8,7 @@ Install these:
 - [Homebrew]
 - `brew install npm`
 - `npm install`
+- `bundle install`
 
 Download the TestFlight SDK into `./vendor`. It should be called `./vendor/TestFlight`:
 

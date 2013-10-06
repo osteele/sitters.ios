@@ -10,3 +10,4 @@ gem 'sugarcube', :require => [
 ]
 gem 'motion-pixate'
 gem 'motion-cocoapods'
+gem 'formotion'

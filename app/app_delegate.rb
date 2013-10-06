@@ -15,6 +15,7 @@ class AppDelegate
 
     # window.rootViewController = SitterWebViewController.alloc.init
     # window.rootViewController = SitterStyledViewController.alloc.init
+    # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
     window.styleMode = PXStylingNormal
 
     window.makeKeyAndVisible
@@ -29,7 +30,7 @@ class AppDelegate
       SearchController.alloc.init,
       UpdatesController.alloc.init,
       ChatController.alloc.init,
-      SettingsController.alloc.init
+      SettingsController.alloc.initWithForm(SettingsController.form)
     ]
   end
 
