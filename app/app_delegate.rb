@@ -14,6 +14,8 @@ class AppDelegate
     ]
 
     @window.rootViewController = tab_controller
+    # @window.rootViewController = SitterWebViewController.alloc.init
+    # @window.rootViewController = SitterStyledViewController.alloc.init
     @window.styleMode = PXStylingNormal
 
     if Device.simulator?
