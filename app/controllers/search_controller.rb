@@ -18,7 +18,7 @@ class SearchController < UITableViewController
 
   def searchBar(search_bar, textDidChange:searchText)
     searchText = searchText.upcase
-    @sitters = Sitter.all.select do |sitter| sitter.name.upcase.include? searchText end
+    @sitters = Sitter.all.select { |sitter| sitter.name.upcase.include? searchText.upcase }
     view.reloadData
   end
 
@@ -35,7 +35,7 @@ class SearchController < UITableViewController
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier) ||
       UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
-    sitter = Sitter.all[indexPath.row]
+    sitter = @sitters[indexPath.row]
     cell.textLabel.text = sitter.name
     cell.detailTextLabel.text = sitter.description
     cell
