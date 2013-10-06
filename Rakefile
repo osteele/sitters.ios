@@ -5,7 +5,7 @@ require "rubygems"
 require 'bundler'
 Bundler.require
 
-ENV['PX_STYLESHEET_PATH'] = File.join(File.dirname(__FILE__), 'resources/build/styles/default.css')
+ENV['PX_STYLESHEET_PATH'] = File.join(File.dirname(__FILE__), 'resources/default.css')
 
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
@@ -32,7 +32,7 @@ Motion::Project::App.setup do |app|
   end
 
   app.release do
-    app.entitlements['get-task-allow']  = false
+    app.entitlements['get-task-allow'] = false
   end
 
   sh "grunt build"

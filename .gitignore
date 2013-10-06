@@ -17,3 +17,4 @@ nbproject
 .dat*.*
 vendor
 node_modules
+resources/default.css

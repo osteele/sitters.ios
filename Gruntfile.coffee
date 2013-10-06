@@ -5,7 +5,7 @@ module.exports = (grunt) ->
       build: 'resources/build'
 
     clean:
-      target: '<%= directories.build %>/*'
+      target: ['<%= directories.build %>', 'resources/default.css']
 
     coffeelint:
       gruntfile: 'Gruntfile.coffee'
@@ -27,12 +27,10 @@ module.exports = (grunt) ->
 
     sass:
       app:
-        expand: true
-        cwd: 'app'
-        dest: '<%= directories.build %>'
-        src: ['**/*.scss', '!**/_*']
-        ext: '.css'
-        filter: 'isFile'
+        files:
+          'resources/default.css': 'app/styles/default.scss'
+        options:
+          banner: "// DO NOT EDIT. This file is generated from app/**/*.scss.\n"
 
     update:
       tasks: ['jade', 'sass']
