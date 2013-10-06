@@ -26,12 +26,12 @@ class SittersController < UIViewController
       createTimeSelector
       createSitterAvatars
 
-      subview UIButton, styleId: :recommended do
+      subview UIButton, styleId: :recommended, styleClass: :big_button do
         subview UILabel, text: 'View Recommended'
         subview UILabel, styleClass: :caption, text: '14 connected sitters'
       end
 
-      subview UIButton, left: 164, styleId: :invite do
+      subview UIButton, styleId: :invite, styleClass: :big_button do #left: 164,
         subview UILabel, text: 'Invite a Sitter'
         subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
       end

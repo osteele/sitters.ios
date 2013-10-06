@@ -30,7 +30,7 @@ module.exports = (grunt) ->
         expand: true
         cwd: 'app'
         dest: '<%= directories.build %>'
-        src: ['**/*.scss']
+        src: ['**/*.scss', '!**/_*']
         ext: '.css'
         filter: 'isFile'
 
@@ -43,7 +43,7 @@ module.exports = (grunt) ->
       gruntfile:
         tasks: ['coffeelint:gruntfile']
       jade: {}
-      sass: {}
+      sass: {files: 'app/**/*.scss'}
 
   require('load-grunt-tasks')(grunt)
 

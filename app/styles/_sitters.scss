@@ -1,0 +1,177 @@
+& {
+  background-color: #F9F9F9;
+  font-family: "Helvetica Neue";
+}
+
+#time_selector {
+  top: 20px;
+  width: 320px;
+  height: 120px;
+  background-color: #5582C3;
+
+  label {
+    color: white;
+    text-align: center;
+  }
+
+  .date {
+    width: 320px;
+    height: 20px;
+    top: 5px;
+    font-size: 12px;
+  }
+
+  .day_of_week {
+    width: 44px;
+    height: 34px;
+    top: 30px;
+    font-size: 18px;
+  }
+  /* .day_of_week.overlay, but csslint doesn't like this */
+  .overlay {
+    color: #5481C9;
+  }
+  .selected_day {
+    width: 34px;
+    height: 34px;
+  }
+  button.selected_day {
+    left: 8px;
+    top: 30px;
+    background-color: white;
+    border-radius: 17px;
+    box-shadow: 0 1 1 #226;
+  }
+
+  .hour_range {
+    left: 12px;
+    top: 75px;
+    width: 195px;
+    height: 35px;
+    color: #5481C9;
+  }
+
+  button.hour_range {
+    background-color: white;
+    border-radius: 18px;
+  }
+
+  .hour_blob {
+    top: 70px;
+    width: 40px;
+    height: 40px;
+
+    .hour {
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .am_pm {
+      top: 20px;
+      width: 20px;
+      height: 20px;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .half_past {
+      left: 26px;
+      top: 13px;
+      width: 20px;
+      height: 20px;
+      color: #A8C1E5;
+      font-size: 13px;
+      text-align: right;
+    }
+  }
+}
+
+#avatars {
+  top: 153px;
+}
+
+.sitter {
+  width: 90px;
+  height: 90px;
+  background-color: transparent;
+
+  button, label {
+    top: 66px;
+    left: 34px;
+    width: 22px;
+    height: 22px;
+    color: gray;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  button {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 -1 .5 gray;
+  }
+
+  image-view {
+    width: 70px;
+    height: 70px;
+    left: 10px;
+    top: 10px;
+    opacity: 1;
+  }
+}
+
+#add_sitters {
+  top: 405px;
+  width: 320px;
+  height: 45px;
+  color: #5481C9;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+}
+
+#add_sitters_caption {
+  top: 416px;
+  left: 10px;
+  width: 320px;
+  height: 45px;
+  color: #969696;
+  font-size: 12px;
+  text-align: center;
+}
+
+.big_button {
+  top: 450px;
+  width: 152px;
+  height: 45px;
+  border-radius: 3px;
+
+   label {
+    left: 0;
+    top: -9px;
+    width: 150px;
+    height: 50px;
+    color: white;
+    font-size: 13px;
+    text-align: center;
+  }
+
+   .caption {
+    top: 4px;
+    color: white;
+    font-size: 11px;
+  }
+}
+
+button#recommended {
+  left: 6px;
+  background-color: #5582C3;
+}
+
+button#invite {
+  left: 163px;
+  background-color: #A6A6A6;
+}

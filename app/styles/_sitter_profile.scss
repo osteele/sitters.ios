@@ -1,0 +1,58 @@
+& {
+  background-color: #F9F9F9;
+  font-family: "AmericanTypewriter";
+}
+
+#header {
+  top: 0px;
+  width: 320px;
+  height: 55px;
+  // background-color: #6A9CE5;
+  background-color: linear-gradient(#6A9CE5, #4E7EC2);
+
+  .date {
+    top: 6px; left: 0; width: 320px; height: 15px;
+    color: white;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .hours {
+    top: 25px; left: 0; width: 320px; height: 15px;
+    text-align: center;
+    color: white;
+    font-size: 17px;
+  }
+}
+
+#footer {
+  top: 585px;
+  width: 320px;
+  height: 55px;
+  background-color: #6A9CD0;
+  text-align: center;
+  color: white;
+  font-size: 20px;
+}
+
+.section {
+  left: 16px;
+  width: 320px;
+  /*height: 80px;*/
+  /*border-top: 1px solid gray;*/
+
+  .title { width: 320px; height: 20px; color: #4C7EBF; top: 10px; left:0; font-size: 14px; }
+  .description { width: 320px; height: 20px; top: 36px; left:0; font-size: 17px; background-color: transparent; }
+}
+
+#name { width: 320px; height: 20px; top: 72px; left: 74px; font-size:20px; }
+#description { width: 320px; height: 60px; top: 105px; left: 16px; font-size: 12px; background-color: transparent; }
+#age { top: 140px; }
+#experience { top: 210px; }
+#endorsed_by { top: 270px; }
+#used_by { top: 365; }
+#background_check { top: 460px; }
+#location { top: 523px; }
+#about_me { top: 573px; }
+#smoker { top: 629px; }
+#transport { top: 709px; }
