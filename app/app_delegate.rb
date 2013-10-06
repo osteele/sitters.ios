@@ -13,7 +13,7 @@ class AppDelegate
       controller.viewControllers = tabControllers
     end
 
-    # window.rootViewController = SitterWebViewController.alloc.init
+    # window.rootViewController = SitterViewController.alloc.init
     # window.rootViewController = SitterStyledViewController.alloc.init
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
     window.styleMode = PXStylingNormal

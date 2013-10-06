@@ -12,15 +12,12 @@ module.exports = (grunt) ->
       options: max_line_length: value: 120
 
     connect:
-      server: options: base: '<%= directories.build %>'
+      server: options: base: 'resources'
 
     jade:
       app:
-        expand: true
-        cwd: 'app'
-        src: '**/*.jade'
-        dest: '<%= directories.build %>'
-        ext: '.html'
+        files:
+          'resources/sitter_details.html': 'app/views/sitter_details.jade'
       options:
         pretty: true
         pretty$release: false
@@ -29,6 +26,7 @@ module.exports = (grunt) ->
       app:
         files:
           'resources/default.css': 'app/styles/default.scss'
+          'resources/styles/sitter_details.css': 'app/styles/sitter_details.scss'
         options:
           banner: "// DO NOT EDIT. This file is generated from app/**/*.scss.\n"
 
