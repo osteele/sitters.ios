@@ -303,6 +303,9 @@ class TimeSpan
 end
 
 Teacup::Stylesheet.new :sitters do
+  style :sitters,
+    backgroundColor: UIColor.greenColor
+
   # style :left_dragger,
   #   backgroundColor: UIColor.greenColor
 

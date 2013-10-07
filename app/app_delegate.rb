@@ -14,7 +14,6 @@ class AppDelegate
     end
 
     # window.rootViewController = SitterViewController.alloc.init
-    # window.rootViewController = SitterStyledViewController.alloc.init
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
     window.styleMode = PXStylingNormal
 
