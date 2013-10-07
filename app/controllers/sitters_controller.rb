@@ -2,7 +2,7 @@ class SittersController < UIViewController
   include BW::KVO
   stylesheet :sitters
 
-  attr_accessor :selectedTimespan
+  attr_accessor :selectedTimeSpan
 
   def initWithNibName(name, bundle:bundle)
     super
@@ -20,7 +20,7 @@ class SittersController < UIViewController
     self.view.stylename = :sitters
 
     today = NSDate.date.dateAtStartOfDay
-    self.selectedTimespan = Timespan.new(today, 18, 21)
+    self.selectedTimeSpan = TimeSpan.new(today, 18, 21)
   end
 
   layout do
@@ -66,17 +66,17 @@ class SittersController < UIViewController
         [label, overlay].each do |view|
           view.when_tapped do
             TestFlight.passCheckpoint "Tap day: #{name}"
-            # self.selectedTimespan = Timespan.new(date, selectedTimespan.startHour, selectedTimespan.endHour)
-            self.selectedTimespan = selectedTimespan.onDate(date)
+            # self.selectedTimeSpan = TimeSpan.new(date, selectedTimeSpan.startHour, selectedTimeSpan.endHour)
+            self.selectedTimeSpan = selectedTimeSpan.onDate(date)
           end
         end
         overlays << overlay
       end
 
-      observe(self, :selectedTimespan) do |previousTimespan, timespan|
-        # return if previousTimespan and previousTimespan.date == timespan.date
-        dayLabel.text = dayLabelFormatter.stringFromDate(timespan.date)
-        currentWeekDayIndex = weekdayDates.index(timespan.date)
+      observe(self, :selectedTimeSpan) do |previousTimeSpan, timeSpan|
+        # return if previousTimeSpan and previousTimeSpan.date == timeSpan.date
+        dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
+        currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedOverlay = overlays[currentWeekDayIndex]
         UIView.animateWithDuration 0.3,
           animations: lambda {
@@ -114,41 +114,46 @@ class SittersController < UIViewController
       hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
       hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
       periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
-      observe(self, :selectedTimespan) do |_, timespan|
-        startPeriod = periodFormatter.stringFromDate(timespan.startTime)
-        endPeriod = periodFormatter.stringFromDate(timespan.endTime)
+      observe(self, :selectedTimeSpan) do |_, timeSpan|
+        startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
+        endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
         startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
-        label = startFormatter.stringFromDate(timespan.startTime) + '–x' + hourMinutePeriodFormatter.stringFromDate(timespan.endTime)
+        label = startFormatter.stringFromDate(timeSpan.startTime) + '–' + hourMinutePeriodFormatter.stringFromDate(timeSpan.endTime)
         range_label.text = label
       end
 
+      waiting = Scheduler.new
       observe(range_button, :frame) do |_, frame|
-        frame = range_button.frame # the argument is an opaque value
-        startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
-        endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
-        startHour = [startHour, firstHourNumber].max
-        endHour = [endHour, startHour + minHours].max
-        self.selectedTimespan = selectedTimespan.betweenTimes(startHour, endHour)
+        unless waiting.pending
+          waiting.after 0.2 do
+            frame = range_button.frame
+            startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
+            endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
+            startHour = [startHour, firstHourNumber].max
+            endHour = [endHour, startHour + minHours].max
+            self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
+          end
+        end
       end
     end
   end
 
   def addDragger(dragger)
-    dragger.instance_eval do #class << dragger
-      def target; self.superview; end
+    # class << dragger
+    #   def target; self.superview; end
 
-      def touchesBegan(touches, withEvent:event)
-        @initialOrigin = target.origin
-        @initialTouchPoint = touches.anyObject.locationInView(target.superview)
-      end
+    #   def touchesBegan(touches, withEvent:event)
+    #     @initialOrigin = target.origin
+    #     @initialTouchPoint = touches.anyObject.locationInView(target.superview)
+    #   end
 
-      def touchesMoved(touches, withEvent:event)
-        touchPoint = touches.anyObject.locationInView(target.superview)
-        offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
-        target.origin = [[0, @initialOrigin.x + offset.x].max, target.origin.y]
-      end
-    end
-    return
+    #   def touchesMoved(touches, withEvent:event)
+    #     touchPoint = touches.anyObject.locationInView(target.superview)
+    #     offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
+    #     target.origin = [[0, @initialOrigin.x + offset.x].max, target.origin.y]
+    #   end
+    # end
+    # return
 
     target = dragger.superview
     initial = nil
@@ -165,6 +170,23 @@ class SittersController < UIViewController
   end
 
   def addResizer(dragger, options={})
+    # class << dragger
+    #   def target; self.superview; end
+
+    #   def touchesBegan(touches, withEvent:event)
+    #     @initialSize = target.size
+    #     @initialTouchPoint = touches.anyObject.locationInView(target.superview)
+    #   end
+
+    #   def touchesMoved(touches, withEvent:event)
+    #     touchPoint = touches.anyObject.locationInView(target.superview)
+    #     offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
+    #     target.size = [[@initialSize.width + offset.x, 100].max, target.size.height]
+    #     self.origin = [target.size.width - self.size.width, self.origin.y]
+    #   end
+    # end
+    # return
+
     dragger.userInteractionEnabled = true
     target = dragger.superview
     initial = nil
@@ -205,12 +227,12 @@ class SittersController < UIViewController
       end
     end
 
-    observe(self, :selectedTimespan) do |_, timespan|
-      return
+    observe(self, :selectedTimeSpan) do |_, timeSpan|
       UIView.animateWithDuration 0.3,
         animations: lambda {
           sitterViews.map do |view|
-            view.alpha = if view.dataSource.availableAt(timespan) then 1 else 0.5 end
+            alpha = if view.dataSource.availableAt(timeSpan) then 1 else 0.5 end
+            view.alpha = alpha unless view.alpha == alpha
           end
         }
       end
@@ -223,13 +245,9 @@ class SittersController < UIViewController
     width = 96
     height = 84
     [
-      [0, 0],
-      [1, 0],
-      [0, 1],
-      [1, 1],
-      [2, 1],
-      [0, 2],
-      [1, 2],
+      [0, 0], [1, 0],
+      [0, 1], [1, 1], [2, 1],
+      [0, 2], [1, 2],
     ].map do |x, y|
       left = (if y == 1 then left2 else left1 end)
       [left + x * width, top + y * height]
@@ -237,7 +255,7 @@ class SittersController < UIViewController
   end
 end
 
-class Timespan
+class TimeSpan
   attr_reader :date, :startHour, :endHour
 
   def initialize(date, startHour, endHour)
@@ -255,11 +273,11 @@ class Timespan
   end
 
   def onDate(date)
-    Timespan.new(date, startHour, endHour)
+    TimeSpan.new(date, startHour, endHour)
   end
 
   def betweenTimes(startHour, endHour)
-    Timespan.new(date, startHour, endHour)
+    TimeSpan.new(date, startHour, endHour)
   end
 
   private
@@ -277,6 +295,26 @@ Teacup::Stylesheet.new :sitters do
     # backgroundColor: UIColor.blueColor,
     left: '100%-20',
     top: 0,
-    width: 20,
+    width: 40,
     height: '100%'
+end
+
+class Scheduler
+  attr_reader :pending
+
+  def self.after(delay, &block)
+    self.new.after(delay, &block)
+  end
+
+  def after(delay, &block)
+    @block = block
+    @timer = NSTimer.scheduledTimerWithTimeInterval(delay, target:self, selector:'fire', userInfo:nil, repeats:false)
+    @pending = true
+    return self
+  end
+
+  def fire
+    @pending = false
+    @block.call
+  end
 end
