@@ -134,6 +134,7 @@ class SittersController < UIViewController
   end
 
   def addDragger(dragger)
+    dragger.userInteractionEnabled = true
     target = dragger.superview
     initial = nil
     dragger.when_panned do |recognizer|
@@ -148,6 +149,7 @@ class SittersController < UIViewController
   end
 
   def addResizer(dragger, options={})
+    dragger.userInteractionEnabled = true
     target = dragger.superview
     initial = nil
     dragger.when_panned do |recognizer|
@@ -187,12 +189,12 @@ class SittersController < UIViewController
       end
     end
 
-    observe(self, :selectedTimespan) do |_, value|
-      time = value.date
+    observe(self, :selectedTimespan) do |_, timespan|
+      # time = value.date
       UIView.animateWithDuration 0.3,
         animations: lambda {
           sitterViews.map do |view|
-            view.alpha = if view.dataSource.availableAt(time) then 1 else 0.5 end
+            view.alpha = if view.dataSource.availableAt(timespan) then 1 else 0.5 end
           end
         }
       end
