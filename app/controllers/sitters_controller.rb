@@ -1,5 +1,6 @@
 class SittersController < UIViewController
   include BW::KVO
+  stylesheet :sitters
 
   attr_accessor :selectedTimespan
 
@@ -14,6 +15,9 @@ class SittersController < UIViewController
     super
     @scroll.frame = self.view.bounds
     @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + 20)
+
+    self.view.stylesheet = :sitters
+    self.view.stylename = :sitters
 
     today = NSDate.date.dateAtStartOfDay
     self.selectedTimespan = Timespan.new(today)
@@ -88,10 +92,46 @@ class SittersController < UIViewController
         end
       end
 
-      range_button = subview UIButton, styleClass: :hour_range
-      range_label = subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
-      range_button.when_tapped { TestFlight.passCheckpoint "Tap hour range: ##{i+1}" }
-      range_label.when_tapped { TestFlight.passCheckpoint "Tap hour range: ##{i+1}" }
+      left_dragger = nil
+      right_dragger = nil
+      range_button = subview UIButton, styleClass: :hour_range, styleId: :hour_range do
+        subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
+        left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger
+        right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger
+      end
+
+      # addDragger dayHighlighter
+      addDragger left_dragger
+      addResizer right_dragger
+    end
+  end
+
+  def addDragger(dragger)
+    target = dragger.superview
+    initial = nil
+    dragger.when_panned do |recognizer|
+      pt = recognizer.translationInView(target.superview)
+      case recognizer.state
+      when UIGestureRecognizerStateBegan
+        initial = target.origin
+      when UIGestureRecognizerStateChanged
+        target.origin = [[0, initial.x + pt.x].max, target.origin.y]
+      end
+    end
+  end
+
+  def addResizer(dragger)
+    target = dragger.superview
+    initial = nil
+    dragger.when_panned do |recognizer|
+      pt = recognizer.translationInView(target.superview)
+      case recognizer.state
+      when UIGestureRecognizerStateBegan
+        initial = target.size
+      when UIGestureRecognizerStateChanged
+        target.size = [[40, initial.width + pt.x].max, target.size.height]
+        dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
+      end
     end
   end
 
@@ -154,4 +194,16 @@ class Timespan
     @beginTime = beginTime
     @endTime = endTime || beginTime
   end
+end
+
+Teacup::Stylesheet.new :sitters do
+  # style :left_dragger,
+  #   backgroundColor: UIColor.greenColor
+
+  style :right_dragger,
+    # backgroundColor: UIColor.blueColor,
+    left: '100%-20',
+    top: 0,
+    width: 20,
+    height: '100%'
 end
