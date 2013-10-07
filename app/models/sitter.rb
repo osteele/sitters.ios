@@ -4,7 +4,7 @@ class Sitter
   attr_accessor :description
 
   def self.all
-    [
+    @sitters ||= [
       new("Ashley", 18),
       new("Kayla", 16),
       new("Kristen Morey", 14, "Susie Morey’s sister"),
@@ -34,5 +34,15 @@ class Sitter
 
   def image
     @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.png")
+  end
+
+  def self.json
+    @json ||= begin
+      path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
+      content = NSString.stringWithContentsOfFile(path ,encoding:NSUTF8StringEncoding, error:nil)
+      object = NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
+      # puts "object = #{object}"
+      object
+    end
   end
 end

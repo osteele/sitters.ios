@@ -1,0 +1,36 @@
+{
+  "Ashley": {
+    "age": 18
+  },
+  "Kayla": {
+    "age": 16
+  },
+  "Kristen Morey": {
+    "age": 14,
+    "description": "Susie Morey’s sister"
+  },
+  "Amy Gino": {
+    "age": 12,
+    "description": "Ken and Stacy Reno’s sitter"
+  },
+  "Michelle Schaffer": {
+    "age": 16,
+    "description": "Pete and Lisa Schaffer’s daughter"
+  },
+  "Maggie McConnell": {
+    "age": 28,
+    "description": "Leslie McConnell’s mother"
+  },
+  "Gina Marelli": {
+    "age": 15,
+    "description": "Kayla Brenner’s best friend"
+  },
+  "Gwen Stephenson": {
+    "age": 24,
+    "description": "Isabella Moreno’s teacher"
+  },
+  "Layla Smith": {
+    "age": 16,
+    "description": "Steve and Diane Smith’s sitter"
+  }
+}
