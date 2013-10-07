@@ -1,29 +1,58 @@
 {
   "Ashley": {
-    "age": 18
+    "age": 18,
+    "hours": {
+      "Wed": [[17, 27]],
+      "Sat": [[17, 24]]
+    }
   },
   "Kayla": {
-    "age": 16
+    "age": 16,
+    "hours": {
+      "Mon": [[17, 22]],
+      "Sat": [[17, 24]]
+    }
   },
   "Kristen Morey": {
     "age": 14,
-    "description": "Susie Morey’s sister"
+    "description": "Susie Morey’s sister",
+    "hours": {
+      "Fri": [[17, 24]],
+      "Sat": [[17, 24]]
+    }
   },
   "Amy Gino": {
     "age": 12,
-    "description": "Ken and Stacy Reno’s sitter"
+    "description": "Ken and Stacy Reno’s sitter",
+    "hours": {
+      "Sat": [[18, 20]],
+      "Sun": [[17, 20]]
+    }
   },
   "Michelle Schaffer": {
     "age": 16,
-    "description": "Pete and Lisa Schaffer’s daughter"
+    "description": "Pete and Lisa Schaffer’s daughter",
+    "hours": {
+      "Mon": [[17, 24]],
+      "Sat": [[17, 25]]
+    }
   },
   "Maggie McConnell": {
     "age": 28,
-    "description": "Leslie McConnell’s mother"
+    "description": "Leslie McConnell’s mother",
+    "hours": {
+      "Mon": [[18.5, 27]],
+      "Wed": [[18.5, 27]],
+      "Thu": [[18.5, 27]]
+    }
   },
   "Gina Marelli": {
     "age": 15,
-    "description": "Kayla Brenner’s best friend"
+    "description": "Kayla Brenner’s best friend",
+    "hours": {
+      "Tue": [[17, 23]],
+      "Sat": [[17, 24]]
+    }
   },
   "Gwen Stephenson": {
     "age": 24,

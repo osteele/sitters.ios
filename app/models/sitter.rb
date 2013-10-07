@@ -1,35 +1,39 @@
 class Sitter
-  attr_accessor :name
-  attr_accessor :age
-  attr_accessor :description
+  attr_reader :name
+  attr_reader :age
+  attr_reader :description
 
   def self.all
     @sitters ||= [
-      new("Ashley", 18),
-      new("Kayla", 16),
-      new("Kristen Morey", 14, "Susie Morey’s sister"),
-      new("Amy Gino", 12, "Ken and Stacy Reno’s sitter"),
-      new("Michelle Schaffer", 16, "Pete and Lisa Schaffer’s daughter"),
-      new("Maggie McConnell", 28, "Leslie McConnell’s mother"),
-      new("Gina Marelli", 15, "Kayla Brenner’s best friend"),
-      new("Gwen Stephenson", 24, "Isabella Moreno’s teacher"),
-      new("Layla Smith", 16, "Steve and Diane Smith’s sitter"),
+      new("Ashley"),
+      new("Kayla"),
+      new("Kristen Morey"),
+      new("Amy Gino"),
+      new("Michelle Schaffer"),
+      new("Maggie McConnell"),
+      new("Gina Marelli"),
+      new("Gwen Stephenson"),
+      new("Layla Smith"),
     ]
   end
 
-  def initialize(name, age, description="")
-    self.name = name
-    self.age = age
-    self.description = description
+  def initialize(name)
+    data = Sitter.json[name]
+    @name = name
+    @age = data['age']
+    @description = data['description']
+    @hours = data['hours'] || {}
   end
 
   def first_name
     self.name.split[0]
   end
 
-  def availableAt(time)
-    # pseudorandom, for reproducible debugging
-    [self.name, self.age, time].hash % 1000 > 600
+  def availableAt(timespan)
+    @@formatter ||= NSDateFormatter.alloc.init.setDateFormat('E')
+    day = @@formatter.stringFromDate(timespan.date)
+    return false unless hours = @hours[day]
+    return hours.any? { |startHour, endHour| startHour <= timespan.startHour and timespan.endHour <= endHour }
   end
 
   def image
@@ -40,9 +44,7 @@ class Sitter
     @json ||= begin
       path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
       content = NSString.stringWithContentsOfFile(path ,encoding:NSUTF8StringEncoding, error:nil)
-      object = NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
-      # puts "object = #{object}"
-      object
+      NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
     end
   end
 end
