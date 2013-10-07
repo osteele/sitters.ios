@@ -51,23 +51,23 @@ class SittersController < UIViewController
     weekStartDay = NSDate.date.dateAtStartOfDay
 
     subview TimeSelector, styleId: :time_selector do
-      # TODO dateFormatFromTemplate:
-      dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
+      dayLabelFormatter = dateFormatter('EEEE, MMMM d')
       dayLabel = subview UILabel, styleClass: :date
 
       dayHighlighter = subview UIButton, styleClass: :selected_day
 
       overlays = []
-      weekDayTimes = (0...7).map do |d| weekStartDay.dateByAddingDays(d) end
-      weekDayTimes.each_with_index do |time, i|
+      weekdayDates = (0...7).map do |day| weekStartDay.dateByAddingDays(day) end
+      weekdayDates.each_with_index do |date, i|
         x = 3 + i * 44
-        name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(time)
+        name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(date)
         label = subview UILabel, text: name, styleClass: :day_of_week, left: x
         overlay = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
         [label, overlay].each do |view|
           view.when_tapped do
             TestFlight.passCheckpoint "Tap day: #{name}"
-            self.selectedTimespan = Timespan.new(time, selectedTimespan.startHour, selectedTimespan.endHour)
+            # self.selectedTimespan = Timespan.new(date, selectedTimespan.startHour, selectedTimespan.endHour)
+            self.selectedTimespan = selectedTimespan.onDate(date)
           end
         end
         overlays << overlay
@@ -76,7 +76,7 @@ class SittersController < UIViewController
       observe(self, :selectedTimespan) do |previousTimespan, timespan|
         # return if previousTimespan and previousTimespan.date == timespan.date
         dayLabel.text = dayLabelFormatter.stringFromDate(timespan.date)
-        currentWeekDayIndex = weekDayTimes.index(timespan.date)
+        currentWeekDayIndex = weekdayDates.index(timespan.date)
         selectedOverlay = overlays[currentWeekDayIndex]
         UIView.animateWithDuration 0.3,
           animations: lambda {
@@ -91,39 +91,44 @@ class SittersController < UIViewController
       hourWidth = 58
       [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
         subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
-          # TODO use dateFormatter to create these, in order to honor 24hr and locale
+          # TODO use dateFormatter
           subview UILabel, text: hour.to_s, styleClass: :hour
           subview UILabel, text: 'PM', styleClass: :am_pm
           subview UILabel, text: ':30', styleClass: :half_past
         end
       end
 
+      minHours = 2
       range_label = nil
       range_button = subview UIButton, styleClass: :hour_range, styleId: :hour_range do
-        range_label = subview UILabel, text: '6:00—9:00PM', styleClass: :hour_range
+        range_label = subview UILabel, styleClass: :hour_range
         range_label.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
         left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger
         right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger
         addDragger left_dragger
-        addResizer right_dragger
+        addResizer right_dragger, min_width: minHours * hourWidth
       end
 
-      hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('H:mm')
+      # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
+      hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('HH:mm')
+      hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('HH:mma')
+      periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
       observe(self, :selectedTimespan) do |_, timespan|
-        startTime = timespan.date.dateByAddingHours(timespan.startHour.floor).dateByAddingMinutes((timespan.startHour * 60).floor % 60)
-        endTime = timespan.date.dateByAddingHours(timespan.endHour)
-        label = hourMinuteFormatter.stringFromDate(startTime) + '–' + hourMinuteFormatter.stringFromDate(endTime) + 'PM'
-        puts "label=#{label}"
+        startPeriod = periodFormatter.stringFromDate(timespan.startTime)
+        endPeriod = periodFormatter.stringFromDate(timespan.endTime)
+        startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
+        label = startFormatter.stringFromDate(timespan.startTime) + '–' + hourMinutePeriodFormatter.stringFromDate(timespan.endTime)
+        range_label.text = label
       end
 
       observe(range_button, :frame) do |_, frame|
-        frame = range_button.frame
+        frame = range_button.frame # the argument is an opaque value
         startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
         endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
         startHour = [startHour, firstHourNumber].max
-        endHour = [endHour, startHour + 1].max
-        self.selectedTimespan = Timespan.new(selectedTimespan.date, startHour, endHour)
+        endHour = [endHour, startHour + minHours].max
+        self.selectedTimespan = selectedTimespan.betweenTimes(startHour, endHour)
       end
     end
   end
@@ -142,7 +147,7 @@ class SittersController < UIViewController
     end
   end
 
-  def addResizer(dragger)
+  def addResizer(dragger, options={})
     target = dragger.superview
     initial = nil
     dragger.when_panned do |recognizer|
@@ -151,10 +156,15 @@ class SittersController < UIViewController
       when UIGestureRecognizerStateBegan
         initial = target.size
       when UIGestureRecognizerStateChanged
-        target.size = [[40, initial.width + pt.x].max, target.size.height]
+        target.size = [[initial.width + pt.x, options[:min_width] || 0].max, target.size.height]
         dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
       end
     end
+  end
+
+  def dateFormatter(template)
+    template = NSDateFormatter.dateFormatFromTemplate(template, options:0, locale:NSLocale.currentLocale)
+    dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat(template)
   end
 
   def createSitterAvatars
@@ -216,6 +226,28 @@ class Timespan
     @date = date
     @startHour = startHour
     @endHour = endHour
+  end
+
+  def startTime
+    hourToTime(startHour)
+  end
+
+  def endTime
+    hourToTime(endHour)
+  end
+
+  def onDate(date)
+    Timespan.new(date, startHour, endHour)
+  end
+
+  def betweenTimes(startHour, endHour)
+    Timespan.new(date, startHour, endHour)
+  end
+
+  private
+
+  def hourToTime(hour)
+    date.dateByAddingHours(hour.floor).dateByAddingMinutes((hour * 60).floor % 60)
   end
 end
 
