@@ -122,18 +122,17 @@ class SittersController < UIViewController
         range_label.text = label
       end
 
-      waiting = Scheduler.new
+      updater = Debounced.new 0.2 do
+        frame = range_button.frame
+        startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
+        endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
+        startHour = [startHour, firstHourNumber].max
+        endHour = [endHour, startHour + minHours].max
+        self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
+      end
+
       observe(range_button, :frame) do |_, frame|
-        unless waiting.pending
-          waiting.after 0.2 do
-            frame = range_button.frame
-            startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
-            endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
-            startHour = [startHour, firstHourNumber].max
-            endHour = [endHour, startHour + minHours].max
-            self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
-          end
-        end
+        updater.fire!
       end
     end
   end
@@ -316,5 +315,18 @@ class Scheduler
   def fire
     @pending = false
     @block.call
+  end
+end
+
+class Debounced
+  def initialize(delay, &block)
+    @delay = delay
+    @block = block
+    @scheduler = Scheduler.new
+  end
+
+  def fire!
+    return if @scheduler.pending
+    @scheduler.after @delay, &@block
   end
 end
