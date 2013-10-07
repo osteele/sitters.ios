@@ -111,14 +111,14 @@ class SittersController < UIViewController
       end
 
       # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
-      hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('HH:mm')
-      hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('HH:mma')
+      hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
+      hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
       periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
       observe(self, :selectedTimespan) do |_, timespan|
         startPeriod = periodFormatter.stringFromDate(timespan.startTime)
         endPeriod = periodFormatter.stringFromDate(timespan.endTime)
         startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
-        label = startFormatter.stringFromDate(timespan.startTime) + '–' + hourMinutePeriodFormatter.stringFromDate(timespan.endTime)
+        label = startFormatter.stringFromDate(timespan.startTime) + '–x' + hourMinutePeriodFormatter.stringFromDate(timespan.endTime)
         range_label.text = label
       end
 
@@ -134,9 +134,25 @@ class SittersController < UIViewController
   end
 
   def addDragger(dragger)
-    dragger.userInteractionEnabled = true
+    dragger.instance_eval do #class << dragger
+      def target; self.superview; end
+
+      def touchesBegan(touches, withEvent:event)
+        @initialOrigin = target.origin
+        @initialTouchPoint = touches.anyObject.locationInView(target.superview)
+      end
+
+      def touchesMoved(touches, withEvent:event)
+        touchPoint = touches.anyObject.locationInView(target.superview)
+        offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
+        target.origin = [[0, @initialOrigin.x + offset.x].max, target.origin.y]
+      end
+    end
+    return
+
     target = dragger.superview
     initial = nil
+    dragger.userInteractionEnabled = true
     dragger.when_panned do |recognizer|
       pt = recognizer.translationInView(target.superview)
       case recognizer.state
@@ -190,7 +206,7 @@ class SittersController < UIViewController
     end
 
     observe(self, :selectedTimespan) do |_, timespan|
-      # time = value.date
+      return
       UIView.animateWithDuration 0.3,
         animations: lambda {
           sitterViews.map do |view|
