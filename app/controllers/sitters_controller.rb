@@ -87,9 +87,9 @@ class SittersController < UIViewController
       end
 
       firstHourOffset = 10
-      firstHourNumber = 17
+      firstHourNumber = 18
       hourWidth = 58
-      [5, 6, 7, 8, 10, 11].each_with_index do |hour, i|
+      [6, 7, 8, 9, 10, 11].each_with_index do |hour, i|
         subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
           # TODO use dateFormatter
           subview UILabel, text: hour.to_s, styleClass: :hour
@@ -106,8 +106,8 @@ class SittersController < UIViewController
 
         left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger
         right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger
-        addDragger left_dragger
-        addResizer right_dragger, min_width: minHours * hourWidth
+        addDragger left_dragger, min: firstHourOffset, factor: hourWidth / 2
+        addResizer right_dragger, min_width: minHours * hourWidth, factor: hourWidth / 2
       end
 
       # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
@@ -122,10 +122,10 @@ class SittersController < UIViewController
         range_label.text = label
       end
 
-      updater = Debounced.new 0.2 do
+      updater = Debounced.new 0.5 do
         frame = range_button.frame
-        startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).floor / 2.0
-        endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).floor / 2.0
+        startHour = firstHourNumber + ((range_button.origin.x - firstHourOffset) / hourWidth * 2).round / 2.0
+        endHour = firstHourNumber + ((range_button.origin.x + range_button.size.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
         startHour = [startHour, firstHourNumber].max
         endHour = [endHour, startHour + minHours].max
         self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
@@ -137,7 +137,7 @@ class SittersController < UIViewController
     end
   end
 
-  def addDragger(dragger)
+  def addDragger(dragger, options={})
     # class << dragger
     #   def target; self.superview; end
 
@@ -163,7 +163,15 @@ class SittersController < UIViewController
       when UIGestureRecognizerStateBegan
         initial = target.origin
       when UIGestureRecognizerStateChanged
-        target.origin = [[0, initial.x + pt.x].max, target.origin.y]
+        target.origin = [[initial.x + pt.x, options[:min] || 0].max, target.origin.y]
+      when UIGestureRecognizerStateEnded
+        min = options[:min] || 0
+        factor = options[:factor] || 1
+        x = ((target.origin.x - min) / factor).round * factor + min
+        UIView.animateWithDuration 0.1,
+          animations: lambda {
+            target.origin = [[x, options[:min] || 0].max, target.origin.y]
+          }
       end
     end
   end
@@ -197,6 +205,14 @@ class SittersController < UIViewController
       when UIGestureRecognizerStateChanged
         target.size = [[initial.width + pt.x, options[:min_width] || 0].max, target.size.height]
         dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
+      when UIGestureRecognizerStateEnded
+        factor = options[:factor] || 1
+        width = (target.size.width / factor).round * factor
+        UIView.animateWithDuration 0.1,
+          animations: lambda {
+            target.size = [[width, options[:min_width] || 0].max, target.size.height]
+            dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
+          }
       end
     end
   end
