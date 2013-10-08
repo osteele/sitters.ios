@@ -38,15 +38,15 @@ class SettingsController < Formotion::FormController
           key: :basic,
           type: :check,
         }]
-      }, {
-        title: 'Settings',
-        key: :settings,
-        rows: [{
-          title: 'Arc Text',
-          key: :arc_text,
-          type: :switch,
-          value: NSUserDefaults.standardUserDefaults[:arc_text],
-        }]
+      # }, {
+      #   title: 'Settings',
+      #   key: :settings,
+      #   rows: [{
+      #     title: 'Arc Text',
+      #     key: :arc_text,
+      #     type: :switch,
+      #     value: NSUserDefaults.standardUserDefaults[:arc_text],
+      #   }]
       # }, {
       #   rows: [{
       #     title: 'Save',
