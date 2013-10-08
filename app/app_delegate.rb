@@ -1,7 +1,7 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    registerWithTestFlight
-    initializePixmate
+    registerWithTestFlight!
+    initializePixmate!
 
     window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
@@ -33,7 +33,7 @@ class AppDelegate
     ]
   end
 
-  def initializePixmate
+  def initializePixmate!
     if Device.simulator?
       stylesheet_path = ENV['PX_STYLESHEET_PATH']
       PXStylesheet.styleSheetFromFilePath stylesheet_path, withOrigin:0
@@ -41,7 +41,7 @@ class AppDelegate
     end
   end
 
-  def registerWithTestFlight
+  def registerWithTestFlight!
     return unless Device.simulator?
     return unless Object.const_defined?('TestFlight')
     app_token = NSBundle.mainBundle.objectForInfoDictionaryKey('TF_APP_TOKEN')

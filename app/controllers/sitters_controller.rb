@@ -239,6 +239,7 @@ class SittersController < UIViewController
     subview UIView, styleId: :avatars do
       for i in 0...7
         sitter = Sitter.all[i]
+        sitter.active = true
         view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
           cgImage = sitter.image.CGImage
           cgImage = CGImageCreateWithMask(cgImage, cgMask)

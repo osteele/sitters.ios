@@ -2,6 +2,7 @@ class Sitter
   attr_reader :name
   attr_reader :age
   attr_reader :description
+  attr_accessor :active
 
   def self.all
     @sitters ||= [
@@ -15,6 +16,10 @@ class Sitter
       new("Gwen Stephenson"),
       new("Layla Smith"),
     ]
+  end
+
+  def self.suggested
+    return self.all.reject { |s| s.active }
   end
 
   def initialize(name)
