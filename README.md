@@ -20,17 +20,15 @@ Download the Pixate SDK into `./vendor`. It should be called `./vendor/Pixate.fr
     $ [[ -d vendor/Pixate.framework/Versions/1.1 ]] && echo 'Pixate found'
     Pixate found
 
-Set these environment variables:
+Copy `~/.env.template` to `~/.env` and edit in the token values.
 
-- `TF_APP_TOKEN` = the TestFlight app token
 
 # Adding a User
 1. Invite the user to TestFlight. TestFlight will collect their UDID.
 2. Sign into the iOS developer center. Add the user's UDID to the [device list](https://developer.apple.com/account/ios/device/deviceList.action).
 3. In the [Provisioning Profiles tab](https://developer.apple.com/account/ios/profile/profileList.action), edit the iOS Team Provisioning Profile. Add the new UDID.
 4. Download and install the modified provisioning profile.
-5. Use the iPhone Configuration Utility to remove the old provisioning profiles from your computer.
-6. Use XCode (app) Organizer (window) “Provisioning Profiles” (sidebar item) to remove the old provisioning profiles from your devices.
+5. Edit the value of `IOS_APP_7S_PRODUCTION_PROFILE_ID` in `~/.env`.
 
 # Uploading a Build
 1. `rake archive:distribution`

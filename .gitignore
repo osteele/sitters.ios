@@ -20,3 +20,5 @@ node_modules
 resources/default.css
 resources/Settings.bundle
 resources/sitter_details.html
+
+.env

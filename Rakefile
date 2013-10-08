@@ -5,6 +5,9 @@ require "rubygems"
 require 'bundler'
 Bundler.require
 
+Dotenv.load
+
+PROFILE_HOME = File.expand_path('~/Library/MobileDevice/Provisioning Profiles')
 ENV['PX_STYLESHEET_PATH'] = File.join(File.dirname(__FILE__), 'resources/default.css')
 require File.join(File.dirname(__FILE__), 'config/settings.rb')
 
@@ -32,9 +35,27 @@ Motion::Project::App.setup do |app|
     pod 'NSDate-Extensions'
   end
 
+  app.development do
+    PROFILE_IDENTIFER_NAME = 'IOS_APP_DEVELOPMENT_PROFILE_ID'
+  end
+
   app.release do
+    PROFILE_IDENTIFER_NAME = 'IOS_APP_RELEASE_PROFILE_ID'
     app.entitlements['get-task-allow'] = false
   end
 
+  profiles = Dir[File.join(PROFILE_HOME, '*.mobileprovision')]
+  profile_path = profiles.first if profiles.length == 1
+  unless profile_path
+    die "#{PROFILE_IDENTIFER_NAME} must be defined" unless PROFILE_IDENTIFER = ENV[PROFILE_IDENTIFER_NAME]
+    profile_path = File.join(PROFILE_HOME, "#{PROFILE_IDENTIFER}.mobileprovision")
+  end
+  app.provisioning_profile = profile_path
+
   sh "grunt build"
+end
+
+def die(message)
+  STDERR.puts message
+  exit 1
 end
