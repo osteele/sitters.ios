@@ -43,17 +43,37 @@
   button.hour_range {
     left: 12px;
     top: 75px;
+    border-radius: 1px;
   }
+
   .hour_range {
     width: 195px;
     height: 35px;
     color: #5481C9;
 
     .left_dragger {
-      width: 640px;
-      height: 35px;
       left: 0;
       top: 0;
+      width: 640px;
+      height: 35px;
+
+      .graphic {
+        background-image: url(left-dragger.png);
+        left: 4px;
+        top: 10px;
+        width: 6px;
+        height: 15px;
+      }
+    }
+
+    .right_dragger {
+      .graphic {
+        background-image: url(right-dragger.png);
+        left: 9px;
+        top: 10px;
+        width: 6px;
+        height: 15px;
+      }
     }
   }
 

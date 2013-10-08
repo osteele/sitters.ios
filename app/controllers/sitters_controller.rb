@@ -104,8 +104,12 @@ class SittersController < UIViewController
         range_label = subview UILabel, styleClass: :hour_range
         range_label.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
-        left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger
-        right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger
+        left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger do
+          subview UIView, styleClass: :graphic
+        end
+        right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger do
+          subview UIView, styleClass: :graphic
+        end
         addDragger left_dragger, min: firstHourOffset, factor: hourWidth / 2
         addResizer right_dragger, min_width: minHours * hourWidth, factor: hourWidth / 2
       end
@@ -118,6 +122,7 @@ class SittersController < UIViewController
         startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
         endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
         startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
+        label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinutePeriodFormatter.stringFromDate(timeSpan.endTime)
         label = startFormatter.stringFromDate(timeSpan.startTime) + '–' + hourMinutePeriodFormatter.stringFromDate(timeSpan.endTime)
         range_label.text = label
       end
@@ -197,6 +202,7 @@ class SittersController < UIViewController
     dragger.userInteractionEnabled = true
     target = dragger.superview
     initial = nil
+    fudge = 21
     dragger.when_panned do |recognizer|
       pt = recognizer.translationInView(target.superview)
       case recognizer.state
@@ -204,14 +210,14 @@ class SittersController < UIViewController
         initial = target.size
       when UIGestureRecognizerStateChanged
         target.size = [[initial.width + pt.x, options[:min_width] || 0].max, target.size.height]
-        dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
+        dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
       when UIGestureRecognizerStateEnded
         factor = options[:factor] || 1
         width = (target.size.width / factor).round * factor
         UIView.animateWithDuration 0.1,
           animations: lambda {
             target.size = [[width, options[:min_width] || 0].max, target.size.height]
-            dragger.origin = [target.size.width - dragger.size.width, dragger.origin.y]
+            dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
           }
       end
     end
