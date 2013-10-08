@@ -122,11 +122,12 @@ class SittersController < UIViewController
         startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
         endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
         startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
-        label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinutePeriodFormatter.stringFromDate(timeSpan.endTime)
+        label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
         string = NSMutableAttributedString.alloc.initWithString(label)
         fontName = "HelveticaNeue"
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + "-Bold", size:15), range:NSMakeRange(0, label.length)
-        string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:10), range:NSMakeRange(label.length-2, 2)
+        string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:8), range:NSMakeRange(label.length - 3, 1)
+        string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:10), range:NSMakeRange(label.length - 2, 2)
         range_label.attributedText = string
       end
 
