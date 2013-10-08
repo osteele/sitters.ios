@@ -98,20 +98,21 @@ class SittersController < UIViewController
         end
       end
 
-      minHours = 2
+      minHours = 1.5
       range_label = nil
       range_button = subview UIButton, styleClass: :hour_range, styleId: :hour_range do
         range_label = subview UILabel, styleClass: :hour_range
         range_label.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
-        left_dragger = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger do
+        leftDragHandle = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger do
           subview UIView, styleClass: :graphic
         end
-        right_dragger = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger do
+        rightDragHandle = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger do
           subview UIView, styleClass: :graphic
         end
-        addDragger left_dragger, min: firstHourOffset, factor: hourWidth / 2
-        addResizer right_dragger, min_width: minHours * hourWidth, factor: hourWidth / 2
+
+        addDragger leftDragHandle, min: firstHourOffset, factor: hourWidth / 2
+        addResizer rightDragHandle, minWidth: minHours * hourWidth, factor: hourWidth / 2
       end
 
       # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
@@ -213,14 +214,14 @@ class SittersController < UIViewController
       when UIGestureRecognizerStateBegan
         initial = target.size
       when UIGestureRecognizerStateChanged
-        target.size = [[initial.width + pt.x, options[:min_width] || 0].max, target.size.height]
+        target.size = [[initial.width + pt.x, options[:minWidth] || 0].max, target.size.height]
         dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
       when UIGestureRecognizerStateEnded
         factor = options[:factor] || 1
         width = (target.size.width / factor).round * factor
         UIView.animateWithDuration 0.1,
           animations: lambda {
-            target.size = [[width, options[:min_width] || 0].max, target.size.height]
+            target.size = [[width, options[:minWidth] || 0].max, target.size.height]
             dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
           }
       end
