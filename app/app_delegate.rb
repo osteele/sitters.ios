@@ -4,19 +4,15 @@ class AppDelegate
     initializePixmate!
 
     window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-
-    # tab_controller = UITabBarController.alloc.initWithNibName(nil, bundle:nil)
-    # tab_controller.viewControllers = tabControllerss
-    # window.rootViewController = tab_controller
-
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
     end
 
-    # window.rootViewController = SitterViewController.alloc.init
+    # window.rootViewController = AddSitterController.alloc.init
+    # window.rootViewController = SitterDetailsController.alloc.init
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
-    window.styleMode = PXStylingNormal
 
+    window.styleMode = PXStylingNormal
     window.makeKeyAndVisible
     true
   end
@@ -43,7 +39,7 @@ class AppDelegate
 
   def registerWithTestFlight!
     return unless Device.simulator?
-    return unless Object.const_defined?('TestFlight')
+    # return unless Object.const_defined?(:TestFlight)
     app_token = NSBundle.mainBundle.objectForInfoDictionaryKey('TF_APP_TOKEN')
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier

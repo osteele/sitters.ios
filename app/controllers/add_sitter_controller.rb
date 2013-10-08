@@ -1,25 +1,8 @@
-class SearchController < UITableViewController
-  def initWithNibName(name, bundle:bundle)
-    super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTabBarSystemItem(UITabBarSystemItemSearch, tag:2)
-    end
-  end
-
+class AddSitterController < UITableViewController
   def viewDidLoad
     super
-    @sitters = Sitter.all
-  end
-
-  layout do
-    search_bar = subview UISearchBar, frame: [0, 20, 320, 44], delegate: self
-    view.tableHeaderView = search_bar
-  end
-
-  def searchBar(search_bar, textDidChange:searchText)
-    searchText = searchText.upcase
-    @sitters = Sitter.all.select { |sitter| sitter.name.upcase.include? searchText.upcase }
-    view.reloadData
+    view.separatorStyle = UITableViewCellSeparatorStyleNone
+    @sitters = Sitter.suggested
   end
 
   def numberOfSectionsInTableView(tableView)
@@ -29,7 +12,7 @@ class SearchController < UITableViewController
   def tableView(tableView, heightForRowAtIndexPath:indexPath); 52; end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    @sitters ||= Sitter.all
+    @sitters ||= Sitter.suggested
     @sitters.length
   end
 

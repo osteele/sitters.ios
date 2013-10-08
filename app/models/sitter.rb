@@ -45,6 +45,11 @@ class Sitter
     @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.png")
   end
 
+  def maskedImage
+    cgImage = CGImageCreateWithMask(self.image.CGImage, SitterCircle.maskImage)
+    return UIImage.imageWithCGImage(cgImage)
+  end
+
   def self.json
     @json ||= begin
       path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
