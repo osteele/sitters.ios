@@ -7,35 +7,48 @@ class SittersController < UIViewController
       dayLabelFormatter = dateFormatter('EEEE, MMMM d')
       dayLabel = subview UILabel, styleClass: :date
 
-      dayHighlighter = subview UIButton, styleClass: :selected_day
+      firstDayX = 3
+      dayspacing = 44
 
-      overlays = []
+      daySelectionMarker = subview UIButton, styleClass: :selected_day do
+        handle = subview UIView, width: 100, height: 100
+        addDragger handle, min: firstDayX + 5, factor: dayspacing
+      end
+
+      dayLabels = []
+      selectionMarkerLabels = []
       weekdayDates = (0...7).map do |day| weekStartDay.dateByAddingDays(day) end
       weekdayDates.each_with_index do |date, i|
-        x = 3 + i * 44
+        x = firstDayX + i * dayspacing
         name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(date)
+        # Create a separate view for the selection marker label so that we can animate
+        # the color transition. Animation animates opacity but not color.
+        # A custom view could animate its text color, but the current system leaves
+        # the possibility for a wider variety of transition effects in the future.
         label = subview UILabel, text: name, styleClass: :day_of_week, left: x
-        overlay = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
-        [label, overlay].each do |view|
-          view.when_tapped do
-            TestFlight.passCheckpoint "Tap day: #{name}"
-            # self.selectedTimeSpan = TimeSpan.new(date, selectedTimeSpan.startHour, selectedTimeSpan.endHour)
-            self.selectedTimeSpan = selectedTimeSpan.onDate(date)
-          end
+        selectionMarkerLabel = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
+        selectionMarkerLabel.userInteractionEnabled = false
+        label.when_tapped do
+          TestFlight.passCheckpoint "Tap day: #{name}"
+          self.selectedTimeSpan = selectedTimeSpan.onDate(date)
         end
-        overlays << overlay
+        dayLabels << label
+        selectionMarkerLabels << selectionMarkerLabel
       end
+
+      daySelectionMarker.superview.bringSubviewToFront daySelectionMarker
+      selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
 
       observe(self, :selectedTimeSpan) do |previousTimeSpan, timeSpan|
         # return if previousTimeSpan and previousTimeSpan.date == timeSpan.date
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
-        selectedOverlay = overlays[currentWeekDayIndex]
+        selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
         UIView.animateWithDuration 0.3,
           animations: lambda {
-            dayHighlighter.origin = [selectedOverlay.origin[0] + 5, selectedOverlay.origin[1]]
-            overlays.map do |v| v.alpha = 0 unless v == selectedOverlay end
-            selectedOverlay.alpha = 1
+            daySelectionMarker.origin = [selectedMarkerLabel.origin[0] + 5, selectedMarkerLabel.origin[1]]
+            selectionMarkerLabels.each do |label| label.alpha = label == selectedMarkerLabel ? 1 : 0 end
+            selectedMarkerLabel.alpha = 1
           }
       end
 

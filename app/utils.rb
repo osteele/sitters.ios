@@ -1,3 +1,5 @@
+NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
+
 class Scheduler
   attr_reader :pending
 

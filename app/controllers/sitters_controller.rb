@@ -1,5 +1,3 @@
-NSNumberFormatterSpellOutStyle = 5
-
 class SittersController < UIViewController
   include BW::KVO
   stylesheet :sitters
