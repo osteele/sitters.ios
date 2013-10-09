@@ -1,5 +1,10 @@
 NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
 
+def dateFormatter(template)
+  template = NSDateFormatter.dateFormatFromTemplate(template, options:0, locale:NSLocale.currentLocale)
+  dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat(template)
+end
+
 class Scheduler
   attr_reader :pending
 
