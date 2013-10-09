@@ -126,8 +126,10 @@ class SittersController < UIViewController
 
   def addSitterView
     @addSitterView ||= begin
+      @addSitterController ||= AddSitterController.alloc.init
       view = subview UIView, left: 0, top: 140, width: 320, height: 500 do
-        @addSitterController ||= AddSitterController.alloc.init
+        v = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
+        v.when_tapped { returnFromAddSitterView }
         subview @addSitterController.view
       end
       view.when_tapped { returnFromAddSitterView }
