@@ -29,8 +29,11 @@ class SittersController < UIViewController
   layout do
     view.styleId = :sitters
 
+    # nav = UINavigationController.alloc.init
+    # nav.navigationItem.titleView.setHidden true
+
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      @currentSittersView = subview UIView, origin: [0, 0], size: [320, 700] do
+      @currentSittersView = subview UIView, origin: [0, 140], size: [320, 700] do
         createSitterAvatars
 
         viewRecommendedButton = subview UIButton, styleId: :recommended, styleClass: :big_button do
@@ -51,10 +54,10 @@ class SittersController < UIViewController
           subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
         end
       end
-      @currentSittersView.userInteractionEnabled = false
       # @currentSittersView.when_tapped { presentAddSitterView }
       # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
+    @currentSittersView.userInteractionEnabled = false
 
     createTimeSelector
   end
