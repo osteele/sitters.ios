@@ -16,8 +16,8 @@ class SittersController < UIViewController
   def viewDidLoad
     super
     fudge = 100
-    @scroll.frame = self.view.bounds
-    @scroll.contentSize = CGSizeMake(@scroll.frame.size.width, @scroll.frame.size.height + fudge)
+    @scrollView.frame = self.view.bounds
+    @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
 
     self.view.stylesheet = :sitters
     self.view.stylename = :sitters
@@ -29,27 +29,33 @@ class SittersController < UIViewController
   layout do
     view.styleId = :sitters
 
-    @scroll = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
+    @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       createTimeSelector
-      createSitterAvatars
 
-      viewRecommendedButton = subview UIButton, styleId: :recommended, styleClass: :big_button do
-        subview UILabel, text: 'View Recommended'
-        subview UILabel, styleClass: :caption, text: '14 connected sitters'
-      end
+      @currentSittersView = subview UIView, origin: [0, 0], size: [320, 700] do
+        createSitterAvatars
 
-      subview UIButton, styleId: :invite, styleClass: :big_button do
-        subview UILabel, text: 'Invite a Sitter'
-        subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
-      end
+        viewRecommendedButton = subview UIButton, styleId: :recommended, styleClass: :big_button do
+          subview UILabel, text: 'View Recommended'
+          subview UILabel, styleClass: :caption, text: '14 connected sitters'
+        end
 
-      addSittersText = subview UIView do
-        sitterCount = 2
-        toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - 2)
-        subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
-        subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+        subview UIButton, styleId: :invite, styleClass: :big_button do
+          subview UILabel, text: 'Invite a Sitter'
+          subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
+        end
+
+        addSittersText = subview UIView do
+          sitterCount = 2
+          toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - 2)
+          subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
+          subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+        end
+        [viewRecommendedButton, addSittersText].each do |view| view.when_tapped { presentAddSitterView } end
       end
-      [viewRecommendedButton, addSittersText].each do |view| view.when_tapped { addSitter } end
+      @currentSittersView.userInteractionEnabled = false
+      @currentSittersView.when_tapped { presentAddSitterView }
+      # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
   end
 
@@ -58,7 +64,7 @@ class SittersController < UIViewController
   def createTimeSelector
     weekStartDay = NSDate.date.dateAtStartOfDay
 
-    subview TimeSelector, styleId: :time_selector do
+    @timeSelectorView = subview TimeSelector, styleId: :time_selector do
       dayLabelFormatter = dateFormatter('EEEE, MMMM d')
       dayLabel = subview UILabel, styleClass: :date
 
@@ -287,9 +293,25 @@ class SittersController < UIViewController
     end
   end
 
-  def addSitter
-    # puts "add sitter"
-    # AddSitterController.alloc.init
+  def presentAddSitterView
+    @scrollView.insertSubview addSitterView, belowSubview:@timeSelectorView
+    @currentSittersView.removeFromSuperview
+  end
+
+  def returnFromAddSitterView
+    @scrollView.insertSubview @currentSittersView, belowSubview:@timeSelectorView
+    addSitterView.removeFromSuperview
+  end
+
+  def addSitterView
+    @addSitterView ||= begin
+      view = subview UIView, left: 0, top: 140, width: 320, height: 500 do
+        @addSitterController ||= AddSitterController.alloc.init
+        subview @addSitterController.view
+      end
+      view.when_tapped { returnFromAddSitterView }
+      view
+    end
   end
 end
 
