@@ -1,7 +1,7 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    registerWithTestFlight!
-    initializePixmate!
+    initializeTestFlight
+    initializePixmate
 
     window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
@@ -29,7 +29,7 @@ class AppDelegate
     ]
   end
 
-  def initializePixmate!
+  def initializePixmate
     if Device.simulator?
       stylesheet_path = ENV['PX_STYLESHEET_PATH']
       PXStylesheet.styleSheetFromFilePath stylesheet_path, withOrigin:0
@@ -37,8 +37,8 @@ class AppDelegate
     end
   end
 
-  def registerWithTestFlight!
-    return unless Device.simulator?
+  def initializeTestFlight
+    return if Device.simulator?
     # return unless Object.const_defined?(:TestFlight)
     app_token = NSBundle.mainBundle.objectForInfoDictionaryKey('TF_APP_TOKEN')
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
