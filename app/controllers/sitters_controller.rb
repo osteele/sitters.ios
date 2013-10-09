@@ -148,36 +148,3 @@ Teacup::Stylesheet.new :sitters do
     width: 40,
     height: '100%'
 end
-
-class Scheduler
-  attr_reader :pending
-
-  def self.after(delay, &block)
-    self.new.after(delay, &block)
-  end
-
-  def after(delay, &block)
-    @block = block
-    @timer = NSTimer.scheduledTimerWithTimeInterval(delay, target:self, selector:'fire', userInfo:nil, repeats:false)
-    @pending = true
-    return self
-  end
-
-  def fire
-    @pending = false
-    @block.call
-  end
-end
-
-class Debounced
-  def initialize(delay, &block)
-    @delay = delay
-    @block = block
-    @scheduler = Scheduler.new
-  end
-
-  def fire!
-    return if @scheduler.pending
-    @scheduler.after @delay, &@block
-  end
-end
