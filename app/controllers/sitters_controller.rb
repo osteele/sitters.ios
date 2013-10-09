@@ -39,6 +39,7 @@ class SittersController < UIViewController
           subview UILabel, text: 'View Recommended'
           subview UILabel, styleClass: :caption, text: '14 connected sitters'
         end
+        viewRecommendedButton.when_tapped { puts "tap recommended button" }
 
         subview UIButton, styleId: :invite, styleClass: :big_button do
           subview UILabel, text: 'Invite a Sitter'
@@ -51,10 +52,9 @@ class SittersController < UIViewController
           subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
           subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
         end
-        [viewRecommendedButton, addSittersText].each do |view| view.when_tapped { presentAddSitterView } end
       end
       @currentSittersView.userInteractionEnabled = false
-      @currentSittersView.when_tapped { presentAddSitterView }
+      # @currentSittersView.when_tapped { presentAddSitterView }
       # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
   end
@@ -80,10 +80,12 @@ class SittersController < UIViewController
           subview UIButton
           subview UILabel, text: (i+1).to_s
         end
-        view.when_tapped { TestFlight.passCheckpoint "Tap sitter: ##{i+1}" }
+        # view.when_tapped { TestFlight.passCheckpoint "Tap sitter: ##{i+1}" }
         sitterViews << view
       end
     end
+    view.userInteractionEnabled = false
+    view.when_tapped { presentAddSitterView }
 
     observe(self, :selectedTimeSpan) do |_, timeSpan|
       UIView.animateWithDuration 0.3,
@@ -135,14 +137,7 @@ class SittersController < UIViewController
 end
 
 Teacup::Stylesheet.new :sitters do
-  style :sitters,
-    backgroundColor: UIColor.greenColor
-
-  # style :left_dragger,
-  #   backgroundColor: UIColor.greenColor
-
   style :right_dragger,
-    # backgroundColor: UIColor.blueColor,
     left: '100%-20',
     top: 0,
     width: 40,
