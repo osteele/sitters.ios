@@ -32,6 +32,8 @@ class SittersController < UIViewController
     self.addChildViewController mySittersController
     @currentSittersView = mySittersController.view
 
+    observe(self, :selectedTimeSpan) do mySittersController.selectedTimeSpan = selectedTimeSpan end
+
     # nav = UINavigationController.alloc.initWithRootViewController(mySittersController)
     # mySittersController.view.frame = [[0, 140], [320, 700]]
     # nav.navigationItem.titleView.setHidden true
@@ -101,6 +103,7 @@ class MySittersController < UIViewController
   include BW::KVO
   stylesheet :sitters
   attr_accessor :outerController
+  attr_accessor :selectedTimeSpan
 
   layout do
     view.styleId = :sitters
