@@ -14,7 +14,7 @@ require File.join(File.dirname(__FILE__), 'config/settings.rb')
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.short_version = app.version = '0.1.5'
+  app.short_version = app.version = '0.1.6'
   app.icons = ['icon-120.png']
   app.interface_orientations = [:portrait]
 
