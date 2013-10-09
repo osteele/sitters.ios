@@ -15,7 +15,7 @@ class SittersController < UIViewController
 
   def viewDidLoad
     super
-    fudge = 100
+    fudge = 70
     @scrollView.frame = self.view.bounds
     @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
 
@@ -30,8 +30,6 @@ class SittersController < UIViewController
     view.styleId = :sitters
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      createTimeSelector
-
       @currentSittersView = subview UIView, origin: [0, 0], size: [320, 700] do
         createSitterAvatars
 
@@ -57,6 +55,8 @@ class SittersController < UIViewController
       # @currentSittersView.when_tapped { presentAddSitterView }
       # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
+
+    createTimeSelector
   end
 
   private
