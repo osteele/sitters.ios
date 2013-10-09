@@ -115,26 +115,52 @@ class SittersController < UIViewController
   end
 
   def presentAddSitterView
-    @scrollView.insertSubview addSitterView, belowSubview:@timeSelectorView
-    @currentSittersView.removeFromSuperview
+    @addSitterController ||= AddSitterController.alloc.init
+    @suggestedSitterListView ||= begin
+      view = subview UIView, left: 320, top: 140, width: 320, height: 500 do
+        back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
+        back.when_tapped { returnFromAddSitterView }
+        list = subview @addSitterController.view
+        # list.when_tapped { presentSitterDetails }
+      end
+      view
+    end
+    @scrollView.insertSubview @suggestedSitterListView, belowSubview:@timeSelectorView
+    UIView.animateWithDuration 0.3, animations: lambda {
+      @currentSittersView.origin = [-320, @currentSittersView.origin.y]
+      @suggestedSitterListView.origin = [0, @suggestedSitterListView.origin.y]
+    }
   end
 
   def returnFromAddSitterView
     @scrollView.insertSubview @currentSittersView, belowSubview:@timeSelectorView
-    addSitterView.removeFromSuperview
+    UIView.animateWithDuration 0.3, animations: lambda {
+      @currentSittersView.origin = [0, @currentSittersView.origin.y]
+      @suggestedSitterListView.origin = [320, @suggestedSitterListView.origin.y]
+    }
   end
 
-  def addSitterView
-    @addSitterView ||= begin
-      @addSitterController ||= AddSitterController.alloc.init
-      view = subview UIView, left: 0, top: 140, width: 320, height: 500 do
-        v = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
-        v.when_tapped { returnFromAddSitterView }
-        subview @addSitterController.view
+  def presentSitterDetails
+    @sitterDetailsController ||= SitterDetailsController.alloc.init
+    @sitterDetailsView ||= begin
+      view = subview UIView, left: 320, top: 140, width: 320, height: 800 do
+        back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Add Sitter', color:UIColor.blueColor
+        back.when_tapped { returnFromSitterDetailsView }
+        subview @sitterDetailsController.view
       end
-      view.when_tapped { returnFromAddSitterView }
-      view
     end
+    @scrollView.insertSubview @sitterDetailsView, belowSubview:@timeSelectorView
+    UIView.animateWithDuration 0.3, animations: lambda {
+      @suggestedSitterListView.origin = [-320, @suggestedSitterListView.origin.y]
+      @sitterDetailsView.origin = [0, @sitterDetailsView.origin.y]
+    }
+  end
+
+  def returnFromSitterDetailsView
+    UIView.animateWithDuration 0.3, animations: lambda {
+      @suggestedSitterListView.origin = [0, @suggestedSitterListView.origin.y]
+      @sitterDetailsView.origin = [320, @sitterDetailsView.origin.y]
+    }
   end
 end
 
