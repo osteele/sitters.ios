@@ -29,15 +29,27 @@ class SittersController < UIViewController
         selectionMarkerLabel = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
         selectionMarkerLabel.userInteractionEnabled = false
         label.when_tapped do
-          TestFlight.passCheckpoint "Tap day: #{name}"
           self.selectedTimeSpan = selectedTimeSpan.onDate(date)
         end
         dayLabels << label
         selectionMarkerLabels << selectionMarkerLabel
       end
 
+      daySelectionMarkerOffset = 5
       daySelectionMarker.superview.bringSubviewToFront daySelectionMarker
       selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
+
+      observe(daySelectionMarker, :frame) do
+        selectionMarkerLabels.each do |label|
+          dx = label.origin.x - daySelectionMarker.origin.x + daySelectionMarkerOffset
+          label.alpha = 1 - [[dx.abs / 45.0, 1].min, 0].max
+          dayIndex = ((daySelectionMarker.origin.x + daySelectionMarkerOffset - firstDayX) / dayspacing).round
+          dayIndex = [[dayIndex, 0].max, weekdayDates.length - 1].min
+          date = weekdayDates[dayIndex]
+          self.selectedTimeSpan = selectedTimeSpan.onDate(date) unless selectedTimeSpan.date == date
+        end
+
+      end
 
       observe(self, :selectedTimeSpan) do |previousTimeSpan, timeSpan|
         # return if previousTimeSpan and previousTimeSpan.date == timeSpan.date
@@ -46,9 +58,7 @@ class SittersController < UIViewController
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
         UIView.animateWithDuration 0.3,
           animations: lambda {
-            daySelectionMarker.origin = [selectedMarkerLabel.origin[0] + 5, selectedMarkerLabel.origin[1]]
-            selectionMarkerLabels.each do |label| label.alpha = label == selectedMarkerLabel ? 1 : 0 end
-            selectedMarkerLabel.alpha = 1
+            daySelectionMarker.origin = [selectedMarkerLabel.origin[0] + daySelectionMarkerOffset, selectedMarkerLabel.origin[1]]
           }
       end
 
