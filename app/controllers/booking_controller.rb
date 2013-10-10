@@ -53,16 +53,15 @@ class BookingController < UIViewController
     # puts "presentAddSitterView"
     @suggestedSittersController ||= SuggestedSittersController.alloc.init
     @navigationController.pushViewController @suggestedSittersController, animated:true
-    UIView.animateWithDuration 0.3, animations: lambda {
-      @shrinkTimeSelector.call
-      @scrollView.contentOffset = CGPointZero
-    }
+    # self.wantsFullScreenLayout = true
+    # UIApplication.sharedApplication.setStatusBarHidden true
+    UIView.animateWithDuration 0.3,
+      animations: lambda { setTimeSelectorHeight :short },
+      completion: lambda { |finished| @scrollView.contentOffset = CGPointZero;  setTimeSelectorHeight :force_short }
   end
 
   def mySittersWillAppear
-    UIView.animateWithDuration 0.3, animations: lambda {
-      @unshrinkTimeSelector.call if @unshrinkTimeSelector
-    }
+    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :tall }
   end
 end
 

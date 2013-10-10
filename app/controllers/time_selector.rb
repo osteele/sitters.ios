@@ -131,27 +131,45 @@ class BookingController < UIViewController
       observe(hourRangeButton, :frame) do timeSpanHoursUpdater.fire! end
 
       @shrinkTimeSelector = Proc.new do
-        # puts "shrinking"
-        @timeSelectorSaved = {
+        # puts "shrink 1"
+        view = @timeSelectorView
+        @ssavedTimeSelectorValues ||= {
           frame: @timeSelectorView.frame,
           hourRangeColor: hourRangeButton.backgroundColor,
           hourRangeFrame: hourRangeButton.frame,
-        }
-        @timeSelectorView.origin = [0, 64]
-        @timeSelectorView.size = [@timeSelectorView.size.width, 55]
-        # puts "resized to 55"
-        tallSizeOnlyViews.each do |view| view.alpha = 0 end
-        shortSizeOnlyViews.each do |view| view.alpha = 1 end
+          tallSizeOnlyAlphas: tallSizeOnlyViews.map { |view| view.alpha }
+        }.tap do
+          # puts "shrink 2"
+          view.origin = [0, 64]
+          view.size = [view.size.width, 55]
+          # puts "resized to 55"
+          tallSizeOnlyViews.each do |view| view.alpha = 0 end
+          shortSizeOnlyViews.each do |view| view.alpha = 1 end
+        end
       end
 
       @unshrinkTimeSelector = Proc.new do
-        if @timeSelectorSaved
-          @timeSelectorView.frame = @timeSelectorSaved[:frame]
-          hourRangeButton.frame = @timeSelectorSaved[:hourRangeFrame]
-          tallSizeOnlyViews.each do |view| view.alpha = 1 end
+        view = @timeSelectorView
+        values = @ssavedTimeSelectorValues
+        @ssavedTimeSelectorValues = nil
+        if values
+          view.frame = values[:frame]
+          hourRangeButton.frame = values[:hourRangeFrame]
+          tallSizeOnlyViews.each_with_index do |view, i| view.alpha = values[:tallSizeOnlyAlphas][i] end
           shortSizeOnlyViews.each do |view| view.alpha = 0 end
         end
       end
+    end
+  end
+
+  def setTimeSelectorHeight(key)
+    case key
+    when :short
+      @shrinkTimeSelector.call if @shrinkTimeSelector
+    when :tall
+      @unshrinkTimeSelector.call if @unshrinkTimeSelector
+    when :force_short
+      @timeSelectorView.size = [@timeSelectorView.size.width, 55]
     end
   end
 end
