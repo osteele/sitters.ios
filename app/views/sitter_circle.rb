@@ -18,7 +18,6 @@ class SitterCircle < UIView
 
   def drawRect(rect)
     context = UIGraphicsGetCurrentContext()
-    CGContextSaveGState context
 
     # Outer circle: fill and frame
     radius = cx = cy = rect.size.width / 2
@@ -41,6 +40,15 @@ class SitterCircle < UIView
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
 
+    ringWidth = 10
+    imageRect = CGRectMake(ringWidth, ringWidth, rect.size.width - 2 * ringWidth, rect.size.height - 2 * ringWidth)
+    image = CGImageCreateWithMask(dataSource.image.CGImage, SitterCircle.maskImage)
+    CGContextSaveGState context
+    CGContextTranslateCTM context, 0, rect.size.height
+    CGContextScaleCTM context, 1, -1
+    CGContextDrawImage context, imageRect, image
+    CGContextRestoreGState context
+
     # radius = 11
     # CGContextAddArc context, cx, 90 - 3 - radius, radius, 0, 2 * Math::PI, 0
     # CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
@@ -53,8 +61,6 @@ class SitterCircle < UIView
     # Sitter name
     radius = 26
     drawArcText context, dataSource.first_name.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text]
-
-    CGContextRestoreGState context
   end
 
   def newDrawArcText(context, string, cx, cy, radius)

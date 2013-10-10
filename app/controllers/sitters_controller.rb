@@ -131,8 +131,6 @@ class MySittersController < UIViewController
   end
 
   def createSitterAvatars
-    cgMask = SitterCircle.maskImage
-
     sitters = Sitter.all[0...7]
     sitterViews = []
     view = subview UIView, styleId: :avatars, left: 10, top: 150, width: 300, height: 300 do
@@ -140,7 +138,6 @@ class MySittersController < UIViewController
         sitter = sitters[i]
         sitter.active = true
         view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
-          subview UIImageView, image: sitter.maskedImage
           subview UIButton
           subview UILabel, text: (i+1).to_s
         end
