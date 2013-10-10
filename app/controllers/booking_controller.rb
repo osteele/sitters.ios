@@ -40,7 +40,6 @@ class BookingController < UIViewController
     # nav.navigationItem.titleView.setHidden true
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      # subview mySittersController.view
       subview @navigationController.view, size: [320, 700]
       # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
@@ -52,65 +51,11 @@ class BookingController < UIViewController
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
   def presentAddSitterView
-    @addSitterController ||= SuggestedSittersController.alloc.init
-    # @suggestedSitterListView ||= begin
-    #   view = subview UIView, left: 320, top: 140, width: 320, height: 500 do
-    #     back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
-    #     back.when_tapped { returnFromAddSitterView }
-    #     list = subview @addSitterController.view
-    #     # list.when_tapped { presentSitterDetails }
-    #   end
-    #   view
-    # end
-    @navigationController.pushViewController @addSitterController, animated:true
-    UIView.animateWithDuration 0.3, animations: lambda { @shrinkTimeSelector.call }
-    @scrollView.contentOffset = CGPointZero
-    return
-
-    @scrollView.insertSubview @suggestedSitterListView, belowSubview:@timeSelectorView
+    @suggestedSittersController ||= SuggestedSittersController.alloc.init
+    @navigationController.pushViewController @suggestedSittersController, animated:true
     UIView.animateWithDuration 0.3, animations: lambda {
-      @currentSittersView.origin = [-320, @currentSittersView.origin.y]
-      @suggestedSitterListView.origin = [0, @suggestedSitterListView.origin.y]
-    }
-  end
-
-  private
-
-  def returnFromAddSitterView
-    @navigationController.popViewControllerAnimated true
-    UIView.animateWithDuration 0.3, animations: lambda { @unshrinkTimeSelector.call }
-    return
-
-    @scrollView.insertSubview @currentSittersView, belowSubview:@timeSelectorView
-    UIView.animateWithDuration 0.3, animations: lambda {
-      @currentSittersView.origin = [0, @currentSittersView.origin.y]
-      @suggestedSitterListView.origin = [320, @suggestedSitterListView.origin.y]
-    }
-  end
-
-  def presentSitterDetails
-    @sitterDetailsController ||= SitterDetailsController.alloc.init
-    # @sitterDetailsView ||= begin
-    #   view = subview UIView, left: 320, top: 140, width: 320, height: 800 do
-    #     back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Add Sitter', color:UIColor.blueColor
-    #     back.when_tapped { returnFromSitterDetailsView }
-    #     subview @sitterDetailsController.view
-    #   end
-    # end
-    @navigationController.pushViewController @sitterDetailsController, animated:true
-    return
-
-    @scrollView.insertSubview @sitterDetailsView, belowSubview:@timeSelectorView
-    UIView.animateWithDuration 0.3, animations: lambda {
-      @suggestedSitterListView.origin = [-320, @suggestedSitterListView.origin.y]
-      @sitterDetailsView.origin = [0, @sitterDetailsView.origin.y]
-    }
-  end
-
-  def returnFromSitterDetailsView
-    UIView.animateWithDuration 0.3, animations: lambda {
-      @suggestedSitterListView.origin = [0, @suggestedSitterListView.origin.y]
-      @sitterDetailsView.origin = [320, @sitterDetailsView.origin.y]
+     @shrinkTimeSelector.call
+      @scrollView.contentOffset = CGPointZero
     }
   end
 end
@@ -128,24 +73,22 @@ class MySittersController < UIViewController
 
     createSitterAvatars
 
-    viewRecommendedButton = subview UIButton, styleId: :recommended, styleClass: :big_button do
-      subview UILabel, text: 'View Recommended'
+    subview UIButton, styleId: :recommended, styleClass: :big_button do
+      label = subview UILabel, text: 'View Recommended'
+      label.when_tapped { outerController.presentAddSitterView }
       subview UILabel, styleClass: :caption, text: '14 connected sitters'
     end
-    viewRecommendedButton.when_tapped { outerController.presentAddSitterView }
 
     subview UIButton, styleId: :invite, styleClass: :big_button do
       subview UILabel, text: 'Invite a Sitter'
       subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
     end
 
-    addSittersText = subview UIView do
-      sitterCount = 2
-      toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - 2)
-      subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
-      subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
-    end
-    addSittersText.when_tapped { outerController.presentAddSitterView }
+    sitterCount = 2
+    toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
+    label = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
+    label.when_tapped { outerController.presentAddSitterView }
+    subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
   end
 
   def createSitterAvatars
