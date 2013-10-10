@@ -1,6 +1,5 @@
 class SitterCircle < UIView
-  attr_accessor :dataSource
-  attr_accessor :dataIndex
+  attr_accessor :sitter
 
   def self.new
     view = alloc.initWithFrame(CGRectZero)
@@ -35,7 +34,7 @@ class SitterCircle < UIView
 
     ringWidth = 10
     imageRect = CGRectMake(ringWidth, ringWidth, rect.size.width - 2 * ringWidth, rect.size.height - 2 * ringWidth)
-    image = CGImageCreateWithMask(dataSource.image.CGImage, SitterCircle.maskImage)
+    image = CGImageCreateWithMask(sitter.image.CGImage, SitterCircle.maskImage)
     CGContextDrawImage context, imageRect, image
 
     radius = 11
@@ -49,7 +48,7 @@ class SitterCircle < UIView
 
     # Sitter name
     radius = 26
-    drawArcText context, dataSource.first_name.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text]
+    drawArcText context, sitter.first_name.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text]
   end
 
   def newDrawArcText(context, string, cx, cy, radius)
@@ -99,16 +98,16 @@ class SitterCircle < UIView
       text_width = string.sizeWithAttributes({}).width
       text_angle = text_width * 2 * Math::PI / (radius * 2 * Math::PI)
       # puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
-      next_angle = Math::PI / 2 - text_angle / 2
+      next_angle = Math::PI / 2 + text_angle / 2
     end
     for i in 0...string.length
       # angle = -Math::PI / 2 + 11 * (i - string.length / 2) * Math::PI / 180
       if kern
         letter_width = string[i].sizeWithAttributes({}).width
         letter_angle = letter_width / text_width * text_angle
-        angle = next_angle + letter_angle / 2
+        angle = next_angle - letter_angle / 2
         # puts "#{string[i]} (width=#{letter_width}, angle=#{letter_angle * 360}) at angle=#{angle}"
-        next_angle += letter_angle
+        next_angle -= letter_angle
       end
       dx = radius * Math.cos(angle)
       dy = radius * Math.sin(angle)

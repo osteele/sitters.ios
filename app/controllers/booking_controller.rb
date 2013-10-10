@@ -103,8 +103,7 @@ class MySittersController < UIViewController
     view = subview UIView, styleId: :avatars, left: 10, top: 150, width: 300, height: 300 do
       for i in 0...7
         sitter = sitters[i]
-        sitter.active = true
-        view = subview SitterCircle, dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+        view = subview SitterCircle, sitter: sitter, styleClass: 'sitter' do
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }
@@ -118,7 +117,7 @@ class MySittersController < UIViewController
       UIView.animateWithDuration 0.3,
         animations: lambda {
           sitterViews.map do |view|
-            alpha = if view.dataSource.availableAt(timeSpan) then 1 else 0.5 end
+            alpha = if view.sitter.availableAt(timeSpan) then 1 else 0.5 end
             view.alpha = alpha unless view.alpha == alpha
           end
         }

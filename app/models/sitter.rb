@@ -23,7 +23,7 @@ class Sitter
   end
 
   def self.suggested
-    return self.all.reject { |s| s.active }
+    return self.all - self.added
   end
 
   def initialize(name)
