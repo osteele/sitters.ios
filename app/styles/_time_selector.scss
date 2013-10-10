@@ -1,0 +1,116 @@
+#time_selector {
+  top: 20px;
+  width: 320px;
+  height: 120px;
+  background-color: #5582C3;
+
+  label {
+    color: white;
+    text-align: center;
+  }
+
+  .date {
+    width: 320px;
+    height: 20px;
+    top: 5px;
+    font-size: 12px;
+  }
+
+  .day_of_week {
+    width: 44px;
+    height: 34px;
+    top: 30px;
+    font-size: 18px;
+
+    &.overlay {
+      color: #5481C9;
+    }
+  }
+
+  .selected_day {
+    width: 34px;
+    height: 34px;
+  }
+
+  button.selected_day {
+    left: 8px;
+    top: 30px;
+    background-color: white;
+    border-radius: 17px;
+    box-shadow: 0 1 1 #226;
+  }
+
+  button.hour_range {
+    left: 10px;
+    top: 75px;
+    border-radius: 1px;
+  }
+
+  .hour_range {
+    width: 195px;
+    height: 35px;
+    color: #5481C9;
+
+    .left_dragger {
+      left: 0;
+      top: 0;
+      width: 640px;
+      height: 35px;
+
+      .graphic {
+        background-image: url(images/left-drag-handle.png);
+        left: 4px;
+        top: 10px;
+        width: 6px;
+        height: 15px;
+      }
+    }
+
+    .right_dragger {
+      .graphic {
+        background-image: url(images/right-drag-handle.png);
+        left: 9px;
+        top: 10px;
+        width: 6px;
+        height: 15px;
+      }
+    }
+  }
+
+  button.hour_range {
+    background-color: white;
+    border-radius: 18px;
+  }
+
+  .hour_blob {
+    top: 70px;
+    width: 40px;
+    height: 40px;
+
+    .hour {
+      top: 8px;
+      width: 20px;
+      height: 20px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .am_pm {
+      top: 20px;
+      width: 20px;
+      height: 20px;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .half_past {
+      left: 26px;
+      top: 13px;
+      width: 20px;
+      height: 20px;
+      color: #A8C1E5;
+      font-size: 13px;
+      text-align: right;
+    }
+  }
+}
