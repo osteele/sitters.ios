@@ -1,4 +1,6 @@
 class SuggestedSittersController < UITableViewController
+  attr_accessor :outerController
+
   def viewDidLoad
     super
     view.separatorStyle = UITableViewCellSeparatorStyleNone
@@ -20,6 +22,10 @@ class SuggestedSittersController < UITableViewController
   def tableView(tableView, numberOfRowsInSection:section)
     @sitters ||= Sitter.suggested
     @sitters.length
+  end
+
+  def tableView(tableView, didSelectRowAtIndexPath:indexPath)
+    outerController.presentSitterDetails @sitters[indexPath.row]
   end
 
   IMAGE_TAG = 1

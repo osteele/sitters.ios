@@ -49,15 +49,24 @@ class BookingController < UIViewController
   # def navigationController(c1, willShowViewController:c2, animated:f); puts 'navigationController'; end
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
-  def presentAddSitterView
-    # puts "presentAddSitterView"
-    @suggestedSittersController ||= SuggestedSittersController.alloc.init
+  def presentSuggestedSitters
+    # puts "presentSuggestedSitters"
+    @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
     @navigationController.pushViewController @suggestedSittersController, animated:true
     # self.wantsFullScreenLayout = true
     # UIApplication.sharedApplication.setStatusBarHidden true
+
+    setTimeSelectorHeight :short
+
     UIView.animateWithDuration 0.3,
       animations: lambda { setTimeSelectorHeight :short },
-      completion: lambda { |finished| @scrollView.contentOffset = CGPointZero;  setTimeSelectorHeight :force_short }
+      completion: lambda { |finished| @scrollView.contentOffset = CGPointZero }
+  end
+
+  def presentSitterDetails(sitter)
+    # @sitterDetailsController ||= SitterDetailsController.alloc.init
+    # @sitterDetailsController.sitter = sitter
+    # @navigationController.pushViewController @sitterDetailsController, animated:true
   end
 
   def mySittersWillAppear
@@ -79,7 +88,7 @@ class MySittersController < UIViewController
 
     subview UIButton, styleId: :recommended, styleClass: :big_button do
       label = subview UILabel, text: 'View Recommended'
-      label.when_tapped { outerController.presentAddSitterView }
+      label.when_tapped { outerController.presentSuggestedSitters }
       subview UILabel, styleClass: :caption, text: '14 connected sitters'
     end
 
@@ -91,10 +100,10 @@ class MySittersController < UIViewController
     sitterCount = 2
     toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
     addSittersLabel = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
-    addSittersLabel.when_tapped { outerController.presentAddSitterView }
+    addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
     subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
 
-    # observe self, :sitters do
+    # observe self, :sitters do |old, new|
     #   puts "sitters"
     #   puts "#{sitters.length}"
     # end
@@ -114,7 +123,7 @@ class MySittersController < UIViewController
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }
-        # view.when_tapped { presentAddSitterView }
+        # view.when_tapped { presentSuggestedSitters }
         sitterViews << view
       end
     end

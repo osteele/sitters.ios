@@ -131,32 +131,25 @@ class BookingController < UIViewController
       observe(hourRangeButton, :frame) do timeSpanHoursUpdater.fire! end
 
       @shrinkTimeSelector = Proc.new do
-        # puts "shrink 1"
-        view = @timeSelectorView
-        @ssavedTimeSelectorValues ||= {
-          frame: @timeSelectorView.frame,
-          hourRangeColor: hourRangeButton.backgroundColor,
-          hourRangeFrame: hourRangeButton.frame,
-          tallSizeOnlyAlphas: tallSizeOnlyViews.map { |view| view.alpha }
+        timeSelectorView = @timeSelectorView
+        @savedTimeSelectorValues ||= {
+          frame: timeSelectorView.frame,
+          alphas: tallSizeOnlyViews.map { |v| [v, v.alpha] }
         }.tap do
-          # puts "shrink 2"
-          view.origin = [0, 64]
-          view.size = [view.size.width, 55]
-          # puts "resized to 55"
-          tallSizeOnlyViews.each do |view| view.alpha = 0 end
-          shortSizeOnlyViews.each do |view| view.alpha = 1 end
+          timeSelectorView.frame = [[0, 64], [timeSelectorView.size.width, 40]] # height was 55
+          tallSizeOnlyViews.each do |v| v.alpha = 0 end
+          shortSizeOnlyViews.each do |v| v.alpha = 1 end
         end
       end
 
       @unshrinkTimeSelector = Proc.new do
-        view = @timeSelectorView
-        values = @ssavedTimeSelectorValues
-        @ssavedTimeSelectorValues = nil
+        timeSelectorView = @timeSelectorView
+        values = @savedTimeSelectorValues
         if values
-          view.frame = values[:frame]
-          hourRangeButton.frame = values[:hourRangeFrame]
-          tallSizeOnlyViews.each_with_index do |view, i| view.alpha = values[:tallSizeOnlyAlphas][i] end
-          shortSizeOnlyViews.each do |view| view.alpha = 0 end
+          timeSelectorView.frame = values[:frame]
+          values[:alphas].each do |v, alpha| v.alpha = alpha end
+          shortSizeOnlyViews.each do |v| view.alpha = 0 end
+          @savedTimeSelectorValues = nil
         end
       end
     end
@@ -168,8 +161,6 @@ class BookingController < UIViewController
       @shrinkTimeSelector.call if @shrinkTimeSelector
     when :tall
       @unshrinkTimeSelector.call if @unshrinkTimeSelector
-    when :force_short
-      @timeSelectorView.size = [@timeSelectorView.size.width, 55]
     end
   end
 end

@@ -1,10 +1,12 @@
 class SitterDetailsController < UIViewController
+  attr_accessor :sitter
+
   layout do
     view.styleId = :sitter_details
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
-    webView = subview UIWebView, origin: [0, 55], size: [320, 600], delegate: self
-    webView.loadRequest NSURLRequest.requestWithURL(url)
+    @webView = subview UIWebView, origin: [0, 55], size: [320, 600], delegate: self
+    @webView.loadRequest NSURLRequest.requestWithURL(url)
 
     subview UIView, styleId: :header do
       dateFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
@@ -17,7 +19,7 @@ class SitterDetailsController < UIViewController
   end
 
   def webViewDidFinishLoad(webView)
-    webView.size = [webView.size.width, 1]
-    webView.size = webView.sizeThatFits(CGSizeZero)
+    @webView.size = [webView.size.width, 1]
+    @webView.size = webView.sizeThatFits(CGSizeZero)
   end
 end
