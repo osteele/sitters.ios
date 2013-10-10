@@ -136,8 +136,8 @@ class BookingController < UIViewController
           hourRangeColor: hourRangeButton.backgroundColor,
           hourRangeFrame: hourRangeButton.frame,
         }
-        @timeSelectorView.origin = [0, 50]
-        @timeSelectorView.size = [@timeSelectorView.size.width, 50]
+        @timeSelectorView.origin = [0, 64]
+        @timeSelectorView.size = [@timeSelectorView.size.width, 55]
         tallSizeOnlyViews.each do |view| view.alpha = 0 end
         shortSizeOnlyViews.each do |view| view.alpha = 1 end
       end
