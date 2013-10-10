@@ -18,6 +18,10 @@ class Sitter
     ]
   end
 
+  def self.added
+    @added ||= self.all[0...7]
+  end
+
   def self.suggested
     return self.all.reject { |s| s.active }
   end

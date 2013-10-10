@@ -65,6 +65,7 @@ class MySittersController < UIViewController
   stylesheet :sitters
   attr_accessor :outerController
   attr_accessor :selectedTimeSpan
+  attr_accessor :sitters
 
   # def viewWillAppear(c1); puts 'MySittersController viewWillAppear'; end
 
@@ -86,13 +87,18 @@ class MySittersController < UIViewController
 
     sitterCount = 2
     toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
-    label = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
-    label.when_tapped { outerController.presentAddSitterView }
+    addSittersLabel = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
+    addSittersLabel.when_tapped { outerController.presentAddSitterView }
     subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+
+    # observe self, :sitters do
+    #   puts "sitters"
+    #   puts "#{sitters.length}"
+    # end
   end
 
   def createSitterAvatars
-    sitters = Sitter.all[0...7]
+    self.sitters = Sitter.added
     sitterViews = []
     view = subview UIView, styleId: :avatars, left: 10, top: 150, width: 300, height: 300 do
       for i in 0...7
