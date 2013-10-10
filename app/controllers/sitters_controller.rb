@@ -138,7 +138,6 @@ class MySittersController < UIViewController
         sitter = sitters[i]
         sitter.active = true
         view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
-          subview UIButton
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }

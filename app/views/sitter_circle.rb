@@ -18,6 +18,8 @@ class SitterCircle < UIView
 
   def drawRect(rect)
     context = UIGraphicsGetCurrentContext()
+    CGContextTranslateCTM context, 0, rect.size.height
+    CGContextScaleCTM context, 1, -1
 
     # Outer circle: fill and frame
     radius = cx = cy = rect.size.width / 2
@@ -43,20 +45,16 @@ class SitterCircle < UIView
     ringWidth = 10
     imageRect = CGRectMake(ringWidth, ringWidth, rect.size.width - 2 * ringWidth, rect.size.height - 2 * ringWidth)
     image = CGImageCreateWithMask(dataSource.image.CGImage, SitterCircle.maskImage)
-    CGContextSaveGState context
-    CGContextTranslateCTM context, 0, rect.size.height
-    CGContextScaleCTM context, 1, -1
     CGContextDrawImage context, imageRect, image
-    CGContextRestoreGState context
 
-    # radius = 11
-    # CGContextAddArc context, cx, 90 - 3 - radius, radius, 0, 2 * Math::PI, 0
-    # CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
-    # CGContextFillPath context
+    radius = 11
+    CGContextAddArc context, cx, radius + 3, radius, 0, 2 * Math::PI, 0
+    CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
+    CGContextFillPath context
 
-    # CGContextAddArc context, cx, 90 - 2 - radius, radius, 0, 2 * Math::PI, 0
-    # CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
-    # CGContextFillPath context
+    CGContextAddArc context, cx, radius + 2, radius, 0, 2 * Math::PI, 0
+    CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
+    CGContextFillPath context
 
     # Sitter name
     radius = 26
@@ -110,7 +108,7 @@ class SitterCircle < UIView
       text_width = string.sizeWithAttributes({}).width
       text_angle = text_width * 2 * Math::PI / (radius * 2 * Math::PI)
       # puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
-      next_angle = -Math::PI / 2 - text_angle / 2
+      next_angle = Math::PI / 2 - text_angle / 2
     end
     for i in 0...string.length
       # angle = -Math::PI / 2 + 11 * (i - string.length / 2) * Math::PI / 180
