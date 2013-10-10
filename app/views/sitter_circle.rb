@@ -7,15 +7,6 @@ class SitterCircle < UIView
     view
   end
 
-  # layout do
-  #   subview UILabel, text: 'ok', width: 100, height: 20, left: 0, top: 0
-  # end
-
-  # def initWithFrame(frame)
-  #     # subview UILabel, :square_label, :view_recommended
-  #   self
-  # end
-
   def drawRect(rect)
     context = UIGraphicsGetCurrentContext()
     CGContextTranslateCTM context, 0, rect.size.height
@@ -121,8 +112,7 @@ class SitterCircle < UIView
       end
       dx = radius * Math.cos(angle)
       dy = radius * Math.sin(angle)
-      xform = CGAffineTransformMakeRotation(angle + Math::PI / 2)
-      xform = CGAffineTransformScale(xform, 1, -1)
+      xform = CGAffineTransformMakeRotation(angle - Math::PI / 2)
       CGContextSetTextMatrix context, xform
       CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
     end
