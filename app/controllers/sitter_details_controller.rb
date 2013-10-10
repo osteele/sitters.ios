@@ -24,14 +24,17 @@ class SitterDetailsController < UIViewController
   end
 
   def renderTemplate(sitter)
-    path = NSBundle.mainBundle.pathForResource('sitter_details', ofType:'html')
-    @templateString ||= NSString.stringWithContentsOfFile(path ,encoding:NSUTF8StringEncoding, error:nil)
-    html = GRMustacheTemplate.renderObject(sitter, fromString:@templateString, error:nil)
+    @templatePath ||= NSBundle.mainBundle.pathForResource('sitter_details', ofType:'html')
+    @template ||= GRMustacheTemplate.templateFromContentsOfFile(@templatePath, error:nil)
+    html = @template.renderObject(sitter, error:nil)
     @webView.loadHTMLString html, baseURL:NSURL.fileURLWithPath(NSBundle.mainBundle.bundlePath)
+    @webView.alpha = 0 # so we don't first see the previuos sitter
   end
 
   def webViewDidFinishLoad(webView)
     webView.size = [webView.size.width, 1]
     webView.size = webView.sizeThatFits(CGSizeZero)
+    @webView.alpha = 1
+    # UIView.animateWithDuration 0.3, animations: lambda { @webView.alpha = 1 }
   end
 end
