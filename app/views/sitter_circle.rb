@@ -37,14 +37,22 @@ class SitterCircle < UIView
     image = CGImageCreateWithMask(sitter.image.CGImage, SitterCircle.maskImage)
     CGContextDrawImage context, imageRect, image
 
-    radius = 11
-    CGContextAddArc context, cx, radius + 3, radius, 0, 2 * Math::PI, 0
+    labelCircleRadius = 11
+    CGContextAddArc context, cx, labelCircleRadius + 3, labelCircleRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
     CGContextFillPath context
 
-    CGContextAddArc context, cx, radius + 2, radius, 0, 2 * Math::PI, 0
+    CGContextAddArc context, cx, labelCircleRadius + 2, labelCircleRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
+
+    if false
+      # CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
+      CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+      labelRect = CGRectMake(cx - 40, 0, cx + 40, 2 * labelCircleRadius)
+      # labelRect = CGRectMake(0, 0, 100, 100)
+      labelText.drawInRect labelRect, withFont:UIFont.fontWithName("HelveticaNeue", size:14) #, lineBreakMode:0
+    end
 
     # Sitter name
     radius = 26
