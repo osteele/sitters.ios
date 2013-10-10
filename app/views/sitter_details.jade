@@ -4,7 +4,7 @@ html
     meta(http-equiv="content-type", content="text/html; charset=UTF-8")
     link(rel="stylesheet", href="styles/sitter_details.css")
   body
-    h1 Kristen Morey
+    h1 {{ name }}
     #sitter_image
     #stars
       .star
@@ -12,7 +12,7 @@ html
       .star
       .star
       .star
-    #description Susie Morey’s 14-year-old sister. Currently a freshman at Palo Alto High School
+    #description {{ description }}
 
     #chat
     #phone
@@ -20,7 +20,7 @@ html
 
     section
       h2 Age
-      p 14 years
+      p {{ age }} years
     end
 
     section

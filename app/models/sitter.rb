@@ -38,6 +38,9 @@ class Sitter
     self.name.split[0]
   end
 
+  def description; @description; end
+  def age; @age; end
+
   def availableAt(timespan)
     @@formatter ||= NSDateFormatter.alloc.init.setDateFormat('E')
     day = @@formatter.stringFromDate(timespan.date)

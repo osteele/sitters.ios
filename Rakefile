@@ -32,6 +32,7 @@ Motion::Project::App.setup do |app|
   app.libs << libz unless app.libs.include?(libz)
 
   app.pods do
+    pod 'GRMustache'
     pod 'NSDate-Extensions'
   end
 

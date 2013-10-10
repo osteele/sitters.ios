@@ -62,9 +62,9 @@ class BookingController < UIViewController
   end
 
   def presentSitterDetails(sitter)
-    # @sitterDetailsController ||= SitterDetailsController.alloc.init
-    # @sitterDetailsController.sitter = sitter
-    # @navigationController.pushViewController @sitterDetailsController, animated:true
+    @sitterDetailsController ||= SitterDetailsController.alloc.init
+    @sitterDetailsController.sitter = sitter
+    @navigationController.pushViewController @sitterDetailsController, animated:true
   end
 
   def mySittersWillAppear
