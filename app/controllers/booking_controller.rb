@@ -1,4 +1,4 @@
-class SittersController < UIViewController
+class BookingController < UIViewController
   include BW::KVO
   stylesheet :sitters
 
@@ -52,7 +52,7 @@ class SittersController < UIViewController
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
   def presentAddSitterView
-    @addSitterController ||= AddSitterController.alloc.init
+    @addSitterController ||= SuggestedSittersController.alloc.init
     # @suggestedSitterListView ||= begin
     #   view = subview UIView, left: 320, top: 140, width: 320, height: 500 do
     #     back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor

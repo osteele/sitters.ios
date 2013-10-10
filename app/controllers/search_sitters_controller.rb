@@ -1,4 +1,4 @@
-class SearchController < UITableViewController
+class SearchSittersController < UITableViewController
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do

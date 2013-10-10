@@ -1,9 +1,11 @@
-class AddSitterController < UITableViewController
+class SuggestedSittersController < UITableViewController
   def viewDidLoad
     super
     view.separatorStyle = UITableViewCellSeparatorStyleNone
     @sitters = Sitter.suggested
   end
+
+  # def viewWillAppear(c1); puts 'SuggestedSittersController viewWillAppear'; end
 
   def numberOfSectionsInTableView(tableView)
     1

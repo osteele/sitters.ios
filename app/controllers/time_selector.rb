@@ -1,4 +1,4 @@
-class SittersController < UIViewController
+class BookingController < UIViewController
   private
   def createTimeSelector
     weekStartDay = NSDate.date.dateAtStartOfDay
@@ -143,6 +143,7 @@ class SittersController < UIViewController
       end
 
       @unshrinkTimeSelector = Proc.new do
+        return unless @timeSelectorSaved
         @timeSelectorView.frame = @timeSelectorSaved[:frame]
         hourRangeButton.frame = @timeSelectorSaved[:hourRangeFrame]
         tallSizeOnlyViews.each do |view| view.alpha = 1 end

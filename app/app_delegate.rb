@@ -8,7 +8,7 @@ class AppDelegate
       controller.viewControllers = tabControllers
     end
 
-    # window.rootViewController = AddSitterController.alloc.init
+    # window.rootViewController = SuggestedSittersController.alloc.init
     # window.rootViewController = SitterDetailsController.alloc.init
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
 
@@ -21,8 +21,8 @@ class AppDelegate
 
   def tabControllers
     [
-      SittersController.alloc.init,
-      SearchController.alloc.init,
+      BookingController.alloc.init,
+      SearchSittersController.alloc.init,
       UpdatesController.alloc.init,
       ChatController.alloc.init,
       SettingsController.alloc.initWithForm(SettingsController.form)
