@@ -155,7 +155,7 @@ class MySittersController < UIViewController
       for i in 0...7
         sitter = sitters[i]
         sitter.active = true
-        view = subview SitterCircle, origin: sitter_positions[i], dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
+        view = subview SitterCircle, dataSource: sitter, dataIndex: i, styleClass: 'sitter' do
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }
@@ -163,6 +163,7 @@ class MySittersController < UIViewController
         sitterViews << view
       end
     end
+    HexagonLayout.new.applyTo sitterViews
 
     observe(self, :selectedTimeSpan) do |_, timeSpan|
       UIView.animateWithDuration 0.3,
@@ -175,22 +176,6 @@ class MySittersController < UIViewController
       end
 
     return view
-  end
-
-  def sitter_positions
-    top = 0
-    left1 = 70
-    left2 = left1 - 48
-    width = 96
-    height = 84
-    [
-      [0, 0], [1, 0],
-      [0, 1], [1, 1], [2, 1],
-      [0, 2], [1, 2],
-    ].map do |x, y|
-      left = (if y == 1 then left2 else left1 end)
-      [left + x * width, top + y * height]
-    end
   end
 end
 

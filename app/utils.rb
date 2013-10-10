@@ -118,3 +118,31 @@ def addResizer(dragger, options={})
     end
   end
 end
+
+# Don't need the overhead of a UICollectionViewLayout and associated classes,
+# since there'too few cells for a flyweight and there's just the one fixed layout.
+class HexagonLayout
+  attr_accessor :cellWidth, :cellHeight, :leftMargin
+
+  def initialize
+    @cellWidth = 96
+    @cellHeight = 84
+    @leftMargin = 9
+  end
+
+  def applyTo(views)
+    views.each_with_index do |view, i|
+      view.origin = positionAt(i)
+    end
+  end
+
+  def positionAt(n)
+    cellsPerEvenRow = 2
+    cellsPerOddRow = cellsPerEvenRow + 1
+    cellsPerRowPair = cellsPerEvenRow + cellsPerOddRow
+    row, col, rowType = [2 * (n / cellsPerRowPair).floor, n % cellsPerRowPair, :even]
+    row, col, rowType = [row + 1, col - cellsPerEvenRow, :odd] if col >= cellsPerEvenRow
+    col += 0.5 if rowType == :even
+    [leftMargin + col * cellWidth, row * cellHeight]
+  end
+end
