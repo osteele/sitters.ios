@@ -102,6 +102,9 @@ class BookingController < UIViewController
       end
       tallSizeOnlyViews << hourRangeButton
 
+      staticHoursLabel = subview UILabel, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
+      shortSizeOnlyViews << staticHoursLabel
+
       # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
       hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
       hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
@@ -116,7 +119,8 @@ class BookingController < UIViewController
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + "-Bold", size:15), range:NSMakeRange(0, label.length)
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:8), range:NSMakeRange(label.length - 3, 1)
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:10), range:NSMakeRange(label.length - 2, 2)
-        hourRangeLabel.attributedText = string
+        hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
+        staticHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
       end
 
       timeSpanHoursUpdater = Debounced.new 0.5 do
@@ -136,7 +140,7 @@ class BookingController < UIViewController
           frame: timeSelectorView.frame,
           alphas: tallSizeOnlyViews.map { |v| [v, v.alpha] }
         }.tap do
-          timeSelectorView.frame = [[0, 64], [timeSelectorView.size.width, 40]] # height was 55
+          timeSelectorView.frame = [[0, 64], [timeSelectorView.size.width, 55]]
           tallSizeOnlyViews.each do |v| v.alpha = 0 end
           shortSizeOnlyViews.each do |v| v.alpha = 1 end
         end
@@ -148,7 +152,7 @@ class BookingController < UIViewController
         if values
           timeSelectorView.frame = values[:frame]
           values[:alphas].each do |v, alpha| v.alpha = alpha end
-          shortSizeOnlyViews.each do |v| view.alpha = 0 end
+          shortSizeOnlyViews.each do |v| v.alpha = 0 end
           @savedTimeSelectorValues = nil
         end
       end

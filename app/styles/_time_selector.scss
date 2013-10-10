@@ -3,6 +3,7 @@
   width: 320px;
   height: 120px;
   background-color: #5582C3;
+  // background-color: linear-gradient(#6FA1EB, #4E7EC2);
 
   label {
     color: white;
@@ -43,7 +44,8 @@
   button.hour_range {
     left: 10px;
     top: 75px;
-    border-radius: 1px;
+    background-color: white;
+    border-radius: 18px;
   }
 
   .hour_range {
@@ -75,11 +77,6 @@
         height: 15px;
       }
     }
-  }
-
-  button.hour_range {
-    background-color: white;
-    border-radius: 18px;
   }
 
   .hour_blob {

@@ -56,8 +56,6 @@ class BookingController < UIViewController
     # self.wantsFullScreenLayout = true
     # UIApplication.sharedApplication.setStatusBarHidden true
 
-    setTimeSelectorHeight :short
-
     UIView.animateWithDuration 0.3,
       animations: lambda { setTimeSelectorHeight :short },
       completion: lambda { |finished| @scrollView.contentOffset = CGPointZero }
@@ -103,10 +101,16 @@ class MySittersController < UIViewController
     addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
     subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
 
-    # observe self, :sitters do |old, new|
-    #   puts "sitters"
-    #   puts "#{sitters.length}"
+    # sittersObserver = NSObject.new
+    # class << sittersObserver
+    #   def observeValueForKeyPath(keyPath, ofObject:object, change:change, context:context)
+    #     puts "fired #{keyPath}"
+    #     puts "sitters"
+    #     puts "#{sitters.length}"
+    #   end
     # end
+    # addObserver sittersObserver, forKeyPath: 'sitters', options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld, context:nil
+
   end
 
   def viewWillAppear(animated)

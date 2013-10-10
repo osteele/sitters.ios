@@ -11,7 +11,7 @@ class SuggestedSittersController < UITableViewController
 
   def numberOfSectionsInTableView(tableView); 1; end
 
-  def tableView(tableView, heightForHeaderInSection:section); 55; end
+  def tableView(tableView, heightForHeaderInSection:section); 75; end
 
   # def tableView(tableView, viewForHeaderInSection:section)
   #   UIView.alloc.initWithFrame([[0, 140], [320, 55]])
