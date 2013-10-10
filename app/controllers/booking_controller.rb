@@ -30,7 +30,7 @@ class BookingController < UIViewController
     mySittersController = MySittersController.alloc.init
     mySittersController.outerController = self
     self.addChildViewController mySittersController
-    @currentSittersView = mySittersController.view
+    @mySittersView = mySittersController.view
 
     observe(self, :selectedTimeSpan) do mySittersController.selectedTimeSpan = selectedTimeSpan end
 
@@ -41,7 +41,6 @@ class BookingController < UIViewController
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
       subview @navigationController.view, size: [320, 700]
-      # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
 
     createTimeSelector
@@ -51,11 +50,18 @@ class BookingController < UIViewController
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
   def presentAddSitterView
+    # puts "presentAddSitterView"
     @suggestedSittersController ||= SuggestedSittersController.alloc.init
     @navigationController.pushViewController @suggestedSittersController, animated:true
     UIView.animateWithDuration 0.3, animations: lambda {
-     @shrinkTimeSelector.call
+      @shrinkTimeSelector.call
       @scrollView.contentOffset = CGPointZero
+    }
+  end
+
+  def mySittersWillAppear
+    UIView.animateWithDuration 0.3, animations: lambda {
+      @unshrinkTimeSelector.call if @unshrinkTimeSelector
     }
   end
 end
@@ -66,8 +72,6 @@ class MySittersController < UIViewController
   attr_accessor :outerController
   attr_accessor :selectedTimeSpan
   attr_accessor :sitters
-
-  # def viewWillAppear(c1); puts 'MySittersController viewWillAppear'; end
 
   layout do
     view.styleId = :sitters
@@ -95,6 +99,10 @@ class MySittersController < UIViewController
     #   puts "sitters"
     #   puts "#{sitters.length}"
     # end
+  end
+
+  def viewWillAppear(animated)
+    outerController.mySittersWillAppear if outerController
   end
 
   def createSitterAvatars

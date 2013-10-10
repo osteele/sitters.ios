@@ -131,6 +131,7 @@ class BookingController < UIViewController
       observe(hourRangeButton, :frame) do timeSpanHoursUpdater.fire! end
 
       @shrinkTimeSelector = Proc.new do
+        # puts "shrinking"
         @timeSelectorSaved = {
           frame: @timeSelectorView.frame,
           hourRangeColor: hourRangeButton.backgroundColor,
@@ -138,16 +139,18 @@ class BookingController < UIViewController
         }
         @timeSelectorView.origin = [0, 64]
         @timeSelectorView.size = [@timeSelectorView.size.width, 55]
+        # puts "resized to 55"
         tallSizeOnlyViews.each do |view| view.alpha = 0 end
         shortSizeOnlyViews.each do |view| view.alpha = 1 end
       end
 
       @unshrinkTimeSelector = Proc.new do
-        return unless @timeSelectorSaved
-        @timeSelectorView.frame = @timeSelectorSaved[:frame]
-        hourRangeButton.frame = @timeSelectorSaved[:hourRangeFrame]
-        tallSizeOnlyViews.each do |view| view.alpha = 1 end
-        shortSizeOnlyViews.each do |view| view.alpha = 0 end
+        if @timeSelectorSaved
+          @timeSelectorView.frame = @timeSelectorSaved[:frame]
+          hourRangeButton.frame = @timeSelectorSaved[:hourRangeFrame]
+          tallSizeOnlyViews.each do |view| view.alpha = 1 end
+          shortSizeOnlyViews.each do |view| view.alpha = 0 end
+        end
       end
     end
   end
