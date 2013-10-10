@@ -34,30 +34,39 @@ class SittersController < UIViewController
 
     observe(self, :selectedTimeSpan) do mySittersController.selectedTimeSpan = selectedTimeSpan end
 
-    # nav = UINavigationController.alloc.initWithRootViewController(mySittersController)
+    @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
+    @navigationController.delegate = self
     # mySittersController.view.frame = [[0, 140], [320, 700]]
     # nav.navigationItem.titleView.setHidden true
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      subview mySittersController.view
-      # subview nav.view
+      # subview mySittersController.view
+      subview @navigationController.view, size: [320, 700]
       # @currentSittersView.size = @currentSittersView.sizeThatFits(CGSizeZero)
     end
 
     createTimeSelector
   end
 
+  # def navigationController(c1, willShowViewController:c2, animated:f); puts 'navigationController'; end
+  # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
+
   def presentAddSitterView
     @addSitterController ||= AddSitterController.alloc.init
-    @suggestedSitterListView ||= begin
-      view = subview UIView, left: 320, top: 140, width: 320, height: 500 do
-        back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
-        back.when_tapped { returnFromAddSitterView }
-        list = subview @addSitterController.view
-        # list.when_tapped { presentSitterDetails }
-      end
-      view
-    end
+    # @suggestedSitterListView ||= begin
+    #   view = subview UIView, left: 320, top: 140, width: 320, height: 500 do
+    #     back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Sitters', color:UIColor.blueColor
+    #     back.when_tapped { returnFromAddSitterView }
+    #     list = subview @addSitterController.view
+    #     # list.when_tapped { presentSitterDetails }
+    #   end
+    #   view
+    # end
+    @navigationController.pushViewController @addSitterController, animated:true
+    UIView.animateWithDuration 0.3, animations: lambda { @shrinkTimeSelector.call }
+    @scrollView.contentOffset = CGPointZero
+    return
+
     @scrollView.insertSubview @suggestedSitterListView, belowSubview:@timeSelectorView
     UIView.animateWithDuration 0.3, animations: lambda {
       @currentSittersView.origin = [-320, @currentSittersView.origin.y]
@@ -68,6 +77,10 @@ class SittersController < UIViewController
   private
 
   def returnFromAddSitterView
+    @navigationController.popViewControllerAnimated true
+    UIView.animateWithDuration 0.3, animations: lambda { @unshrinkTimeSelector.call }
+    return
+
     @scrollView.insertSubview @currentSittersView, belowSubview:@timeSelectorView
     UIView.animateWithDuration 0.3, animations: lambda {
       @currentSittersView.origin = [0, @currentSittersView.origin.y]
@@ -77,13 +90,16 @@ class SittersController < UIViewController
 
   def presentSitterDetails
     @sitterDetailsController ||= SitterDetailsController.alloc.init
-    @sitterDetailsView ||= begin
-      view = subview UIView, left: 320, top: 140, width: 320, height: 800 do
-        back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Add Sitter', color:UIColor.blueColor
-        back.when_tapped { returnFromSitterDetailsView }
-        subview @sitterDetailsController.view
-      end
-    end
+    # @sitterDetailsView ||= begin
+    #   view = subview UIView, left: 320, top: 140, width: 320, height: 800 do
+    #     back = subview UILabel, left:0, top:0, width:320, height:20, text:' < Add Sitter', color:UIColor.blueColor
+    #     back.when_tapped { returnFromSitterDetailsView }
+    #     subview @sitterDetailsController.view
+    #   end
+    # end
+    @navigationController.pushViewController @sitterDetailsController, animated:true
+    return
+
     @scrollView.insertSubview @sitterDetailsView, belowSubview:@timeSelectorView
     UIView.animateWithDuration 0.3, animations: lambda {
       @suggestedSitterListView.origin = [-320, @suggestedSitterListView.origin.y]
@@ -104,6 +120,8 @@ class MySittersController < UIViewController
   stylesheet :sitters
   attr_accessor :outerController
   attr_accessor :selectedTimeSpan
+
+  # def viewWillAppear(c1); puts 'MySittersController viewWillAppear'; end
 
   layout do
     view.styleId = :sitters
@@ -141,9 +159,9 @@ class MySittersController < UIViewController
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }
+        # view.when_tapped { presentAddSitterView }
         sitterViews << view
       end
-      # view.when_tapped { presentAddSitterView }
     end
 
     observe(self, :selectedTimeSpan) do |_, timeSpan|
