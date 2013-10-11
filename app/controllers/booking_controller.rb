@@ -26,6 +26,7 @@ class BookingController < UIViewController
 
     mySittersController = MySittersController.alloc.init
     mySittersController.outerController = self
+    # mySittersController.title = 'Reserve'
     self.addChildViewController mySittersController
     @mySittersView = mySittersController.view
 
@@ -36,7 +37,7 @@ class BookingController < UIViewController
     # mySittersController.view.frame = [[0, 140], [320, 700]]
     # nav.navigationItem.titleView.setHidden true
 
-    subview @navigationController.view, size: [320, 700]
+    subview @navigationController.view #, size: [320, 700]
 
     createTimeSelector
   end
@@ -46,6 +47,7 @@ class BookingController < UIViewController
 
   def presentSuggestedSitters
     @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
+    # @suggestedSittersController.title = 'Recommended Sitters'
     @navigationController.pushViewController @suggestedSittersController, animated:true
     # self.wantsFullScreenLayout = true
     # UIApplication.sharedApplication.setStatusBarHidden true
@@ -57,6 +59,7 @@ class BookingController < UIViewController
   def presentSitterDetails(sitter)
     @sitterDetailsController ||= SitterDetailsController.alloc.init
     @sitterDetailsController.sitter = sitter
+    # @sitterDetailsController.title = sitter.name
     @navigationController.pushViewController @sitterDetailsController, animated:true
   end
 
@@ -91,7 +94,7 @@ class MySittersController < UIViewController
       label = subview UILabel, text: 'View Recommended'
       label.when_tapped { outerController.presentSuggestedSitters }
       caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters"
-      caption.when_tapped { puts '2 outerController.presentSuggestedSitters'; outerController.presentSuggestedSitters }
+      caption.when_tapped { outerController.presentSuggestedSitters }
     end
     # viewRecommended.when_tapped { '2 outerController.presentSuggestedSitters' }
 
