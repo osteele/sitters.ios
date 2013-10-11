@@ -126,10 +126,10 @@ class MySittersController < UIViewController
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
-    view = subview UIView, styleId: :avatars, origin: [0, 88], size: [300, 300] do
+    view = subview UIView, styleId: :avatars, origin: [0, 88], size: [320, 300] do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, sitter: sitter, styleClass: 'sitter' do
+        view = subview SitterCircleView, sitter: sitter, styleClass: :sitter do
           subview UILabel, text: (i+1).to_s
         end
         # view.when_tapped { puts 'tap sitter' }

@@ -17,6 +17,14 @@ class Update
     ]
   end
 
+  def self.unread
+    @unread ||= self.all[0...3]
+  end
+
+  def self.clear
+    @unread = []
+  end
+
   def initialize(contact, description, timestamp)
     self.contact = contact
     self.description = description

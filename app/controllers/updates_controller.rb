@@ -1,17 +1,23 @@
 class UpdatesController < UITableViewController
   def initWithNibName(name, bundle:bundle)
     super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Updates', image:UIImage.imageNamed('updates.png'), tag:3)
-    end
+    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Updates', image:UIImage.imageNamed('updates.png'), tag:3)
+    self.tabBarItem.badgeValue = Update.unread.length.to_s
+    self
+  end
+
+  def viewDidAppear(animated)
+    super.viewDidAppear(animated)
+    Update.clear
+    self.tabBarItem.badgeValue = nil
   end
 
   def tableView(tableView, heightForHeaderInSection:section); 52; end
   def numberOfSectionsInTableView(tableView); 1; end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    @sitters ||= Update.all
-    @sitters.length
+    @updates ||= Update.all
+    @updates.length
   end
 
   IMAGE_TAG = 1
