@@ -7,12 +7,14 @@ class SitterCircleView < UIView
   end
 
   def drawRect(rect)
+    bounds = CGRectMake(0, 0, self.size.width, self.size.height)
+
     context = UIGraphicsGetCurrentContext()
-    CGContextTranslateCTM context, 0, rect.size.height
+    CGContextTranslateCTM context, 0, bounds.size.height
     CGContextScaleCTM context, 1, -1
 
     # Outer circle: fill and frame
-    radius = cx = cy = rect.size.width / 2
+    radius = cx = cy = bounds.size.width / 2
     radius -= 1
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
@@ -25,7 +27,7 @@ class SitterCircleView < UIView
     # Inner circle: fill and frame
     radius -= 10
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
-    CGContextSetFillColorWithColor context, "#A6A6A6".uicolor.CGColor
+    CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
     CGContextFillPath context
 
     CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
@@ -33,7 +35,7 @@ class SitterCircleView < UIView
     CGContextStrokePath context
 
     ringWidth = 10
-    imageRect = CGRectMake(ringWidth, ringWidth, rect.size.width - 2 * ringWidth, rect.size.height - 2 * ringWidth)
+    imageRect = CGRectMake(ringWidth, ringWidth, bounds.size.width - 2 * ringWidth, bounds.size.height - 2 * ringWidth)
     CGContextDrawImage context, imageRect, sitterImage
 
     labelCircleRadius = 11
