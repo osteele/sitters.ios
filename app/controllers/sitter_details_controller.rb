@@ -9,7 +9,7 @@ class SitterDetailsController < UIViewController
     @webView = subview UIWebView, origin: [0, 120], size: [320, 800], delegate: self
     renderTemplate(sitter) if sitter
 
-    subview UILabel, styleId: :footer, text: 'Add to My Seven Sitters'
+    # subview UILabel, styleId: :footer, text: 'Add to My Seven Sitters'
   end
 
   def sitter=(sitter)

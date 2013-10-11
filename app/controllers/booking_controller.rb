@@ -35,9 +35,8 @@ class BookingController < UIViewController
     @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
     @navigationController.delegate = self
     # mySittersController.view.frame = [[0, 140], [320, 700]]
-    # nav.navigationItem.titleView.setHidden true
 
-    subview @navigationController.view #, size: [320, 700]
+    subview @navigationController.view, size: [320, 1000]
 
     createTimeSelector
   end
@@ -78,7 +77,7 @@ class MySittersController < UIViewController
   def viewDidLoad
     super
 
-    fudge = 70
+    fudge = 10
     @scrollView.frame = self.view.bounds
     @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
   end
@@ -88,36 +87,36 @@ class MySittersController < UIViewController
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
 
-    createSitterAvatars
+      createSitterAvatars
 
-    viewRecommended = subview UIButton, styleId: :recommended, styleClass: :big_button do
-      label = subview UILabel, text: 'View Recommended'
-      label.when_tapped { outerController.presentSuggestedSitters }
-      caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters"
-      caption.when_tapped { outerController.presentSuggestedSitters }
-    end
-    # viewRecommended.when_tapped { '2 outerController.presentSuggestedSitters' }
+      viewRecommended = subview UIButton, styleId: :recommended, styleClass: :big_button do
+        label = subview UILabel, text: 'View Recommended'
+        label.when_tapped { outerController.presentSuggestedSitters }
+        caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters"
+        caption.when_tapped { outerController.presentSuggestedSitters }
+      end
+      # viewRecommended.when_tapped { '2 outerController.presentSuggestedSitters' }
 
-    subview UIButton, styleId: :invite, styleClass: :big_button do
-      subview UILabel, text: 'Invite a Sitter'
-      subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
-    end
+      subview UIButton, styleId: :invite, styleClass: :big_button do
+        subview UILabel, text: 'Invite a Sitter'
+        subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
+      end
 
-    sitterCount = 2
-    toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
-    addSittersLabel = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
-    addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
-    subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+      sitterCount = 2
+      toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
+      addSittersLabel = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
+      addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
+      subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
 
-    # sittersObserver = NSObject.new
-    # class << sittersObserver
-    #   def observeValueForKeyPath(keyPath, ofObject:object, change:change, context:context)
-    #     puts "fired #{keyPath}"
-    #     puts "sitters"
-    #     puts "#{sitters.length}"
-    #   end
-    # end
-    # addObserver sittersObserver, forKeyPath: 'sitters', options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld, context:nil
+      # sittersObserver = NSObject.new
+      # class << sittersObserver
+      #   def observeValueForKeyPath(keyPath, ofObject:object, change:change, context:context)
+      #     puts "fired #{keyPath}"
+      #     puts "sitters"
+      #     puts "#{sitters.length}"
+      #   end
+      # end
+      # addObserver sittersObserver, forKeyPath: 'sitters', options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld, context:nil
 
     end
 
