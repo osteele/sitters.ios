@@ -1,7 +1,11 @@
 source 'https://rubygems.org'
-# ruby '2.0.0'
 # ruby-gemset=sitters
 
+# build
+gem 'dotenv'
+gem 'motion-cocoapods'
+
+# foundation
 gem 'teacup'
 gem 'bubble-wrap'
 gem 'sugarcube', :require => [
@@ -9,7 +13,7 @@ gem 'sugarcube', :require => [
   'sugarcube-repl',
 ]
 gem 'motion-pixate'
-gem 'motion-cocoapods'
+
+# domains
 gem 'formotion'
 gem 'motion-settings-bundle'
-gem 'dotenv'
