@@ -51,8 +51,7 @@ class BookingController < UIViewController
     # self.wantsFullScreenLayout = true
     # UIApplication.sharedApplication.setStatusBarHidden true
 
-    UIView.animateWithDuration 0.3,
-      animations: lambda { setTimeSelectorHeight :short }
+    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
   end
 
   def presentSitterDetails(sitter)
@@ -89,15 +88,13 @@ class MySittersController < UIViewController
 
       createSitterAvatars
 
-      viewRecommended = subview UIButton, styleId: :recommended, styleClass: :big_button do
-        label = subview UILabel, text: 'View Recommended'
-        label.when_tapped { outerController.presentSuggestedSitters }
-        caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters"
-        caption.when_tapped { outerController.presentSuggestedSitters }
+      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :big_button, styleId: :recommended, styleClass: :big_button do
+        label = subview UILabel, text: 'View Recommended', userInteractionEnabled: false
+        caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters", userInteractionEnabled: false
       end
-      # viewRecommended.when_tapped { '2 outerController.presentSuggestedSitters' }
+      viewRecommended.when_tapped { outerController.presentSuggestedSitters }
 
-      subview UIButton, styleId: :invite, styleClass: :big_button do
+      subview UIButton.buttonWithType(UIButtonTypeRoundedRect), styleId: :invite, styleClass: :big_button do
         subview UILabel, text: 'Invite a Sitter'
         subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
       end
@@ -157,6 +154,9 @@ class MySittersController < UIViewController
 end
 
 Teacup::Stylesheet.new :sitters do
+  # style :big_button,
+    # : UIButton
+
   style :right_dragger,
     left: '100%-20',
     top: 0,
