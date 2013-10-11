@@ -9,6 +9,7 @@ Install these:
 - `brew install npm`
 - `npm install`
 - `bundle install`
+- `rake pod:install`
 
 Download the TestFlight SDK into `./vendor`. It should be called `./vendor/TestFlight`:
 
