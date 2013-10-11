@@ -13,9 +13,6 @@ class BookingController < UIViewController
 
   def viewDidLoad
     super
-    fudge = 70
-    @scrollView.frame = self.view.bounds
-    @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
 
     self.view.stylesheet = :sitters
     self.view.stylename = :sitters
@@ -39,9 +36,7 @@ class BookingController < UIViewController
     # mySittersController.view.frame = [[0, 140], [320, 700]]
     # nav.navigationItem.titleView.setHidden true
 
-    @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-      subview @navigationController.view, size: [320, 700]
-    end
+    subview @navigationController.view, size: [320, 700]
 
     createTimeSelector
   end
@@ -50,15 +45,13 @@ class BookingController < UIViewController
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
   def presentSuggestedSitters
-    # puts "presentSuggestedSitters"
     @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
     @navigationController.pushViewController @suggestedSittersController, animated:true
     # self.wantsFullScreenLayout = true
     # UIApplication.sharedApplication.setStatusBarHidden true
 
     UIView.animateWithDuration 0.3,
-      animations: lambda { setTimeSelectorHeight :short },
-      completion: lambda { |finished| @scrollView.contentOffset = CGPointZero }
+      animations: lambda { setTimeSelectorHeight :short }
   end
 
   def presentSitterDetails(sitter)
@@ -79,16 +72,28 @@ class MySittersController < UIViewController
   attr_accessor :selectedTimeSpan
   attr_accessor :sitters
 
+  def viewDidLoad
+    super
+
+    fudge = 70
+    @scrollView.frame = self.view.bounds
+    @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
+  end
+
   layout do
     view.styleId = :sitters
 
+    @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
+
     createSitterAvatars
 
-    subview UIButton, styleId: :recommended, styleClass: :big_button do
+    viewRecommended = subview UIButton, styleId: :recommended, styleClass: :big_button do
       label = subview UILabel, text: 'View Recommended'
       label.when_tapped { outerController.presentSuggestedSitters }
-      subview UILabel, styleClass: :caption, text: '14 connected sitters'
+      caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters"
+      caption.when_tapped { puts '2 outerController.presentSuggestedSitters'; outerController.presentSuggestedSitters }
     end
+    # viewRecommended.when_tapped { '2 outerController.presentSuggestedSitters' }
 
     subview UIButton, styleId: :invite, styleClass: :big_button do
       subview UILabel, text: 'Invite a Sitter'
@@ -111,6 +116,8 @@ class MySittersController < UIViewController
     # end
     # addObserver sittersObserver, forKeyPath: 'sitters', options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld, context:nil
 
+    end
+
   end
 
   def viewWillAppear(animated)
@@ -120,7 +127,7 @@ class MySittersController < UIViewController
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
-    view = subview UIView, styleId: :avatars, left: 10, top: 150, width: 300, height: 300 do
+    view = subview UIView, styleId: :avatars, origin: [0, 88], size: [300, 300] do
       for i in 0...7
         sitter = sitters[i]
         view = subview SitterCircle, sitter: sitter, styleClass: 'sitter' do

@@ -127,7 +127,7 @@ class HexagonLayout
   def initialize
     @cellWidth = 96
     @cellHeight = 84
-    @leftMargin = 9
+    @leftMargin = 19
   end
 
   def applyTo(views)
