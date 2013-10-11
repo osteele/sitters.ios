@@ -1,4 +1,4 @@
-class SitterCircle < UIView
+class SitterCircleView < UIView
   attr_accessor :sitter
 
   def self.new
@@ -34,8 +34,7 @@ class SitterCircle < UIView
 
     ringWidth = 10
     imageRect = CGRectMake(ringWidth, ringWidth, rect.size.width - 2 * ringWidth, rect.size.height - 2 * ringWidth)
-    image = CGImageCreateWithMask(sitter.image.CGImage, SitterCircle.maskImage)
-    CGContextDrawImage context, imageRect, image
+    CGContextDrawImage context, imageRect, sitterImage
 
     labelCircleRadius = 11
     CGContextAddArc context, cx, labelCircleRadius + 3, labelCircleRadius, 0, 2 * Math::PI, 0
@@ -124,6 +123,16 @@ class SitterCircle < UIView
       CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
     end
   end
+
+  def sitterImage
+    SitterCircleView.sitterImage(sitter)
+  end
+
+  def self.sitterImage(sitter)
+    CGImageCreateWithMask(sitter.image.CGImage, SitterCircleView.maskImage)
+  end
+
+  private
 
   def self.maskImage
     @maskImage ||= begin

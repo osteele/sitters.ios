@@ -53,8 +53,7 @@ class Sitter
   end
 
   def maskedImage
-    cgImage = CGImageCreateWithMask(self.image.CGImage, SitterCircle.maskImage)
-    return UIImage.imageWithCGImage(cgImage)
+    UIImage.imageWithCGImage(SitterCircleView.sitterImage(self))
   end
 
   def self.json
