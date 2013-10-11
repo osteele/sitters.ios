@@ -30,4 +30,8 @@ class Update
     self.description = description
     self.timestamp = timestamp
   end
+
+  def today?
+    self.timestamp =~ /[AP]M$/
+  end
 end

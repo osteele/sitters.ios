@@ -46,7 +46,10 @@ class UpdatesController < UITableViewController
 
     # cell.viewWithTag(IMAGE_TAG).image = update.maskedImage
     cell.viewWithTag(TITLE_TAG).text = update.contact
+    cell.viewWithTag(TITLE_TAG).font = UIFont.fontWithName("HelveticaNeue", size:14)
+    cell.viewWithTag(TITLE_TAG).font = UIFont.fontWithName("HelveticaNeue-Bold", size:14) if update.today?
     cell.viewWithTag(DESCRIPTION_TAG).text = update.description
+    cell.viewWithTag(TIMESTAMP_TAG).textColor = update.today? ? UIColor.blackColor : UIColor.grayColor
     cell.viewWithTag(TIMESTAMP_TAG).text = update.timestamp
     cell
   end
