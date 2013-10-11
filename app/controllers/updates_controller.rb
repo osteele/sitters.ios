@@ -1,13 +1,15 @@
 class UpdatesController < UITableViewController
   def initWithNibName(name, bundle:bundle)
     super
-    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Updates', image:UIImage.imageNamed('updates.png'), tag:3)
+    image = UIImage.imageNamed('tabs/updates.png')
+    image = UIImage.imageWithCGImage(image.CGImage, scale:2, orientation:UIImageOrientationUp)
+    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Updates', image:image, tag:3)
     self.tabBarItem.badgeValue = Update.unread.length.to_s
     self
   end
 
   def viewDidAppear(animated)
-    super.viewDidAppear(animated)
+    super
     Update.clear
     self.tabBarItem.badgeValue = nil
   end
