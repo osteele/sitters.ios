@@ -39,73 +39,66 @@ class Debounced
 end
 
 def addDragger(dragger, options={})
-  # class << dragger
-  #   def target; self.superview; end
-
-  #   def touchesBegan(touches, withEvent:event)
-  #     @initialOrigin = target.origin
-  #     @initialTouchPoint = touches.anyObject.locationInView(target.superview)
-  #   end
-
-  #   def touchesMoved(touches, withEvent:event)
-  #     touchPoint = touches.anyObject.locationInView(target.superview)
-  #     offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
-  #     target.origin = [[0, @initialOrigin.x + offset.x].max, target.origin.y]
-  #   end
-  # end
-  # return
-
   target = dragger.superview
-  initial = nil
+  initialPosition = nil
+  animator = nil
+  attachment = nil
   dragger.userInteractionEnabled = true
   dragger.when_panned do |recognizer|
     pt = recognizer.translationInView(target.superview)
+
     case recognizer.state
     when UIGestureRecognizerStateBegan
-      initial = target.origin
+      initialPosition = target.origin
+
+      animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
+      animator.removeAllBehaviors
+
+      # attachment ||= UIAttachmentBehavior.alloc.initWithItem(target, attachedToAnchor:[pt.x + target.size.width / 2, pt.y + target.size.height / 2])
+      # animator.addBehavior(attachment)
+      # collision = UICollisionBehavior.alloc.initWithItems []
+      # collision.addBoundaryWithIdentifier(:leftWall, fromPoint: [50, 0], toPoint: [50, 1000])
+      # animator.addBehavior(collision)
+
     when UIGestureRecognizerStateChanged
-      target.origin = [[initial.x + pt.x, options[:min] || 0].max, target.origin.y]
+      # center = [[initialPosition.x + pt.x, options[:min] || 0].max, target.origin.y]
+      # center[0] += target.size.width / 2
+      # center[1] += target.size.height / 2
+      # attachment.anchorPoint = center
+      target.origin = [[initialPosition.x + pt.x, options[:min] || 0].max, target.origin.y]
+
     when UIGestureRecognizerStateEnded
       min = options[:min] || 0
       factor = options[:factor] || 1
       x = ((target.origin.x - min) / factor).round * factor + min
-      UIView.animateWithDuration 0.1,
-        animations: lambda {
-          target.origin = [[x, options[:min] || 0].max, target.origin.y]
-        }
+
+      center = [[x, options[:min] || 0].max, target.origin.y]
+      center[0] += target.size.width / 2
+      center[1] += target.size.height / 2
+      snapBehavior = UISnapBehavior.alloc.initWithItem(target, snapToPoint:center)
+      animator.removeAllBehaviors
+      animator.addBehavior(snapBehavior)
+
+      # UIView.animateWithDuration 0.1,
+      #   animations: lambda {
+      #     target.origin = [[x, options[:min] || 0].max, target.origin.y]
+      #   }
     end
   end
 end
 
 def addResizer(dragger, options={})
-  # class << dragger
-  #   def target; self.superview; end
-
-  #   def touchesBegan(touches, withEvent:event)
-  #     @initialSize = target.size
-  #     @initialTouchPoint = touches.anyObject.locationInView(target.superview)
-  #   end
-
-  #   def touchesMoved(touches, withEvent:event)
-  #     touchPoint = touches.anyObject.locationInView(target.superview)
-  #     offset = CGPoint.new(touchPoint.x - @initialTouchPoint.x, touchPoint.y - @initialTouchPoint.y)
-  #     target.size = [[@initialSize.width + offset.x, 100].max, target.size.height]
-  #     self.origin = [target.size.width - self.size.width, self.origin.y]
-  #   end
-  # end
-  # return
-
-  dragger.userInteractionEnabled = true
   target = dragger.superview
-  initial = nil
+  initialSize = nil
   fudge = 21
+  dragger.userInteractionEnabled = true
   dragger.when_panned do |recognizer|
     pt = recognizer.translationInView(target.superview)
     case recognizer.state
     when UIGestureRecognizerStateBegan
-      initial = target.size
+      initialSize = target.size
     when UIGestureRecognizerStateChanged
-      target.size = [[initial.width + pt.x, options[:minWidth] || 0].max, target.size.height]
+      target.size = [[initialSize.width + pt.x, options[:minWidth] || 0].max, target.size.height]
       dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
     when UIGestureRecognizerStateEnded
       factor = options[:factor] || 1
