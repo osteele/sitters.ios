@@ -14,14 +14,12 @@ html {
 #sitter_image {
   position: absolute;
   left: 16px;
-  top: 14px;
+  top: 12px;
   background: url('../sitters/kristen.png');
-  background-size: 52px;
-  width: 52px;
-  height: 52px;
-  // -moz-border-radius: 52px;
-  -webkit-border-radius: 52px;
-  // border-radius: 52px;
+  background-size: 54px 54px;
+  width: 54px;
+  height: 54px;
+  -webkit-border-radius: 27px;
 }
 
 #video-thumbnail {
@@ -37,7 +35,7 @@ html {
 
 #stars {
   position: absolute;
-  left: 80px;
+  left: 77px;
   top: 44px;
 
   .star {

@@ -8,13 +8,6 @@ class SitterDetailsController < UIViewController
     @webView = subview UIWebView, origin: [0, 120], size: [320, 800], delegate: self
     renderTemplate(sitter) if sitter
 
-    subview UIView, styleId: :header do
-      dateFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEE, MMMM d')
-      dateText = dateFormatter.stringFromDate(NSDate.date.dateAtStartOfDay)
-      subview UILabel, styleClass: :date, text: dateText
-      subview UILabel, styleClass: :hours, text: '6:00–9:00 PM'
-    end
-
     subview UILabel, styleId: :footer, text: 'Add to My Seven Sitters'
   end
 

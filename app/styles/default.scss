@@ -1,19 +1,24 @@
 #sitters {
   background-color: #F9F9F9;
-  // background-color: red;
   font-family: "Helvetica Neue";
 }
 
 scroll-view {
   background-color: #F9F9F9;
-  // background-color: red;
   font-family: "Helvetica Neue";
 }
 
 #sitters {
   // background-color: #F9F9F9;
-  // background-color: red;
   // font-family: "Helvetica Neue";
   @import "time_selector";
   @import "sitters";
 }
+
+// #sitter_details {
+//   #footer {
+//     width: 640px;
+//     height: 80px;
+//     background: red;
+//   }
+// }
