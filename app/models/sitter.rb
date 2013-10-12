@@ -49,7 +49,7 @@ class Sitter
   end
 
   def image
-    @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.png")
+    @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.jpg")
   end
 
   def maskedImage
