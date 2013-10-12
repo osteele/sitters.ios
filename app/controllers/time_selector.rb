@@ -98,7 +98,7 @@ class BookingController < UIViewController
         end
 
         addDragger leftDragHandle, min: firstHourOffset, factor: hourWidth / 2
-        addResizer rightDragHandle, minWidth: minHours * hourWidth, factor: hourWidth / 2
+        addResizer rightDragHandle, minWidth: (minHours + 0.5) * hourWidth, factor: hourWidth / 2
       end
       hourRangeButton.layer.cornerRadius = 17
       hourRangeButton.layer.shadowRadius = 3
