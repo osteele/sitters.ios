@@ -10,7 +10,7 @@ class Sitter
       new("Kayla"),
       new("Kristen Morey"),
       new("Amy Gino"),
-      new("Michelle Schaffer"),
+      new("Michelle Shaffer"),
       new("Maggie McConnell"),
       new("Gina Marelli"),
       new("Gwen Stephenson"),

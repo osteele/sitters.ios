@@ -8,6 +8,12 @@ class UpdatesController < UITableViewController
     self
   end
 
+  def viewDidLoad
+    super
+    view.separatorStyle = UITableViewCellSeparatorStyleNone
+    @items ||= Update.all
+  end
+
   def viewDidAppear(animated)
     super
     Update.clear
@@ -18,8 +24,7 @@ class UpdatesController < UITableViewController
   def numberOfSectionsInTableView(tableView); 1; end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    @updates ||= Update.all
-    @updates.length
+    @items.length
   end
 
   IMAGE_TAG = 1
@@ -34,7 +39,7 @@ class UpdatesController < UITableViewController
     unless cell
       cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
       layout cell.contentView do
-        subview UIImageView, tag: IMAGE_TAG, width: 47, height: 47, left: 10, top: 5
+        subview UIImageView, tag: IMAGE_TAG, width: 44, height: 44, left: 10, top: 0
         subview UILabel, tag: TITLE_TAG, width: 255, height: 40, left: 65, top: -3, textColor: 0x5988C4.uicolor
         subview UILabel, tag: DESCRIPTION_TAG, width: 255, height: 40, left: 65, top: 14, font: UIFont.fontWithName(fontName, size:14)
         subview UILabel, tag: TIMESTAMP_TAG, width: 200, height: 40, left: 110, top: -3,
@@ -42,9 +47,9 @@ class UpdatesController < UITableViewController
       end
     end
 
-    update = Update.all[indexPath.row]
+    update = @items[indexPath.row]
 
-    # cell.viewWithTag(IMAGE_TAG).image = update.maskedImage
+    cell.viewWithTag(IMAGE_TAG).image = update.image
     cell.viewWithTag(TITLE_TAG).text = update.contact
     cell.viewWithTag(TITLE_TAG).font = UIFont.fontWithName("HelveticaNeue", size:14)
     cell.viewWithTag(TITLE_TAG).font = UIFont.fontWithName("HelveticaNeue-Bold", size:14) if update.today?
