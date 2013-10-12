@@ -1,25 +1,47 @@
 body {
   background: blue;
-  font-family: "Helvetica Neue";
+  font-family: "Helvetica Neue", "HelveticaNeue";
+  padding: 0;
+  margin: 0;
 }
 
 html {
   background-color: #F9F9F9;
   font-family: "Helvetica Neue";
-  margin-left: 16px;
-  margin-top: 14px;
-  // padding-top: 15px;
+  padding: 0;
+  margin: 15px;
 }
 
 #sitter_image {
-  position: absolute;
-  left: 16px;
-  top: 12px;
+  float: left;
+  margin-right: 10px;
   background: url('../sitters/kristen.png');
+  // background: gray;
   background-size: 54px 54px;
   width: 54px;
   height: 54px;
   -webkit-border-radius: 27px;
+}
+
+h1 {
+  font-size: 20px;
+  padding-top: 6px;
+  padding-bottom: 35px;
+  // background: linear-gradient(90deg, rgba(0,0,0,0), #F9F9F9);
+}
+
+#stars {
+  position: absolute;
+  left: 77px;
+  top: 45px;
+
+  .star {
+    width: 19px;
+    height: 18px;
+    display: inline-block;
+    background: url('../images/star.png');
+    background-size: 19px 18px;
+  }
 }
 
 #video-thumbnail {
@@ -33,27 +55,13 @@ html {
   background-size: 167px 111px;
 }
 
-#stars {
-  position: absolute;
-  left: 77px;
-  top: 44px;
-
-  .star {
-    width: 19px;
-    height: 18px;
-    display: inline-block;
-    background: url('../images/star.png');
-    background-size: 19px 18px;
-  }
-}
-
 #chat {
   position: absolute;
   left: 230px;
   top: 22px;
   width: 27px;
   height: 27px;
-  // background: url('../images/chat.png');
+  background: url('../images/chat.png');
   background-size: 27px 27px;
 }
 
@@ -63,31 +71,21 @@ html {
   top: 22px;
   width: 27px;
   height: 27px;
-  // background: url('../images/phone.png');
+  background: url('../images/phone.png');
   background-size: 27px 27px;
-}
-
-h1 {
-  margin-top: 0;
-  padding-top: 0;
-  position: relative;
-  top: -6px;
-  margin-left: 52px;
-  font-size: 20px;
 }
 
 #description {
   font-size: 12px;
-  margin-bottom: 20px;
-  position: relative;
-  top: 14px;
 }
 
 section {
-  border-top: 1px solid lightGray;
+  border-top: 1px solid #ddd;
+  margin-top: 14px;
+  padding-top: 8px;
 
-  h2 { color: #4C7EBF; font-size: 14px; }
-  p { font-size: 17px; }
+  h2 { color: #4C7EBF; font-size: 14px; font-weight: normal; margin-bottom: 10px; }
+  p { font-size: 14px; font-weight: normal; line-height: 1.45; }
 }
 
 .endorse {

@@ -19,6 +19,7 @@ vendor
 node_modules
 resources/default.css
 resources/Settings.bundle
-resources/sitter_details.html
-
+resources/styles/sitter_details.css
 .env
+
+resources/sitter_details.html
