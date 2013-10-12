@@ -9,7 +9,7 @@ class AppDelegate
     end
 
     # window.rootViewController = SuggestedSittersController.alloc.init
-    # window.rootViewController = SitterDetailsController.alloc.init
+    # window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
 
     window.styleMode = PXStylingNormal

@@ -6,8 +6,8 @@ class SitterDetailsController < UIViewController
     view.backgroundColor = 0xF9F9F9.uicolor
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
-    @webView = subview UIWebView, origin: [0, 120], size: [320, 800], delegate: self
-    renderTemplate(sitter) if sitter
+    @webView = subview UIWebView, delegate: self, frame: view.frame
+    renderTemplate sitter if sitter
 
     # subview UILabel, styleId: :footer, text: 'Add to My Seven Sitters'
   end
@@ -15,7 +15,7 @@ class SitterDetailsController < UIViewController
   def sitter=(sitter)
     @sitter = sitter
     @webView.alpha = 0 if @webView # so we don't first see the previous sitter
-    renderTemplate(sitter) if @webView
+    renderTemplate sitter if @webView
   end
 
   def renderTemplate(sitter)
@@ -26,9 +26,12 @@ class SitterDetailsController < UIViewController
   end
 
   def webViewDidFinishLoad(webView)
-    webView.size = [webView.size.width, 1]
-    webView.size = webView.sizeThatFits(CGSizeZero)
+    headerHeight = 55
+    view.size = webView.size
+    webView.frame = view.frame
+    webView.origin = [webView.origin.x, headerHeight]
+    webView.size = [webView.size.width, webView.size.height - 2 * headerHeight]
+
     webView.alpha = 1
-    # UIView.animateWithDuration 0.3, animations: lambda { @webView.alpha = 1 }
   end
 end
