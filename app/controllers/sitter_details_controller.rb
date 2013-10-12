@@ -1,9 +1,15 @@
 class SitterDetailsController < UIViewController
   attr_accessor :sitter
+  attr_accessor :headerHeight
 
   layout do
+    self.headerHeight = 55
+
     view.styleId = :sitter_details
     view.backgroundColor = 0xF9F9F9.uicolor
+
+    view.top = headerHeight
+    view.height -= headerHeight * 2
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
     @webView = subview UIWebView, delegate: self, frame: view.frame
@@ -26,11 +32,8 @@ class SitterDetailsController < UIViewController
   end
 
   def webViewDidFinishLoad(webView)
-    headerHeight = 55
-    view.size = webView.size
-    webView.frame = view.frame
-    webView.origin = [webView.origin.x, headerHeight]
-    webView.size = [webView.size.width, webView.size.height - 2 * headerHeight]
+    view.frame = webView.frame
+    view.top = headerHeight
 
     webView.alpha = 1
   end
