@@ -19,7 +19,7 @@ class Sitter
   end
 
   def self.added
-    @added ||= self.all[0...7]
+    @added ||= self.all[0...6]
   end
 
   def self.suggested
@@ -42,9 +42,9 @@ class Sitter
   def age; @age; end
 
   def availableAt(timespan)
-    @@formatter ||= NSDateFormatter.alloc.init.setDateFormat('E')
-    day = @@formatter.stringFromDate(timespan.date)
-    return false unless hours = @hours[day]
+    @@hoursAvailableDateKey ||= NSDateFormatter.alloc.init.setDateFormat('E')
+    day = @@hoursAvailableDateKey.stringFromDate(timespan.date)
+    hours = @hours[day] || []
     return hours.any? { |startHour, endHour| startHour <= timespan.startHour and timespan.endHour <= endHour }
   end
 
@@ -53,7 +53,7 @@ class Sitter
   end
 
   def maskedImage
-    UIImage.imageWithCGImage(SitterCircleView.sitterImage(self))
+    @maskedImage ||= UIImage.imageWithCGImage(SitterCircleView.sitterImage(self))
   end
 
   def self.json
