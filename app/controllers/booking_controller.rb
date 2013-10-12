@@ -132,6 +132,9 @@ class MySittersController < UIViewController
         view = subview SitterCircleView, sitter: sitter, styleClass: :sitter do
           subview UILabel, text: (i+1).to_s
         end
+        view.layer.shadowRadius = 0.5
+        view.layer.shadowOffset = [0, 0.5]
+        view.layer.shadowOpacity = 0.25
         # view.when_tapped { puts 'tap sitter' }
         # view.when_tapped { presentSuggestedSitters }
         sitterViews << view
