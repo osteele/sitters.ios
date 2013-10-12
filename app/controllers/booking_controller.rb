@@ -157,6 +157,11 @@ Teacup::Stylesheet.new :sitters do
   # style :big_button,
     # : UIButton
 
+  style :hours_bar,
+    backgroundColor: UIColor.whiteColor,
+    left: 10,
+    top: 75;
+
   style :right_dragger,
     left: '100%-20',
     top: 0,

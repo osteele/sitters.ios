@@ -86,7 +86,7 @@ class BookingController < UIViewController
       minHours = 1.5
       hourRangeLabel = nil
       leftDragHandle = rightDragHandle = nil
-      hourRangeButton = subview UIButton, styleClass: :hour_range, styleId: :hour_range do
+      hourRangeButton = subview UIView, :hours_bar, styleClass: :hour_range, styleId: :hour_range do
         hourRangeLabel = subview UILabel, styleClass: :hour_range
         hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
@@ -100,6 +100,13 @@ class BookingController < UIViewController
         addDragger leftDragHandle, min: firstHourOffset, factor: hourWidth / 2
         addResizer rightDragHandle, minWidth: minHours * hourWidth, factor: hourWidth / 2
       end
+      hourRangeButton.layer.cornerRadius = 17
+      hourRangeButton.layer.shadowRadius = 3
+      hourRangeButton.layer.shadowOffset = [0, 1]
+      hourRangeButton.layer.shadowOpacity = 0.5
+      # hourRangeButton.layer.masksToBounds = false
+      # hourRangeButton.layer.shadowPath = UIBezierPath.bezierPathWithRoundedRect(hourRangeButton.bounds, cornerRadius:17).CGPath
+
       tallSizeOnlyViews << hourRangeButton
 
       staticHoursLabel = subview UILabel, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
@@ -114,9 +121,9 @@ class BookingController < UIViewController
         endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
         startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
         label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
-        fontName = "HelveticaNeue"
+        fontName = 'HelveticaNeue'
         string = NSMutableAttributedString.alloc.initWithString(label)
-        string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + "-Bold", size:15), range:NSMakeRange(0, label.length)
+        string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + '-Bold', size:15), range:NSMakeRange(0, label.length)
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:8), range:NSMakeRange(label.length - 3, 1)
         string.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:10), range:NSMakeRange(label.length - 2, 2)
         hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
