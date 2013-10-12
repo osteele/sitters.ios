@@ -39,10 +39,16 @@ class Debounced
 end
 
 def addDragger(dragger, options={})
+  # dragger.instance_eval do
+  #   attr_accessor :isDragging
+  # end
+
   target = dragger.superview
+  xMin = options[:min] || 0
   initialPosition = nil
   animator = nil
-  attachment = nil
+  # dragger.isDragging = false
+  attachmentBehavior = nil
   dragger.userInteractionEnabled = true
   dragger.when_panned do |recognizer|
     pt = recognizer.translationInView(target.superview)
@@ -50,40 +56,54 @@ def addDragger(dragger, options={})
     case recognizer.state
     when UIGestureRecognizerStateBegan
       initialPosition = target.origin
+      # dragger.isDragging = true
 
-      animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
-      animator.removeAllBehaviors
-
-      # attachment ||= UIAttachmentBehavior.alloc.initWithItem(target, attachedToAnchor:[pt.x + target.size.width / 2, pt.y + target.size.height / 2])
-      # animator.addBehavior(attachment)
-      # collision = UICollisionBehavior.alloc.initWithItems []
-      # collision.addBoundaryWithIdentifier(:leftWall, fromPoint: [50, 0], toPoint: [50, 1000])
-      # animator.addBehavior(collision)
+      # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
+      # animator.removeAllBehaviors
 
     when UIGestureRecognizerStateChanged
-      # center = [[initialPosition.x + pt.x, options[:min] || 0].max, target.origin.y]
-      # center[0] += target.size.width / 2
-      # center[1] += target.size.height / 2
-      # attachment.anchorPoint = center
-      target.origin = [[initialPosition.x + pt.x, options[:min] || 0].max, target.origin.y]
+      x = [initialPosition.x + pt.x, xMin].max
+      x = [x, 320 - target.size.width / 2].min
+      target.origin = [x, target.origin.y]
 
     when UIGestureRecognizerStateEnded
-      min = options[:min] || 0
+      # dragger.isDragging = false
+
       factor = options[:factor] || 1
-      x = ((target.origin.x - min) / factor).round * factor + min
+      x = ((target.origin.x - xMin) / factor).round * factor + xMin
+      x = [x, xMin].max
 
-      center = [[x, options[:min] || 0].max, target.origin.y]
-      center[0] += target.size.width / 2
-      center[1] += target.size.height / 2
-      snapBehavior = UISnapBehavior.alloc.initWithItem(target, snapToPoint:center)
-      animator.removeAllBehaviors
-      animator.addBehavior(snapBehavior)
+      # itemBehavior = UIDynamicItemBehavior.alloc.initWithItems([target])
+      # itemBehavior.allowsRotation = false
+      # itemBehavior.density = target.size.width * target.size.height / 3000
+      # animator.addBehavior itemBehavior
 
-      # UIView.animateWithDuration 0.1,
-      #   animations: lambda {
-      #     target.origin = [[x, options[:min] || 0].max, target.origin.y]
-      #   }
+      # snapBehavior = UISnapBehavior.alloc.initWithItem(target, snapToPoint:[x + target.center.x - target.origin.x, target.center.y])
+      # animator.addBehavior(snapBehavior)
+
+      UIView.animateWithDuration 0.1,
+        animations: lambda {
+          target.origin = [[x, options[:min] || 0].max, target.origin.y]
+        }
     end
+  end
+
+  dragger.when_tapped do
+    startX = target.origin.x
+    elasticity = 0.5
+    animations = [[0.1, 5, UIViewAnimationOptionCurveEaseOut],
+                  [0.1, 0, UIViewAnimationOptionCurveEaseIn],
+                  [0.1 * elasticity, 5 * elasticity, UIViewAnimationOptionCurveEaseOut],
+                  [0.1 * elasticity, 0, UIViewAnimationOptionCurveEaseIn],
+                  [0.1 * elasticity * elasticity, 5 * elasticity * elasticity, UIViewAnimationOptionCurveEaseOut],
+                  [0.1 * elasticity * elasticity, 0, UIViewAnimationOptionCurveEaseIn]]
+    step = Proc.new do
+      dur, dx, options = animations.shift
+      UIView.animateWithDuration dur, delay:0, options:options,
+        animations: lambda { target.origin = [startX + dx, target.origin.y] },
+        completion: lambda { |finished| step.call if animations.any? }
+    end
+    step.call #unless dragging
   end
 end
 
