@@ -48,8 +48,12 @@ class Sitter
     return hours.any? { |startHour, endHour| startHour <= timespan.startHour and timespan.endHour <= endHour }
   end
 
+  def imagePath
+    "sitters/#{first_name.downcase}.jpg"
+  end
+
   def image
-    @image ||= UIImage.imageNamed("sitters/#{first_name.downcase}.jpg")
+    @image ||= UIImage.imageNamed(imagePath)
   end
 
   def maskedImage
