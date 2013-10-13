@@ -1,14 +1,10 @@
-body {
-  background: blue;
-  font-family: "Helvetica Neue", "HelveticaNeue";
+html {
   padding: 0;
-  margin: 0;
 }
 
-html {
+body {
   background-color: #F9F9F9;
-  font-family: "Helvetica Neue";
-  padding: 0;
+  font-family: "Helvetica Neue", "HelveticaNeue";
   margin: 15px;
 }
 
@@ -16,7 +12,6 @@ html {
   float: left;
   margin-right: 10px;
   // background: url('../sitters/kristen.png');
-  // background: gray;
   background-size: 54px 54px;
   width: 54px;
   height: 54px;
@@ -36,7 +31,7 @@ h1 {
   top: 45px;
 
   .star {
-    width: 19px;
+    width: 18px;
     height: 18px;
     display: inline-block;
     background: url('../images/star.png');
@@ -99,7 +94,15 @@ section {
   img {
     width: 50px;
     height: 50px;
-    margin-right: 6px;
+    margin-right: 8px;
     -webkit-border-radius: 25px;
   }
+}
+
+ul {
+  font-size: 14px; line-height: 1.45;
+}
+
+li {
+  list-style: none;
 }
