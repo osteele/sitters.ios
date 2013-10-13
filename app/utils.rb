@@ -8,9 +8,9 @@ class UIView < UIResponder
   def top=(y); self.origin = [self.origin.x, y]; end
   def left=(x); self.origin = [x, self.origin.y]; end
   def height=(height); self.size = [self.size.width, height]; end
-  def width=(width); self.size = [width, self.size.width]; end
+  def width=(width); self.size = [width, self.size.height]; end
   alias_method :x, :left
-  alias_method :y, :left
+  alias_method :y, :top
   alias_method :x=, :left=
   alias_method :y=, :top=
 
@@ -59,15 +59,10 @@ class Debounced
 end
 
 def addDragger(dragger, options={})
-  # dragger.instance_eval do
-  #   attr_accessor :isDragging
-  # end
-
   target = dragger.superview
   xMin = options[:min] || 0
   initialPosition = nil
   animator = nil
-  # dragger.isDragging = false
   attachmentBehavior = nil
   dragger.userInteractionEnabled = true
   dragger.when_panned do |recognizer|
@@ -76,7 +71,6 @@ def addDragger(dragger, options={})
     case recognizer.state
     when UIGestureRecognizerStateBegan
       initialPosition = target.origin
-      # dragger.isDragging = true
 
       # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
       # animator.removeAllBehaviors
@@ -106,24 +100,26 @@ def addDragger(dragger, options={})
       UIView.animateWithDuration 0.1,
         animations: lambda {
           # target.tx = 0
-          target.origin = [[x, options[:min] || 0].max, target.origin.y]
+          target.x = [x, xMin].max
         }
     end
   end
 
   dragger.when_tapped do
-    startX = target.origin.x
+    xStart = target.x
+    firstBounceTime = 0.2
     elasticity = 0.5
-    animations = [[0.1, 5, UIViewAnimationOptionCurveEaseOut],
-                  [0.1, 0, UIViewAnimationOptionCurveEaseIn],
-                  [0.1 * elasticity, 5 * elasticity, UIViewAnimationOptionCurveEaseOut],
-                  [0.1 * elasticity, 0, UIViewAnimationOptionCurveEaseIn],
-                  [0.1 * elasticity * elasticity, 5 * elasticity * elasticity, UIViewAnimationOptionCurveEaseOut],
-                  [0.1 * elasticity * elasticity, 0, UIViewAnimationOptionCurveEaseIn]]
+    animations = []
+    3.times do |i|
+      ratio = elasticity ** i
+      bounceTime = firstBounceTime * ratio
+      animations << [bounceTime / 2, 5 * ratio, UIViewAnimationOptionCurveEaseOut]
+      animations << [bounceTime / 2, 0, UIViewAnimationOptionCurveEaseIn]
+    end
     step = Proc.new do
       dur, dx, options = animations.shift
       UIView.animateWithDuration dur, delay:0, options:options,
-        animations: lambda { target.origin = [startX + dx, target.origin.y] },
+        animations: lambda { target.x = xStart + dx },
         completion: lambda { |finished| step.call if animations.any? }
     end
     step.call #unless dragging
@@ -132,6 +128,7 @@ end
 
 def addResizer(dragger, options={})
   target = dragger.superview
+  minWidth = options[:minWidth] || 0
   initialSize = nil
   fudge = 21
   dragger.userInteractionEnabled = true
@@ -141,15 +138,15 @@ def addResizer(dragger, options={})
     when UIGestureRecognizerStateBegan
       initialSize = target.size
     when UIGestureRecognizerStateChanged
-      target.size = [[initialSize.width + pt.x, options[:minWidth] || 0].max, target.size.height]
-      dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
+      target.width = [initialSize.width + pt.x, minWidth].max
+      dragger.x = target.width - dragger.width + fudge
     when UIGestureRecognizerStateEnded
       factor = options[:factor] || 1
-      width = (target.size.width / factor).round * factor
+      width = (target.width / factor).round * factor
       UIView.animateWithDuration 0.1,
         animations: lambda {
-          target.size = [[width, options[:minWidth] || 0].max, target.size.height]
-          dragger.origin = [target.size.width - dragger.size.width + fudge, dragger.origin.y]
+          target.width = [width, minWidth].max
+          dragger.x = target.width - dragger.width + fudge
         }
     end
   end
