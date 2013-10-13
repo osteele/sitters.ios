@@ -54,7 +54,7 @@ Motion::Project::App.setup do |app|
   end
   app.provisioning_profile = profile_path
 
-  sh "grunt build"
+  sh "grunt update"
 end
 
 def die(message)
