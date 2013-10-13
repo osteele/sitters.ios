@@ -1,14 +1,23 @@
 NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
 
 class UIView < UIResponder
-  def top; origin.x; end
+  def top; self.origin.x; end
   def left; origin.x; end
-  def height; size.height; end
-  def width; size.width; end
-  def top=(y); self.origin = [origin.x, y]; end
-  def left=(x); self.origin = [x, origin.y]; end
-  def height=(height); self.size = [size.width, height]; end
-  def width=(width); self.size = [width, size.width]; end
+  def height; self.size.height; end
+  def width; self.size.width; end
+  def top=(y); self.origin = [self.origin.x, y]; end
+  def left=(x); self.origin = [x, self.origin.y]; end
+  def height=(height); self.size = [self.size.width, height]; end
+  def width=(width); self.size = [width, self.size.width]; end
+  alias_method :x, :left
+  alias_method :y, :left
+  alias_method :x=, :left=
+  alias_method :y=, :top=
+
+  def tx; self.transform.tx; end
+  def ty; self.transform.ty; end
+  def tx=(tx); transform = self.transform; transform.tx = tx; self.transform = transform; end
+  def ty=(ty); transform = self.transform; transform.ty = ty; self.transform = transform; end
 end
 
 def dateFormatter(template)
@@ -73,6 +82,8 @@ def addDragger(dragger, options={})
       # animator.removeAllBehaviors
 
     when UIGestureRecognizerStateChanged
+      # target.tx = pt.x
+
       x = [initialPosition.x + pt.x, xMin].max
       x = [x, 320 - target.size.width / 2].min
       target.origin = [x, target.origin.y]
@@ -94,6 +105,7 @@ def addDragger(dragger, options={})
 
       UIView.animateWithDuration 0.1,
         animations: lambda {
+          # target.tx = 0
           target.origin = [[x, options[:min] || 0].max, target.origin.y]
         }
     end

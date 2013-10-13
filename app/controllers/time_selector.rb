@@ -132,8 +132,8 @@ class BookingController < UIViewController
 
       timeSpanHoursUpdater = Debounced.new 0.5 do
         frame = hourRangeButton.frame
-        startHour = firstHourNumber + ((hourRangeButton.origin.x - firstHourOffset) / hourWidth * 2).round / 2.0
-        endHour = firstHourNumber + ((hourRangeButton.origin.x + hourRangeButton.size.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
+        startHour = firstHourNumber + ((hourRangeButton.x + hourRangeButton.tx - firstHourOffset) / hourWidth * 2).round / 2.0
+        endHour = firstHourNumber + ((hourRangeButton.x + hourRangeButton.tx + hourRangeButton.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
         startHour = [startHour, firstHourNumber].max
         endHour = [endHour, startHour + minHours].max
         self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
