@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 
 # build
 gem 'dotenv'
+gem 'launchy'
 gem 'motion-cocoapods'
 gem 'require_all'
 gem 'rest-client'

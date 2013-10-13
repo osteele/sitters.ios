@@ -4,6 +4,7 @@ GEM
     activesupport (3.2.14)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
+    addressable (2.3.5)
     bubble-wrap (1.4.0)
     claide (0.3.2)
     cocoapods (0.26.2)
@@ -29,6 +30,8 @@ GEM
       motion-require (~> 0.0.3)
     i18n (0.6.5)
     json (1.8.0)
+    launchy (2.3.0)
+      addressable (~> 2.3)
     mime-types (1.25)
     motion-cocoapods (1.4.0)
       cocoapods (>= 0.26.2)
@@ -58,6 +61,7 @@ DEPENDENCIES
   bubble-wrap
   dotenv
   formotion
+  launchy
   motion-cocoapods
   motion-pixate
   motion-settings-bundle

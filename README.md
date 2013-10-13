@@ -32,9 +32,9 @@ Copy `~/.env.template` to `~/.env` and edit in the token values.
 5. Edit the value of `IOS_APP_7S_PRODUCTION_PROFILE_ID` in `~/.env`.
 
 # Uploading a Build
-1. `rake archive:distribution`
-2. Upload the IPA from `./build/iPhoneOS-7.0-Release` to the [Testflight upload page](https://testflightapp.com/dashboard/builds/add/).
-3. If the provisioning profile changed it from from `~/Library/MobileDevice/'Provisioning Profiles'`.
+1. `rake testflight:upload`
+2. If the provisioning profile changed it from from `~/Library/MobileDevice/'Provisioning Profiles'`.
+3. Open the TestFlight build page and add users.
 
 # App Store Release Checklist
 1. Remove the call to `UIDevice.currentDevice.uniqueIdentifier` from `./app/app_delegate.rb`.
