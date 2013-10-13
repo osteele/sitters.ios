@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-$:.unshift("/Library/RubyMotion/lib")
+$:.unshift('/Library/RubyMotion/lib')
 require 'motion/project/template/ios'
-require "rubygems"
+require 'rubygems'
 require 'bundler'
 Bundler.require
 
 Dotenv.load
+require_all 'tasks'
 
 PROFILE_HOME = File.expand_path('~/Library/MobileDevice/Provisioning Profiles')
 ENV['PX_STYLESHEET_PATH'] = File.join(File.dirname(__FILE__), 'resources/default.css')
