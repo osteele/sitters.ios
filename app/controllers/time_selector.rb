@@ -113,7 +113,7 @@ class BookingController < UIViewController
         subview UIView, styleClass: :graphic
       end
 
-      addDragger leftDragHandle, min: firstHourOffset, factor: hourWidth / 2
+      addDragger leftDragHandle, minX: firstHourOffset, factor: hourWidth / 2, minWidth: (minHours + 0.5) * hourWidth, resize: false
       addResizer rightDragHandle, minWidth: (minHours + 0.5) * hourWidth, factor: hourWidth / 2
     end
     hourSlider.layer.cornerRadius = 17

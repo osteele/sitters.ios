@@ -60,8 +60,11 @@ end
 
 def addDragger(dragger, options={})
   target = dragger.superview
-  xMin = options[:min] || 0
-  initialPosition = nil
+  xMin = options[:minX] || 0
+  minWidth = options[:minWidth] || 0
+  resize = options[:resize] || false
+  initialOrigin = nil
+  initialSize = nil
   animator = nil
   attachmentBehavior = nil
   dragger.userInteractionEnabled = true
@@ -70,17 +73,19 @@ def addDragger(dragger, options={})
 
     case recognizer.state
     when UIGestureRecognizerStateBegan
-      initialPosition = target.origin
-
+      initialOrigin = target.origin
+      initialSize = target.size
       # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
       # animator.removeAllBehaviors
 
     when UIGestureRecognizerStateChanged
       # target.tx = pt.x
 
-      x = [initialPosition.x + pt.x, xMin].max
+      x = [initialOrigin.x + pt.x, xMin].max
       x = [x, 320 - target.size.width / 2].min
-      target.origin = [x, target.origin.y]
+      x = [x, initialOrigin.x + initialSize.width - minWidth].min if resize
+      target.x = x
+      target.width = initialOrigin.x + initialSize.width - x if resize
 
     when UIGestureRecognizerStateEnded
       # dragger.isDragging = false
@@ -88,6 +93,7 @@ def addDragger(dragger, options={})
       factor = options[:factor] || 1
       x = ((target.origin.x - xMin) / factor).round * factor + xMin
       x = [x, xMin].max
+      x = [x, initialOrigin.x + initialSize.width - minWidth].min if resize
 
       # itemBehavior = UIDynamicItemBehavior.alloc.initWithItems([target])
       # itemBehavior.allowsRotation = false
@@ -100,7 +106,8 @@ def addDragger(dragger, options={})
       UIView.animateWithDuration 0.1,
         animations: lambda {
           # target.tx = 0
-          target.x = [x, xMin].max
+          target.x = x
+          target.width = initialOrigin.x + initialSize.width - x if resize
         }
     end
   end
