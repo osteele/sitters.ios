@@ -56,7 +56,7 @@ class SitterCircleView < UIView
     CGContextFillPath context
 
     # Sitter name
-    radius = 26
+    radius = 36
     drawArcText context, sitter.firstName.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text] if sitter
       CGContextRestoreGState context
 
@@ -70,30 +70,21 @@ class SitterCircleView < UIView
   end
 
   def drawArcText(context, string, cx, cy, radius)
-    radius += 10
     font = UIFont.fontWithName('HelveticaNeue', size:10)
     textAttributes = { NSFontAttributeName => font }
     astring = NSAttributedString.alloc.initWithString(string, attributes:textAttributes)
-    # astring.addAttributes textAttributes, value:font, range:NSMakeRange(0, string.length)
 
-    # cfline = CTLineCreateWithAttributedString(astring)
-    # glyphCount = CTLineGetGlyphCount(cfline)
-    # runArray = CTLineGetGlyphRuns(cfline)
+    cfLine = CTLineCreateWithAttributedString(astring)
+    runArray = CTLineGetGlyphRuns(cfLine)
+    # glyphCount = CTLineGetGlyphCount(cfLine)
 
     # for run in runArray
-    #   p 'run', run
-    #   # for glyph in run
-    #     # p 'g', glyph
-    #   # end
-    #   # CTRunDraw
-    #   # data = NSMutableData.dataWithLength 10
-    #   # CTRunGetAdvances run, CFRangeMake(0, CTRunGetGlyphCount(run)), data.bytes
-    #   # p data
-    #   # for glyphIndex in 0...CTRunGetGlyphCount(run)
-    #     # glyph = CFArrayGetValueAtIndex(run, glyphIndex)
-    #     # p 'g', glyph
-    #   # end
+    #   for glyphIndex in 0...CTRunGetGlyphCount(run)
+    #     # CRASH: glyph = CFArrayGetValueAtIndex(run, glyphIndex)
+    #     p CTRunGetTypographicBounds(run, CFRangeMake(glyphIndex, 1), nil, nil, nil)
+    #   end
     # end
+    # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
 
     CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
@@ -106,10 +97,14 @@ class SitterCircleView < UIView
     for i in 0...string.length
       glyph = string[i]
       glyphWidth = glyph.sizeWithAttributes(textAttributes).width
-      glyphAngle = glyphWidth / lineWidth * lineAngle
+      glyphAngle = glyphWidth / radius
+
+      # glyphWidth = CTRunGetTypographicBounds(runArray.first, CFRangeMake(i, 1), nil, nil, nil)
+      # imageWidth = CTRunGetImageBounds(runArray.first, context, CFRangeMake(i, 1)).size.width
+      # imageAngle = imageWidth / radius
 
       CGContextRotateCTM context, -glyphAngle / 2
-      CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
+      CGContextShowTextAtPoint context, -glyphAngle / 2, radius, glyph, 1
       CGContextRotateCTM context, -glyphAngle / 2
     end
     CGContextRestoreGState context
