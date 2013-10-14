@@ -12,7 +12,7 @@ class BookingController < UIViewController
     createDaySelectorViews
     createHourSelectorViews
 
-    @timeSelectorView = subview TimeSelector, styleId: :time_selector do
+    @timeSelectorView = subview TimeSelectorView, styleId: :time_selector do
       createDaySelectorViews
       createHourSelectorViews
     end

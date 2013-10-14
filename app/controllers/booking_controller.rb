@@ -155,9 +155,6 @@ class MySittersController < UIViewController
 end
 
 Teacup::Stylesheet.new :sitters do
-  # style :big_button,
-    # : UIButton
-
   style :hours_bar,
     backgroundColor: UIColor.whiteColor,
     left: 10,
