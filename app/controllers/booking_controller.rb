@@ -46,19 +46,15 @@ class BookingController < UIViewController
 
   def presentSuggestedSitters
     @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
-    # @suggestedSittersController.title = 'Recommended Sitters'
     @navigationController.pushViewController @suggestedSittersController, animated:true
-    # self.wantsFullScreenLayout = true
-    # UIApplication.sharedApplication.setStatusBarHidden true
-
     UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
   end
 
   def presentSitterDetails(sitter)
     @sitterDetailsController ||= SitterDetailsController.alloc.init
     @sitterDetailsController.sitter = sitter
-    # @sitterDetailsController.title = sitter.name
     @navigationController.pushViewController @sitterDetailsController, animated:true
+    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
   end
 
   def mySittersWillAppear
@@ -130,12 +126,13 @@ class MySittersController < UIViewController
       for i in 0...7
         sitter = sitters[i]
         view = subview SitterCircleView, sitter: sitter, styleClass: :sitter
-        if sitter
-          view.layer.shadowRadius = 0.5
-          view.layer.shadowOffset = [0, 0.5]
-          view.layer.shadowOpacity = 0.25
+        view.when_tapped do
+          if view.sitter then
+            outerController.presentSitterDetails view.sitter
+          else
+            outerController.presentSuggestedSitters
+          end
         end
-        view.when_tapped { outerController.presentSuggestedSitters } unless sitter
         sitterViews << view
       end
     end

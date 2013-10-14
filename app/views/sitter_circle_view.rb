@@ -7,6 +7,12 @@ class SitterCircleView < UIView
   end
 
   def drawRect(rect)
+    if sitter
+      layer.shadowOffset = [0, 0.5]
+      layer.shadowOpacity = 0.25
+      layer.shadowRadius = 0.5
+    end
+
     bounds = CGRectMake(0, 0, self.size.width, self.size.height)
 
     context = UIGraphicsGetCurrentContext()
