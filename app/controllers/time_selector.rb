@@ -49,6 +49,7 @@ class BookingController < UIViewController
       selectionMarkerLabel = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
       selectionMarkerLabel.userInteractionEnabled = false
       label.when_tapped do
+        TestFlight.passCheckpoint "Tap day ###{i+1} (#{name})"
         self.selectedTimeSpan = selectedTimeSpan.onDate(date)
       end
       dayLabels << label

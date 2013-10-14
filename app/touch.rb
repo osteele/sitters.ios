@@ -16,6 +16,7 @@ module TouchUtils
       when UIGestureRecognizerStateBegan
         initialOrigin = target.origin
         initialSize = target.size
+        TestFlight.passCheckpoint "Drag #{target.styleClass}"
         # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
         # animator.removeAllBehaviors
 
@@ -65,6 +66,7 @@ module TouchUtils
       case recognizer.state
       when UIGestureRecognizerStateBegan
         initialSize = target.size
+        TestFlight.passCheckpoint "Resize #{target.styleClass}"
       when UIGestureRecognizerStateChanged
         target.width = [initialSize.width + pt.x, minWidth].max
         dragger.x = target.width - dragger.width + fudge
@@ -81,6 +83,7 @@ module TouchUtils
 
   def self.bounceOnTap(target, handle:view)
     view.when_tapped do
+      TestFlight.passCheckpoint "Bounce #{target.styleClass}"
       initialX = target.x
       firstBounceTime = 0.2
       elasticity = 0.5

@@ -45,12 +45,14 @@ class BookingController < UIViewController
   # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
 
   def presentSuggestedSitters
+    TestFlight.passCheckpoint 'Suggested sitters'
     @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
     @navigationController.pushViewController @suggestedSittersController, animated:true
     UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
   end
 
   def presentSitterDetails(sitter)
+    TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
     @sitterDetailsController ||= SitterDetailsController.alloc.init
     @sitterDetailsController.sitter = sitter
     @navigationController.pushViewController @sitterDetailsController, animated:true
