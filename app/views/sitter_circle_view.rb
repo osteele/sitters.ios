@@ -74,17 +74,27 @@ class SitterCircleView < UIView
     textAttributes = { NSFontAttributeName => font }
     astring = NSAttributedString.alloc.initWithString(string, attributes:textAttributes)
 
-    cfLine = CTLineCreateWithAttributedString(astring)
-    runArray = CTLineGetGlyphRuns(cfLine)
-    # glyphCount = CTLineGetGlyphCount(cfLine)
+    # cfLine = CTLineCreateWithAttributedString(astring)
+    # runArray = CTLineGetGlyphRuns(cfLine)
 
+    # glyphCount = CTLineGetGlyphCount(cfLine)
+    # glyphOffsets = [nil] * glyphCount
+    # start = 0
     # for run in runArray
     #   for glyphIndex in 0...CTRunGetGlyphCount(run)
-    #     # CRASH: glyph = CFArrayGetValueAtIndex(run, glyphIndex)
-    #     p CTRunGetTypographicBounds(run, CFRangeMake(glyphIndex, 1), nil, nil, nil)
+    #     glyphOffsets[glyphIndex] = start += CTRunGetTypographicBounds(run, CFRangeMake(glyphIndex, 1), nil, nil, nil)
     #   end
     # end
-    # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
+    # # puts "glyphOffsets = #{glyphOffsets}"
+
+    # glyphCenters = [nil] * glyphCount
+    # previousOffset = 0
+    # glyphOffsets.each_with_index do |offset, i|
+    #   glyphCenters[i] = (previousOffset + offset) / 2
+    #   previousOffset = offset
+    # end
+    # # puts "glyphCenters = #{glyphCenters}"
+    # # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
 
     CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
@@ -99,12 +109,14 @@ class SitterCircleView < UIView
       glyphWidth = glyph.sizeWithAttributes(textAttributes).width
       glyphAngle = glyphWidth / radius
 
+      # glyphAngle = glyphCenters[i] / radius
+
       # glyphWidth = CTRunGetTypographicBounds(runArray.first, CFRangeMake(i, 1), nil, nil, nil)
       # imageWidth = CTRunGetImageBounds(runArray.first, context, CFRangeMake(i, 1)).size.width
       # imageAngle = imageWidth / radius
 
       CGContextRotateCTM context, -glyphAngle / 2
-      CGContextShowTextAtPoint context, -glyphAngle / 2, radius, glyph, 1
+      CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
       CGContextRotateCTM context, -glyphAngle / 2
     end
     CGContextRestoreGState context
