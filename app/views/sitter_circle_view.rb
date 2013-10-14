@@ -57,70 +57,48 @@ class SitterCircleView < UIView
 
     # Sitter name
     radius = 26
-    drawArcText context, sitter.first_name.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text]
-  end
-
-  def newDrawArcText(context, string, cx, cy, radius)
-    kern = true
-    radius += 10
-    fontName = "HelveticaNeue"
-    fontSize = 10
-
-    CGContextSaveGState context
-    CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
-    CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-
-    line = CTLineCreateWithAttributedString
-    glyphCount = CTLineGetGlyphCount(line)
-    PrepareGlyphArcInfo(line, glyphCount, glyphArcInfo)
-    runArray = CTLineGetGlyphRuns(line)
-    puts "runArray = #{runArray}"
-    puts "runArray.length = #{CFArrayGetCount(runArray)}"
-    run = runArray[0]
-    runGlyphCount = CTRunGetGlyphCount(run)
-    puts "runGlyphCount = #{runGlyphCount}"
-    glyphOffset = 0
-
-    CGContextSetTextPosition(context, cx, 10)
-    for runGlyphIndex in 0...runGlyphCount
-      CGContextRotateCTM(context, -(glyphArcInfo[runGlyphIndex + glyphOffset].angle))
-      glyphWidth = glyphArcInfo[runGlyphIndex + glyphOffset].width
-      positionForThisGlyph = CGPointMake(textPosition.x - glyphWidth / 2, textPosition.y)
-      textPosition.x -= glyphWidth
-      CGAffineTransform textMatrix = CTRunGetTextMatrix(run)
-      textMatrix.tx = positionForThisGlyph.x
-      textMatrix.ty = positionForThisGlyph.y
-      CGContextSetTextMatrix context, textMatrix
-      CTRunDraw run, context, CFRangeMake(runGlyphIndex, 1)
-    end
-    CGContextRestoreGState context
+    drawArcText context, sitter.firstName.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text] if sitter
   end
 
   def drawArcText(context, string, cx, cy, radius)
-    kern = true
     radius += 10
-    fontName = "HelveticaNeue"
+    fontName = 'HelveticaNeue'
     fontSize = 10
+    textAttributes = {}
+    astring = NSMutableAttributedString.alloc.initWithString(string)
+
+    # cfline = CTLineCreateWithAttributedString(astring)
+    # glyphCount = CTLineGetGlyphCount(cfline)
+    # runArray = CTLineGetGlyphRuns(cfline)
+
+    # for run in runArray
+    #   p 'run', run
+    #   # for glyph in run
+    #     # p 'g', glyph
+    #   # end
+    #   # CTRunDraw
+    #   # data = NSMutableData.dataWithLength 10
+    #   # CTRunGetAdvances run, CFRangeMake(0, CTRunGetGlyphCount(run)), data.bytes
+    #   # p data
+    #   # for glyphIndex in 0...CTRunGetGlyphCount(run)
+    #     # glyph = CFArrayGetValueAtIndex(run, glyphIndex)
+    #     # p 'g', glyph
+    #   # end
+    # end
+
     CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-    if kern
-      text_width = string.sizeWithAttributes({}).width
-      text_angle = text_width * 2 * Math::PI / (radius * 2 * Math::PI)
-      # puts "#{string} width=#{text_width} angle=#{text_angle * 360}"
-      next_angle = Math::PI / 2 + text_angle / 2
-    end
+    lineWidth = astring.size.width
+    lineAngle = lineWidth * 2 * Math::PI / (radius * 2 * Math::PI)
+    nextAngle = lineAngle / 2 + Math::PI / 2
     for i in 0...string.length
-      # angle = -Math::PI / 2 + 11 * (i - string.length / 2) * Math::PI / 180
-      if kern
-        letter_width = string[i].sizeWithAttributes({}).width
-        letter_angle = letter_width / text_width * text_angle
-        angle = next_angle - letter_angle / 2
-        # puts "#{string[i]} (width=#{letter_width}, angle=#{letter_angle * 360}) at angle=#{angle}"
-        next_angle -= letter_angle
-      end
+      glyphWidth = string[i].sizeWithAttributes(textAttributes).width
+      glyphAngle = glyphWidth / lineWidth * lineAngle
+      angle = nextAngle - glyphAngle / 2
+      nextAngle -= glyphAngle
       dx = radius * Math.cos(angle)
       dy = radius * Math.sin(angle)
-      xform = CGAffineTransformMakeRotation(angle - Math::PI / 2)
+      xform = CGAffineTransformMakeRotation(angle - 0 * glyphAngle / 2 - Math::PI / 2)
       CGContextSetTextMatrix context, xform
       CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
     end

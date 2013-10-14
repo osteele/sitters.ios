@@ -34,7 +34,7 @@ class Sitter
     @hours = data['hours'] || {}
   end
 
-  def first_name
+  def firstName
     self.name.split[0]
   end
 
@@ -49,7 +49,7 @@ class Sitter
   end
 
   def imagePath
-    "sitters/#{first_name.downcase}.jpg"
+    "sitters/#{firstName.downcase}.jpg"
   end
 
   def image
