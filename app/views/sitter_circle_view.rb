@@ -1,5 +1,6 @@
 class SitterCircleView < UIView
   attr_accessor :sitter
+  attr_accessor :labelText
 
   def self.new
     view = alloc.initWithFrame(CGRectZero)
@@ -16,6 +17,7 @@ class SitterCircleView < UIView
     bounds = CGRectMake(0, 0, self.size.width, self.size.height)
 
     context = UIGraphicsGetCurrentContext()
+      CGContextSaveGState context
     CGContextTranslateCTM context, 0, bounds.size.height
     CGContextScaleCTM context, 1, -1
 
@@ -53,17 +55,18 @@ class SitterCircleView < UIView
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
 
-    if false
-      # CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
-      CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-      labelRect = CGRectMake(cx - 40, 0, cx + 40, 2 * labelCircleRadius)
-      # labelRect = CGRectMake(0, 0, 100, 100)
-      labelText.drawInRect labelRect, withFont:UIFont.fontWithName("HelveticaNeue", size:14) #, lineBreakMode:0
-    end
-
     # Sitter name
     radius = 26
     drawArcText context, sitter.firstName.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text] if sitter
+      CGContextRestoreGState context
+
+    # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+    labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius, self.width, 2 * labelCircleRadius)
+    labelText.drawInRect labelRect, withAttributes: {
+      NSFontAttributeName => UIFont.fontWithName('HelveticaNeue', size:14),
+      NSForegroundColorAttributeName => UIColor.blackColor,
+      NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
+    }
   end
 
   def drawArcText(context, string, cx, cy, radius)
