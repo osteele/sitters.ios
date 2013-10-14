@@ -1,4 +1,5 @@
 NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
+UIFontDescriptorTraitBold = 1 << 1 unless Object.const_defined?(:UIFontDescriptorTraitBold)
 
 class UIView < UIResponder
   def top; self.origin.x; end

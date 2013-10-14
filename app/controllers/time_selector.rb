@@ -138,7 +138,8 @@ class BookingController < UIViewController
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
       label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
       labelFont = hourRangeLabel.font
-      boldFont = UIFont.fontWithName('HelveticaNeue-Bold', size:15)
+      boldFontName = UIFont.fontWithName(labelFont.familyName, size:15).fontDescriptor.fontDescriptorWithSymbolicTraits(UIFontDescriptorTraitBold).postscriptName
+      boldFont = UIFont.fontWithName(boldFontName, size:15)
       normalFont = UIFont.fontWithName(labelFont.familyName, size: labelFont.pointSize)
       string = NSMutableAttributedString.alloc.initWithString(label)
       string.addAttribute NSFontAttributeName, value:boldFont, range:NSMakeRange(0, label.length)

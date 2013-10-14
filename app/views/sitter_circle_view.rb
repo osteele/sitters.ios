@@ -68,10 +68,10 @@ class SitterCircleView < UIView
 
   def drawArcText(context, string, cx, cy, radius)
     radius += 10
-    fontName = 'HelveticaNeue'
-    fontSize = 10
-    textAttributes = {}
-    astring = NSMutableAttributedString.alloc.initWithString(string)
+    font = UIFont.fontWithName('HelveticaNeue', size:10)
+    textAttributes = { NSFontAttributeName => font }
+    astring = NSAttributedString.alloc.initWithString(string, attributes:textAttributes)
+    # astring.addAttributes textAttributes, value:font, range:NSMakeRange(0, string.length)
 
     # cfline = CTLineCreateWithAttributedString(astring)
     # glyphCount = CTLineGetGlyphCount(cfline)
@@ -94,7 +94,7 @@ class SitterCircleView < UIView
 
     CGContextSaveGState context
     CGContextTranslateCTM context, cx, cy
-    CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
+    CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
     lineWidth = astring.size.width
     lineAngle = lineWidth * 2 * Math::PI / (radius * 2 * Math::PI)
