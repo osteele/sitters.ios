@@ -33,7 +33,8 @@ class BookingController < UIViewController
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
     daySelectionMarker = subview UIButton, styleClass: :selected_day do
       handle = subview UIView, width: 100, height: 100
-      addDragger handle, min: firstDayX + 5, factor: dayspacing
+      TouchUtils.dragOnTouch handle.superview, handle:handle, options:{xMinimum: firstDayX + 5, widthFactor: dayspacing}
+      TouchUtils.bounceOnTap handle.superview, handle:handle
     end
     tallSizeOnlyViews << daySelectionMarker
 
@@ -113,8 +114,12 @@ class BookingController < UIViewController
         subview UIView, styleClass: :graphic
       end
 
-      addDragger leftDragHandle, minX: firstHourOffset, factor: hourWidth / 2, minWidth: (minHours + 0.5) * hourWidth, resize: false
-      addResizer rightDragHandle, minWidth: (minHours + 0.5) * hourWidth, factor: hourWidth / 2
+      view = leftDragHandle.superview
+      resizeOptions = {xMinimum: firstHourOffset, widthMinimum: (minHours + 0.5) * hourWidth, widthFactor: hourWidth / 2}
+      TouchUtils.dragOnTouch view, handle:leftDragHandle, options:resizeOptions
+      TouchUtils.resizeOnTouch view, handle:rightDragHandle, options:resizeOptions
+      TouchUtils.bounceOnTap view, handle:leftDragHandle
+      TouchUtils.bounceOnTap view, handle:rightDragHandle
     end
     hourSlider.layer.cornerRadius = 17
     hourSlider.layer.shadowRadius = 3
