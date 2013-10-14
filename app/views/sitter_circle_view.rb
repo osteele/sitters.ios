@@ -86,22 +86,26 @@ class SitterCircleView < UIView
     #   # end
     # end
 
+    CGContextSaveGState context
+    CGContextTranslateCTM context, cx, cy
     CGContextSelectFont context, fontName, fontSize, KCGEncodingMacRoman
     CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
     lineWidth = astring.size.width
     lineAngle = lineWidth * 2 * Math::PI / (radius * 2 * Math::PI)
     nextAngle = lineAngle / 2 + Math::PI / 2
     for i in 0...string.length
-      glyphWidth = string[i].sizeWithAttributes(textAttributes).width
+      glyph = string[i]
+      glyphWidth = glyph.sizeWithAttributes(textAttributes).width
       glyphAngle = glyphWidth / lineWidth * lineAngle
       angle = nextAngle - glyphAngle / 2
       nextAngle -= glyphAngle
-      dx = radius * Math.cos(angle)
-      dy = radius * Math.sin(angle)
-      xform = CGAffineTransformMakeRotation(angle - 0 * glyphAngle / 2 - Math::PI / 2)
-      CGContextSetTextMatrix context, xform
-      CGContextShowTextAtPoint context, cx + dx, cy + dy, string[i], 1
+
+      CGContextSaveGState context
+      CGContextRotateCTM context, angle - Math::PI / 2
+      CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
+      CGContextRestoreGState context
     end
+    CGContextRestoreGState context
   end
 
   def sitterImage

@@ -129,9 +129,7 @@ class MySittersController < UIViewController
     view = subview UIView, styleId: :avatars, origin: [0, 88], size: [320, 300] do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, sitter: sitter, styleClass: :sitter do
-          subview UILabel, text: (i+1).to_s
-        end
+        view = subview SitterCircleView, sitter: sitter, styleClass: :sitter
         if sitter
           view.layer.shadowRadius = 0.5
           view.layer.shadowOffset = [0, 0.5]
