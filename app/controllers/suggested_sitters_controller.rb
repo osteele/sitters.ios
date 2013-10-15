@@ -4,7 +4,10 @@ class SuggestedSittersController < UITableViewController
   def viewDidLoad
     super
     view.separatorStyle = UITableViewCellSeparatorStyleNone
-    @sitters = Sitter.suggested
+  end
+
+  def sitters
+    @sitters ||= Sitter.suggested
   end
 
   # def viewWillAppear(c1); puts 'SuggestedSittersController viewWillAppear'; end
@@ -20,12 +23,11 @@ class SuggestedSittersController < UITableViewController
   def tableView(tableView, heightForRowAtIndexPath:indexPath); 52; end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    @sitters ||= Sitter.suggested
-    @sitters.length
+    sitters.length
   end
 
   def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-    outerController.presentSitterDetails @sitters[indexPath.row]
+    outerController.presentSitterDetails sitters[indexPath.row]
   end
 
   IMAGE_TAG = 1
@@ -45,7 +47,7 @@ class SuggestedSittersController < UITableViewController
       end
     end
 
-    sitter = @sitters[indexPath.row]
+    sitter = sitters[indexPath.row]
 
     description = NSMutableAttributedString.alloc.initWithString("#{sitter.name} (#{sitter.age} years old)")
     description.addAttribute NSForegroundColorAttributeName, value:'#5988C4'.uicolor, range:NSMakeRange(0, description.length)
