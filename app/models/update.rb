@@ -1,20 +1,10 @@
 class Update
-  attr_accessor :contact
-  attr_accessor :description
-  attr_accessor :timestamp
+  attr_reader :contact
+  attr_reader :description
+  attr_reader :timestamp
 
   def self.all
-    [
-      new('Steve and Diane Smith', 'added a sitter', '4:12 PM'),
-      new('Maggie McConnell', 'added a parent', '3:31 PM'),
-      new('Jane and Ted Phillips', 'introduced you to Cindy King', '2:48 PM'),
-      new('Layla Smith', 'added a parent', 'yesterday'),
-      new('Gina Marelli', 'would like to be interviewed', 'yesterday'),
-      new('Alex and Jen Handy', 'added a sitter', '2d ago'),
-      new('Michelle Shaffer', 'would like to be interviewed', '3d ago'),
-      new('Tim and Elisa Rendo', 'added a sitter', '3d ago'),
-      new('Maggie McConnell', 'added a parent', '5d ago'),
-    ]
+    @updates ||= self.json.map { |data| self.new(data) }
   end
 
   def self.unread
@@ -25,10 +15,10 @@ class Update
     @unread = []
   end
 
-  def initialize(contact, description, timestamp)
-    self.contact = contact
-    self.description = description
-    self.timestamp = timestamp
+  def initialize(data)
+    @contact = data['contact']
+    @description = data['description']
+    @timestamp = data['timestamp']
   end
 
   def image
@@ -41,5 +31,15 @@ class Update
 
   def today?
     self.timestamp =~ /[AP]M$/
+  end
+
+  private
+
+  def self.json
+    @json ||= begin
+      path = NSBundle.mainBundle.pathForResource('updates', ofType:'json')
+      content = NSString.stringWithContentsOfFile(path ,encoding:NSUTF8StringEncoding, error:nil)
+      NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
+    end
   end
 end
