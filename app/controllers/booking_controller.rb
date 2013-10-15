@@ -26,17 +26,12 @@ class BookingController < UIViewController
 
     mySittersController = MySittersController.alloc.init
     mySittersController.outerController = self
-    # mySittersController.title = 'Reserve'
-    self.addChildViewController mySittersController
-    @mySittersView = mySittersController.view
-
     observe(self, :selectedTimeSpan) do mySittersController.selectedTimeSpan = selectedTimeSpan end
 
     @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
     @navigationController.delegate = self
-    # mySittersController.view.frame = [[0, 140], [320, 700]]
 
-    subview @navigationController.view, size: [320, 1000]
+    subview @navigationController.view #, size: [320, 1000]
 
     createTimeSelector
   end
