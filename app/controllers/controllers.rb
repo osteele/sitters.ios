@@ -9,6 +9,6 @@ end
 
 class ExpiredController < UIViewController
   layout do
-    subview UILabel, width: 320, height: 40, text: "Expired", textAlignment: NSTextAlignmentRight, color: UIColor.whiteColor
+    subview UILabel, width: 320, height: 40, text: "Expired", textAlignment: NSTextAlignmentCenter, color: UIColor.whiteColor
   end
 end

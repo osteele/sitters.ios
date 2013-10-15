@@ -161,6 +161,12 @@ class MySittersController < UIViewController
 end
 
 Teacup::Stylesheet.new :sitters do
+  style :time_selector,
+    # top: 20,
+    # width: 320
+    # height: 120
+    gradient:  { colors: [0x6FA1EB.uicolor, 0x4E7EC2.uicolor] }
+
   style :hours_bar,
     backgroundColor: UIColor.whiteColor,
     left: 10,

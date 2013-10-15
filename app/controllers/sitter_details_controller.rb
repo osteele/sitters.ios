@@ -21,11 +21,12 @@ class SitterDetailsController < UIViewController
   def sitter=(sitter)
     return if @sitter == sitter
     @sitter = sitter
-    renderTemplate if webView
+    renderTemplate
   end
 
   def renderTemplate
-    webView.alpha = 0 if webView
+    return unless webView
+    webView.alpha = 0
     @template ||= begin
       templatePath ||= NSBundle.mainBundle.pathForResource('sitter_details', ofType:'html')
       GRMustacheTemplate.templateFromContentsOfFile(templatePath, error:nil)

@@ -12,7 +12,7 @@ class BookingController < UIViewController
     createDaySelectorViews
     createHourSelectorViews
 
-    @timeSelectorView = subview TimeSelectorView, styleId: :time_selector do
+    @timeSelectorView = subview TimeSelectorView, :time_selector, styleId: :time_selector do
       createDaySelectorViews
       createHourSelectorViews
     end
@@ -33,7 +33,11 @@ class BookingController < UIViewController
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
     daySelectionMarker = subview UIButton, styleClass: :selected_day do
       handle = subview UIView, width: 100, height: 100
-      options = {xMinimum: firstDayX + 5, xMaximum: firstDayX + 5 + 6 * dayspacing, widthFactor: dayspacing}
+      options = {
+        xMinimum: firstDayX + daySelectionMarkerOffset,
+        xMaximum: firstDayX + daySelectionMarkerOffset + 6 * dayspacing,
+        widthFactor: dayspacing
+      }
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
@@ -132,7 +136,7 @@ class BookingController < UIViewController
 
     tallSizeOnlyViews << hourSlider
 
-    staticHoursLabel = subview UILabel, textColor: UIColor.whiteColor, alpha: 0, origin: [0, 18], size: [320, 30], alpha: 0
+    staticHoursLabel = subview UILabel, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
     shortSizeOnlyViews << staticHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
@@ -177,7 +181,9 @@ class BookingController < UIViewController
         frame: timeSelectorView.frame,
         alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
       }
-      timeSelectorView.frame = [[0, 64], [timeSelectorView.size.width, 55]]
+      timeSelectorView.top = 64
+      timeSelectorView.height = 55
+      timeSelectorView.setNeedsDisplay
       tallSizeOnlyViews.each do |v| v.alpha = 0 end
       shortSizeOnlyViews.each do |v| v.alpha = 1 end
     when :tall
@@ -188,6 +194,8 @@ class BookingController < UIViewController
       shortSizeOnlyViews.each do |v| v.alpha = 0 end
       @savedTimeSelectorValues = nil
     end
+    gradient_layer = timeSelectorView.instance_variable_get(:@teacup_gradient_layer)
+    gradient_layer.frame = timeSelectorView.bounds if gradient_layer
   end
 end
 
