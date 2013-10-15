@@ -1,6 +1,7 @@
 module TouchUtils
   def self.dragOnTouch(target, handle:dragger, options:options)
     xMin = options[:xMinimum] || 0
+    xMax = options[:xMaximum]
     minWidth = options[:widthMinimum] || 0
     factor = options[:widthFactor] || 1
     resize = options[:resize] || false
@@ -25,6 +26,7 @@ module TouchUtils
 
         x = [initialOrigin.x + pt.x, xMin].max
         x = [x, 320 - target.size.width / 2].min
+        # x = [x, xMax].min if xMax
         x = [x, initialOrigin.x + initialSize.width - minWidth].min if resize
         target.x = x
         target.width = initialOrigin.x + initialSize.width - x if resize
@@ -34,6 +36,7 @@ module TouchUtils
 
         x = ((target.origin.x - xMin) / factor).round * factor + xMin
         x = [x, xMin].max
+        x = [x, xMax].min if xMax
         x = [x, initialOrigin.x + initialSize.width - minWidth].min if resize
 
         # itemBehavior = UIDynamicItemBehavior.alloc.initWithItems([target])

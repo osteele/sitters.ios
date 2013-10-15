@@ -33,7 +33,8 @@ class BookingController < UIViewController
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
     daySelectionMarker = subview UIButton, styleClass: :selected_day do
       handle = subview UIView, width: 100, height: 100
-      TouchUtils.dragOnTouch handle.superview, handle:handle, options:{xMinimum: firstDayX + 5, widthFactor: dayspacing}
+      options = {xMinimum: firstDayX + 5, xMaximum: firstDayX + 5 + 6 * dayspacing, widthFactor: dayspacing}
+      TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
     tallSizeOnlyViews << daySelectionMarker
