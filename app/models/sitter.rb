@@ -5,17 +5,7 @@ class Sitter
   attr_accessor :active
 
   def self.all
-    @sitters ||= [
-      new("Ashley"),
-      new("Kayla"),
-      new("Kristen Morey"),
-      new("Amy Gino"),
-      new("Michelle Shaffer"),
-      new("Maggie McConnell"),
-      new("Gina Marelli"),
-      new("Gwen Stephenson"),
-      new("Layla Smith"),
-    ]
+    @sitters ||= json.map { |data| self.new(data) }
   end
 
   def self.added
@@ -26,18 +16,14 @@ class Sitter
     return self.all - self.added
   end
 
-  def initialize(name)
-    data = Sitter.json[name]
-    @name = name
+  def initialize(data)
+    @name = data['name']
     @age = data['age']
     @description = data['description']
     @hours = data['hours'] || {}
   end
 
-  def firstName
-    self.name.split[0]
-  end
-
+  def firstName; self.name.split[0]; end
   def description; @description; end
   def age; @age; end
 
@@ -59,6 +45,8 @@ class Sitter
   def maskedImage
     @maskedImage ||= UIImage.imageWithCGImage(SitterCircleView.sitterImage(self))
   end
+
+  private
 
   def self.json
     @json ||= begin
