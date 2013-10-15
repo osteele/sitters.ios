@@ -58,7 +58,13 @@ class SitterCircleView < UIView
     # Sitter name
     if NSUserDefaults.standardUserDefaults[:arc_text] and sitter
       radius = 36
-      DrawingUtils.drawArcText context, sitter.firstName.upcase, cx, cy, radius, UIFont.fontWithName('HelveticaNeue', size:10)
+      font = UIFont.fontWithName('HelveticaNeue', size:10)
+      CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
+      CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+      textAttributes = { NSFontAttributeName => font }
+      sitterName = sitter.firstName.upcase
+      sitterNameAS = NSAttributedString.alloc.initWithString(sitterName, attributes:textAttributes)
+      GraphicsUtils.showStringOnArc context, sitterNameAS, sitterName, cx, cy, radius
     end
 
     CGContextRestoreGState context

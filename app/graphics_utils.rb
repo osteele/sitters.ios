@@ -1,8 +1,5 @@
-module DrawingUtils
-  def self.drawArcText(context, string, cx, cy, radius, font)
-    textAttributes = { NSFontAttributeName => font }
-    astring = NSAttributedString.alloc.initWithString(string, attributes:textAttributes)
-
+module GraphicsUtils
+  def self.showStringOnArc(context, astring, string, cx, cy, radius)
     cfLine = CTLineCreateWithAttributedString(astring)
     runs = CTLineGetGlyphRuns(cfLine)
 
@@ -29,9 +26,6 @@ module DrawingUtils
     # # puts "glyphCenters = #{glyphCenters}"
     # # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
 
-    CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
-    CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-
     lineWidth = astring.size.width
     lineAngle = lineWidth / radius
     CGContextSaveGState context
@@ -40,6 +34,8 @@ module DrawingUtils
     currentRunFirstGlyphIndex = 0
     for run in runs
       runGlyphCount = CTRunGetGlyphCount(run)
+      # glyphs = Pointer.new(CGGlyph.type, runGlyphCount)
+      # CTRunGetGlyphs(run, CTRange(0, runGlyphCount), glyphs)
       for runGlyphIndex in 0...runGlyphCount
         glyphIndex = currentRunFirstGlyphIndex + runGlyphIndex
         glyph = string[glyphIndex]
@@ -52,8 +48,17 @@ module DrawingUtils
         # imageWidth = CTRunGetImageBounds(runArray.first, context, CFRangeMake(glyphIndex, 1)).size.width
         # imageAngle = imageWidth / radius
 
+        # textMatrix = CTRunGetTextMatrix(run)
+        # textMatrix.tx = -glyphWidth / 2
+        # textMatrix.ty = radius
+        # CGContextSetTextMatrix context, textMatrix
+
         CGContextRotateCTM context, -glyphAngle / 2
         CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
+        # CGContextTranslateCTM context, -glyphWidth / 2, radius
+        # glyphRange = CFRangeMake(runGlyphIndex, 1)
+        # CTRunDraw run, context, glyphRange
+        # CGContextTranslateCTM context, glyphWidth / 2, -radius
         CGContextRotateCTM context, -glyphAngle / 2
       end
       currentRunFirstGlyphIndex += runGlyphCount
