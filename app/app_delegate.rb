@@ -12,6 +12,8 @@ class AppDelegate
     # window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
     # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
 
+    window.rootViewController = ExpiredController.alloc.init if isExpired
+
     window.styleMode = PXStylingNormal
     window.makeKeyAndVisible
     true
@@ -27,6 +29,15 @@ class AppDelegate
       ChatController.alloc.init,
       SettingsController.alloc.initWithForm(SettingsController.form)
     ]
+  end
+
+  def isExpired
+    expirationString = NSBundle.mainBundle.objectForInfoDictionaryKey('EXPIRATION_DATE')
+    return false unless expirationString
+    expirationDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+    expirationDate = expirationDateFormatter.dateFromString(expirationString)
+    # puts "Expires #{NSDateFormatter.alloc.init.setDateFormat(NSDateFormatterMediumStyle).stringFromDate(expirationDate)}"
+    return expirationDate < NSDate.date
   end
 
   def initializePixmate
