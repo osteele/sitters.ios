@@ -97,11 +97,17 @@ class MySittersController < UIViewController
         subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
       end
 
-      sitterCount = 2
-      toSevenString = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle).stringFromNumber(7 - sitterCount)
-      addSittersLabel = subview UILabel, styleId: :add_sitters, text: "Add #{toSevenString} more sitters"
+      addSittersLabel = subview UILabel, styleId: :add_sitters
+      addSittersCaption = subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
       addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
-      subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+
+      spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
+      remainingSitterCount = 7 - Sitter.added.length
+      toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
+      addSittersLabel.text = "Add #{toSevenString} more sitter#{remainingSitterCount == 1 ? '' : 's'}"
+      [addSittersLabel, addSittersCaption].each do |v| v.alpha = remainingSitterCount > 0 ? 1 : 0 end
+
+      observe(Sitter, :added) do puts 'Sitter.added' end
 
       # sittersObserver = NSObject.new
       # class << sittersObserver
