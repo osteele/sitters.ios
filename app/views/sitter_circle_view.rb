@@ -14,31 +14,29 @@ class SitterCircleView < UIView
       layer.shadowRadius = 0.5
     end
 
-    bounds = CGRectMake(0, 0, self.size.width, self.size.height)
-
     context = UIGraphicsGetCurrentContext()
-      CGContextSaveGState context
+    CGContextSaveGState context
     CGContextTranslateCTM context, 0, bounds.size.height
     CGContextScaleCTM context, 1, -1
 
     # Outer circle: fill and frame
-    radius = cx = cy = bounds.size.width / 2
-    radius -= 1
-    CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
+    cx = cy = bounds.size.width / 2
+    outerRadius = bounds.size.width / 2 - 1
+    CGContextAddArc context, cx, cy, outerRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
 
-    CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
+    CGContextAddArc context, cx, cy, outerRadius, 0, 2 * Math::PI, 0
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
 
     # Inner circle: fill and frame
-    radius -= 10
-    CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
+    innerRadius = outerRadius - 10
+    CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
     CGContextFillPath context
 
-    CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
+    CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
 
@@ -59,12 +57,9 @@ class SitterCircleView < UIView
     if NSUserDefaults.standardUserDefaults[:arc_text] and sitter
       radius = 36
       font = UIFont.fontWithName('HelveticaNeue', size:10)
-      CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
-      CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
       textAttributes = { NSFontAttributeName => font }
-      sitterName = sitter.firstName.upcase
-      sitterNameAS = NSAttributedString.alloc.initWithString(sitterName, attributes:textAttributes)
-      GraphicsUtils.showStringOnArc context, sitterNameAS, sitterName, cx, cy, radius
+      sitterNameAS = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
+      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, radius
     end
 
     CGContextRestoreGState context

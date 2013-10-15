@@ -1,6 +1,6 @@
 module GraphicsUtils
-  def self.showStringOnArc(context, astring, string, cx, cy, radius)
-    cfLine = CTLineCreateWithAttributedString(astring)
+  def self.showStringOnArc(context, aString, cx, cy, radius)
+    cfLine = CTLineCreateWithAttributedString(aString)
     runs = CTLineGetGlyphRuns(cfLine)
 
     glyphCount = CTLineGetGlyphCount(cfLine)
@@ -26,7 +26,7 @@ module GraphicsUtils
     # # puts "glyphCenters = #{glyphCenters}"
     # # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
 
-    lineWidth = astring.size.width
+    lineWidth = aString.size.width
     lineAngle = lineWidth / radius
     CGContextSaveGState context
     CGContextTranslateCTM context, cx, cy
@@ -34,11 +34,9 @@ module GraphicsUtils
     currentRunFirstGlyphIndex = 0
     for run in runs
       runGlyphCount = CTRunGetGlyphCount(run)
-      # glyphs = Pointer.new(CGGlyph.type, runGlyphCount)
-      # CTRunGetGlyphs(run, CTRange(0, runGlyphCount), glyphs)
       for runGlyphIndex in 0...runGlyphCount
         glyphIndex = currentRunFirstGlyphIndex + runGlyphIndex
-        glyph = string[glyphIndex]
+        glyphRange = CFRangeMake(runGlyphIndex, 1)
         glyphWidth = glyphWidths[glyphIndex]
         glyphAngle = glyphWidth / radius
 
@@ -48,17 +46,15 @@ module GraphicsUtils
         # imageWidth = CTRunGetImageBounds(runArray.first, context, CFRangeMake(glyphIndex, 1)).size.width
         # imageAngle = imageWidth / radius
 
-        # textMatrix = CTRunGetTextMatrix(run)
-        # textMatrix.tx = -glyphWidth / 2
-        # textMatrix.ty = radius
-        # CGContextSetTextMatrix context, textMatrix
-
         CGContextRotateCTM context, -glyphAngle / 2
-        CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
-        # CGContextTranslateCTM context, -glyphWidth / 2, radius
-        # glyphRange = CFRangeMake(runGlyphIndex, 1)
-        # CTRunDraw run, context, glyphRange
-        # CGContextTranslateCTM context, glyphWidth / 2, -radius
+
+        # CGContextSetFillColorWithColor context, (glyphIndex % 2 == 0 ? 0xA60000 : 0x00A600).uicolor.CGColor
+        # CGContextFillRect context, CGRectMake(glyphWidth / 2, radius, glyphWidth, 1)
+        # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
+
+        CGContextSetTextMatrix context, CGAffineTransformMakeTranslation(glyphWidth / 2 - glyphXs[glyphIndex], radius)
+        CTRunDraw run, context, glyphRange
+
         CGContextRotateCTM context, -glyphAngle / 2
       end
       currentRunFirstGlyphIndex += runGlyphCount
