@@ -6,9 +6,18 @@ class SearchSittersController < UITableViewController
     end
   end
 
-  def viewDidLoad
+  def data
+    @searchResults ||= @sitters = Sitter.all.sort_by { |s| s.lastName }
+  end
+
+  def viewDidAppear(animated)
     super
-    @sitters = Sitter.all
+    UIApplication.sharedApplication.setStatusBarHidden true
+  end
+
+  def viewDidDisappear(animated)
+    super
+    UIApplication.sharedApplication.setStatusBarHidden false
   end
 
   layout do
@@ -18,7 +27,7 @@ class SearchSittersController < UITableViewController
 
   def searchBar(search_bar, textDidChange:searchText)
     searchText = searchText.upcase
-    @sitters = Sitter.all.select { |sitter| sitter.name.upcase.include? searchText.upcase }
+    @searchResults = @sitters.select { |sitter| sitter.name.upcase.include? searchText.upcase }
     view.reloadData
   end
 
@@ -31,8 +40,7 @@ class SearchSittersController < UITableViewController
   end
 
   def tableView(tableView, numberOfRowsInSection:section)
-    @sitters ||= Sitter.all
-    @sitters.length
+    data.length
   end
 
   IMAGE_TAG = 1
@@ -51,7 +59,7 @@ class SearchSittersController < UITableViewController
         subview UILabel, tag: DESCRIPTION_TAG, width: 255, height: 40, left: 65, top: 34 - 20, font: UIFont.fontWithName(fontName, size:14)
       end
     end
-    sitter = @sitters[indexPath.row]
+    sitter = data[indexPath.row]
 
     cell.textLabel.origin = [150, cell.textLabel.origin.y]
     cell.detailTextLabel.origin = [150, cell.detailTextLabel.origin.y]
