@@ -22,11 +22,13 @@ class SearchSittersController < UITableViewController
     view.reloadData
   end
 
-  def numberOfSectionsInTableView(tableView)
-    1
-  end
+  def numberOfSectionsInTableView(tableView); 1; end
 
   def tableView(tableView, heightForRowAtIndexPath:indexPath); 52; end
+
+  def tableView(tableView, didSelectRowAtIndexPath:indexPath)
+    self.view.endEditing true
+  end
 
   def tableView(tableView, numberOfRowsInSection:section)
     @sitters ||= Sitter.all
