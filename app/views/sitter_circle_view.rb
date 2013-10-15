@@ -56,9 +56,12 @@ class SitterCircleView < UIView
     CGContextFillPath context
 
     # Sitter name
-    radius = 36
-    drawArcText context, sitter.firstName.upcase, cx, cy, radius if NSUserDefaults.standardUserDefaults[:arc_text] if sitter
-      CGContextRestoreGState context
+    if NSUserDefaults.standardUserDefaults[:arc_text] and sitter
+      radius = 36
+      DrawingUtils.drawArcText context, sitter.firstName.upcase, cx, cy, radius, UIFont.fontWithName('HelveticaNeue', size:10)
+    end
+
+    CGContextRestoreGState context
 
     # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
     labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius, self.width, 2 * labelCircleRadius)
@@ -67,59 +70,6 @@ class SitterCircleView < UIView
       NSForegroundColorAttributeName => UIColor.blackColor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
-  end
-
-  def drawArcText(context, string, cx, cy, radius)
-    font = UIFont.fontWithName('HelveticaNeue', size:10)
-    textAttributes = { NSFontAttributeName => font }
-    astring = NSAttributedString.alloc.initWithString(string, attributes:textAttributes)
-
-    # cfLine = CTLineCreateWithAttributedString(astring)
-    # runArray = CTLineGetGlyphRuns(cfLine)
-
-    # glyphCount = CTLineGetGlyphCount(cfLine)
-    # glyphOffsets = [nil] * glyphCount
-    # start = 0
-    # for run in runArray
-    #   for glyphIndex in 0...CTRunGetGlyphCount(run)
-    #     glyphOffsets[glyphIndex] = start += CTRunGetTypographicBounds(run, CFRangeMake(glyphIndex, 1), nil, nil, nil)
-    #   end
-    # end
-    # # puts "glyphOffsets = #{glyphOffsets}"
-
-    # glyphCenters = [nil] * glyphCount
-    # previousOffset = 0
-    # glyphOffsets.each_with_index do |offset, i|
-    #   glyphCenters[i] = (previousOffset + offset) / 2
-    #   previousOffset = offset
-    # end
-    # # puts "glyphCenters = #{glyphCenters}"
-    # # puts "bounds.width = #{CTLineGetTypographicBounds(cfLine, nil, nil, nil)}"
-
-    CGContextSelectFont context, font.fontName, font.pointSize, KCGEncodingMacRoman
-    CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-
-    lineWidth = astring.size.width
-    lineAngle = lineWidth / radius
-    CGContextSaveGState context
-    CGContextTranslateCTM context, cx, cy
-    CGContextRotateCTM context, lineAngle / 2
-    for i in 0...string.length
-      glyph = string[i]
-      glyphWidth = glyph.sizeWithAttributes(textAttributes).width
-      glyphAngle = glyphWidth / radius
-
-      # glyphAngle = glyphCenters[i] / radius
-
-      # glyphWidth = CTRunGetTypographicBounds(runArray.first, CFRangeMake(i, 1), nil, nil, nil)
-      # imageWidth = CTRunGetImageBounds(runArray.first, context, CFRangeMake(i, 1)).size.width
-      # imageAngle = imageWidth / radius
-
-      CGContextRotateCTM context, -glyphAngle / 2
-      CGContextShowTextAtPoint context, -glyphWidth / 2, radius, glyph, 1
-      CGContextRotateCTM context, -glyphAngle / 2
-    end
-    CGContextRestoreGState context
   end
 
   def sitterImage
