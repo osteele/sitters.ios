@@ -124,15 +124,12 @@ Teacup::Stylesheet.new :booking do
       height: 35
 
   style :hour_right_handle,
-    left: '100%-20',
-    top: 0,
-    width: 40,
-    height: 35
-    # constraints: [
-    #   # constrain_width(100),
-    #   # pin to bottom-right corner
-    #   constrain(:right).equals(:superview, :right)
-    # ]
+    constraints: [
+      constrain(:top).equals(:superview, :top),
+      constrain(:height).equals(:superview, :height),
+      constrain(:right).equals(:superview, :right).plus(20),
+      constrain_width(40)
+    ]
 
   style :hour_left_handle_image,
     image: UIImage.imageNamed('images/left-drag-handle'),

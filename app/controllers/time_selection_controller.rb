@@ -146,7 +146,7 @@ class TimeSelectionController < UIViewController
       TouchUtils.bounceOnTap target, handle:leftDragHandle
       TouchUtils.bounceOnTap target, handle:rightDragHandle
       # FIXME replace this by a constraint
-      observe(target, :frame) do rightDragHandle.x = target.width - 20 end
+      # observe(target, :frame) do rightDragHandle.x = target.width - 20 end
     end
 
     tallSizeOnlyViews << hourSlider
