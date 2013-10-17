@@ -113,8 +113,9 @@ class TimeSelectionController < UIViewController
     firstHourOffset = 10
     firstHourNumber = 18
     hourWidth = 58
+    hours = 6..11
     hoursView = subview UIView do
-      [6, 7, 8, 9, 10, 11].each_with_index do |hour, i|
+      hours.each_with_index do |hour, i|
         subview UIView, :hour_blob, left: 10 + i * 58 do
           # TODO use dateFormatter
           subview UILabel, :hour_blob_hour, text: hour.to_s

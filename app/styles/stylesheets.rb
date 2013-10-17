@@ -34,13 +34,11 @@ Teacup::Stylesheet.new :sitters do
 
   style :recommended_sitters_button, extends: :big_button,
     left: 6,
-    backgroundColor: 0x5582C3.uicolor,
-    color: 0x5582C3.uicolor;
+    backgroundColor: 0x5582C3.uicolor;
 
   style :invite_sitter_button, extends: :big_button,
     left: 163,
-    backgroundColor: 0xA6A6A6.uicolor,
-    color: 0xA6A6A6.uicolor;
+    backgroundColor: 0xA6A6A6.uicolor;
 
   style :big_button_label,
     left: 0,
@@ -86,7 +84,7 @@ Teacup::Stylesheet.new :booking do
     height: 34,
     top: 30,
     font: UIFont.fontWithName('Helvetica', size:18),
-    textColor: 0x5481C9.uicolor
+    textColor: 0x5481C9.uicolor;
 
   style :day_selection_marker,
     left: 8,
@@ -107,14 +105,12 @@ Teacup::Stylesheet.new :booking do
     width: 195,
     height: 35,
     backgroundColor: UIColor.whiteColor,
-    textColor: 0x5481C9.uicolor,
     layer: {
       cornerRadius: 17,
       shadowRadius: 3,
       shadowOffset: [0, 1],
       shadowOpacity: 0.5
-    }
-;
+    };
 
   style :hour_slider_label,
     width: 195,
@@ -143,35 +139,38 @@ Teacup::Stylesheet.new :booking do
     left: 4,
     top: 10,
     width: 6,
-    height: 15
+    height: 15;
 
   style :hour_right_handle_image,
     width: 6,
     height: 15,
     top: 10,
     left: 9,
-    image: UIImage.imageNamed('images/right-drag-handle')
+    image: UIImage.imageNamed('images/right-drag-handle');
 
   style :hour_blob,
     top: 70,
     width: 40,
-    height: 40
+    height: 40;
 
-  style :hour_blog_hour,
+  style :hour_blob_hour,
+    left: 0,
     top: 8,
     width: 20,
     height: 20,
     font: UIFont.fontWithName('Helvetica', size:14),
+    textColor: UIColor.whiteColor,
     textAlignment: NSTextAlignmentCenter;
 
-  style :hour_blog_am_pm,
+  style :hour_blob_am_pm,
     top: 20,
     width: 20,
     height: 20,
     font: UIFont.fontWithName('Helvetica', size:9),
+    textColor: UIColor.whiteColor,
     textAlignment: NSTextAlignmentCenter;
 
-  style :hour_blog_half_past,
+  style :hour_blob_half_past,
     left: 26,
     top: 13,
     width: 20,
