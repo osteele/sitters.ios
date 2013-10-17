@@ -115,12 +115,20 @@ Teacup::Stylesheet.new :booking do
   style :hour_slider_label,
     width: 195,
     height: 35,
-    textColor: 0x5481C9.uicolor
+    textColor: 0x5481C9.uicolor;
+
+  style :hour_drag_handle,
+    constraints: [
+      constrain(:top).equals(:superview, :top),
+      constrain(:left).equals(:superview, :left),
+      constrain(:width).equals(:superview, :width),
+      constrain(:height).equals(:superview, :height)
+    ]
 
   style :hour_left_handle,
       left: 0,
       top: 0,
-      width: 640,
+      width: 40,
       height: 35
 
   style :hour_right_handle,

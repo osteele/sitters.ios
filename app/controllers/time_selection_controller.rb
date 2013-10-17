@@ -132,6 +132,7 @@ class TimeSelectionController < UIViewController
       hourRangeLabel = subview UILabel, :hour_slider_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
+      dragHandle = subview UIView, :hour_drag_handle
       leftDragHandle = subview UIView, :hour_left_handle do
         subview UIImageView, :hour_left_handle_image
       end
@@ -140,13 +141,13 @@ class TimeSelectionController < UIViewController
       end
 
       target = leftDragHandle.superview
-      resizeOptions = {xMinimum: firstHourOffset, widthMinimum: (minHours + 0.5) * hourWidth, widthFactor: hourWidth / 2}
-      TouchUtils.dragOnTouch target, handle:leftDragHandle, options:resizeOptions
-      TouchUtils.resizeOnTouch target, handle:rightDragHandle, options:resizeOptions
-      TouchUtils.bounceOnTap target, handle:leftDragHandle
-      TouchUtils.bounceOnTap target, handle:rightDragHandle
-      # FIXME replace this by a constraint
-      # observe(target, :frame) do rightDragHandle.x = target.width - 20 end
+      dragOptions = {xMinimum: firstHourOffset, widthMinimum: (minHours + 0.5) * hourWidth, widthFactor: hourWidth / 2}
+      TouchUtils.dragOnTouch target, handle:dragHandle, options:dragOptions
+      TouchUtils.dragOnTouch target, handle:leftDragHandle, options:dragOptions.merge(resize:true)
+      TouchUtils.resizeOnTouch target, handle:rightDragHandle, options:dragOptions
+      [dragHandle, leftDragHandle, rightDragHandle].each do |handle|
+        TouchUtils.bounceOnTap target, handle:handle
+      end
     end
 
     tallSizeOnlyViews << hourSlider

@@ -22,18 +22,14 @@ module TouchUtils
         # animator.removeAllBehaviors
 
       when UIGestureRecognizerStateChanged
-        # target.tx = pt.x
-
-        x = [initialOrigin.x + pt.x, xMin].max
+        x = initialOrigin.x + pt.x
+        x = [x, xMin].max
         x = [x, 320 - target.size.width / 2].min
-        # x = [x, xMax].min if xMax
         x = [x, initialOrigin.x + initialSize.width - minWidth].min if resize
         target.x = x
         target.width = initialOrigin.x + initialSize.width - x if resize
 
       when UIGestureRecognizerStateEnded
-        # dragger.isDragging = false
-
         x = ((target.origin.x - xMin) / factor).round * factor + xMin
         x = [x, xMin].max
         x = [x, xMax].min if xMax
