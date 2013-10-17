@@ -2,7 +2,7 @@ class SittersController < UIViewController
   include BW::KVO
   stylesheet :sitters
   attr_accessor :outerController
-  attr_accessor :selectedTimeSpan
+  attr_accessor :timeSelection
   attr_accessor :sitters
 
   def viewDidLoad
@@ -80,7 +80,7 @@ class SittersController < UIViewController
     end
     HexagonLayout.new.applyTo sitterViews
 
-    observe(self, :selectedTimeSpan) do |_, timeSpan|
+    observe(self, :timeSelection) do |_, timeSpan|
       UIView.animateWithDuration 0.3,
         animations: lambda {
           sitterViews.map do |view|

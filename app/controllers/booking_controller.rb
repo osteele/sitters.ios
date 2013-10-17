@@ -14,7 +14,7 @@ class BookingController < UIViewController
     super
     self.view.stylesheet = :sitters
     self.view.stylename = :sitters
-    mySittersController.selectedTimeSpan = timeSelectionController.selectedTimeSpan
+    mySittersController.timeSelection = timeSelectionController.timeSelection
   end
 
   layout do
@@ -32,7 +32,7 @@ class BookingController < UIViewController
   end
 
   def timeSelectionChanged(timeSelection)
-    mySittersController.selectedTimeSpan = timeSelection
+    mySittersController.timeSelection = timeSelection
   end
 
   # def navigationController(navigationController, willShowViewController:targetController, animated:flag)

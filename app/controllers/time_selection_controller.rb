@@ -2,12 +2,12 @@ class TimeSelectionController < UIViewController
   include BW::KVO
   stylesheet :sitters
 
-  attr_accessor :selectedTimeSpan
+  attr_accessor :timeSelection
   attr_accessor :delegate
 
   def initWithNibName(name, bundle:bundle)
     today = NSDate.date.dateAtStartOfDay
-    self.selectedTimeSpan = TimeSpan.new(today, 18, 21)
+    self.timeSelection = TimeSelection.new(today, 18, 21)
     self
   end
 
@@ -79,7 +79,7 @@ class TimeSelectionController < UIViewController
       selectionMarkerLabel.userInteractionEnabled = false
       label.when_tapped do
         TestFlight.passCheckpoint "Tap day ###{i+1} (#{name})"
-        self.selectedTimeSpan = selectedTimeSpan.onDate(date)
+        self.timeSelection = timeSelection.onDate(date)
       end
       dayLabels << label
       selectionMarkerLabels << selectionMarkerLabel
@@ -97,13 +97,13 @@ class TimeSelectionController < UIViewController
         dayIndex = ((daySelectionMarker.origin.x + daySelectionMarkerOffset - firstDayX) / dayspacing).round
         dayIndex = [[dayIndex, 0].max, weekdayDates.length - 1].min
         date = weekdayDates[dayIndex]
-        self.selectedTimeSpan = selectedTimeSpan.onDate(date) unless selectedTimeSpan.date == date
+        self.timeSelection = timeSelection.onDate(date) unless timeSelection.date == date
       end
     end
 
-    observe(self, :selectedTimeSpan) do |previousTimeSpan, timeSpan|
-      unless previousTimeSpan and previousTimeSpan.date == timeSpan.date
-      # return if previousTimeSpan and previousTimeSpan.date == timeSpan.date
+    observe(self, :timeSelection) do |previousTimeSelection, timeSpan|
+      unless previousTimeSelection and previousTimeSelection.date == timeSpan.date
+      # return if previousTimeSelection and previousTimeSelection.date == timeSpan.date
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
@@ -170,7 +170,7 @@ class TimeSelectionController < UIViewController
     hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
     hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
     periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
-    observe(self, :selectedTimeSpan) do |_, timeSpan|
+    observe(self, :timeSelection) do |_, timeSpan|
       startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
       endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
@@ -193,7 +193,7 @@ class TimeSelectionController < UIViewController
       endHour = firstHourNumber + ((hourSlider.x + hourSlider.tx + hourSlider.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
       startHour = [startHour, firstHourNumber].max
       endHour = [endHour, startHour + minHours].max
-      self.selectedTimeSpan = selectedTimeSpan.betweenTimes(startHour, endHour)
+      self.timeSelection = timeSelection.betweenTimes(startHour, endHour)
     end
 
     observe(hourSlider, :frame) do timeSpanHoursUpdater.fire! end
@@ -229,7 +229,7 @@ class TimeSelectionController < UIViewController
   end
 end
 
-class TimeSpan
+class TimeSelection
   attr_reader :date, :startHour, :endHour
 
   def initialize(date, startHour, endHour)
@@ -247,11 +247,11 @@ class TimeSpan
   end
 
   def onDate(date)
-    TimeSpan.new(date, startHour, endHour)
+    TimeSelection.new(date, startHour, endHour)
   end
 
   def betweenTimes(startHour, endHour)
-    TimeSpan.new(date, startHour, endHour)
+    TimeSelection.new(date, startHour, endHour)
   end
 
   private
