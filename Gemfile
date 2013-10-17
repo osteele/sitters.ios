@@ -12,8 +12,8 @@ gem 'rest-client'
 gem 'teacup'
 gem 'bubble-wrap'
 gem 'sugarcube', :require => [
-  'sugarcube-color',
-  'sugarcube-repl',
+  'sugarcube-color'
+  # 'sugarcube-repl',
 ]
 gem 'motion-pixate'
 

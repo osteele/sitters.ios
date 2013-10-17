@@ -1,8 +1,7 @@
 class BookingController < UIViewController
   include BW::KVO
   stylesheet :sitters
-
-  attr_accessor :selectedTimeSpan
+  attr_reader :timeSelectionController, :mySittersController, :suggestedSittersController
 
   def initWithNibName(name, bundle:bundle)
     super
@@ -13,38 +12,46 @@ class BookingController < UIViewController
 
   def viewDidLoad
     super
-
     self.view.stylesheet = :sitters
     self.view.stylename = :sitters
-
-    today = NSDate.date.dateAtStartOfDay
-    self.selectedTimeSpan = TimeSpan.new(today, 18, 21)
+    mySittersController.selectedTimeSpan = timeSelectionController.selectedTimeSpan
   end
 
   layout do
-    view.styleId = :sitters
-
-    mySittersController = SittersController.alloc.init
-    mySittersController.outerController = self
-    observe(self, :selectedTimeSpan) do mySittersController.selectedTimeSpan = selectedTimeSpan end
+    @mySittersController = SittersController.alloc.init
+    @mySittersController.outerController = self
 
     @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
     @navigationController.delegate = self
 
     subview @navigationController.view #, size: [320, 1000]
 
-    createTimeSelector
+    @timeSelectionController = TimeSelectionController.alloc.init
+    @timeSelectionController.delegate = self
+    subview @timeSelectionController.view
   end
 
-  # def navigationController(c1, willShowViewController:c2, animated:f); puts 'navigationController'; end
-  # def navigationController(c1, didShowViewController:c2, animated:f); puts 'navigationController'; end
+  def timeSelectionChanged(timeSelection)
+    mySittersController.selectedTimeSpan = timeSelection
+  end
+
+  # def navigationController(navigationController, willShowViewController:targetController, animated:flag)
+  #   puts "navigationController.willShowViewController #{targetController == mySittersController}"
+  #   UIView.animateWithDuration 0.3, animations: lambda {
+  #     timeSelectionController.setTimeSelectorHeight targetController == mySittersController ? :tall : :short
+  #   }
+  # end
+
+  # def navigationController(navigationController, didShowViewController:targetController, animated:flag)
+  #   puts "navigationController.didShowViewController #{targetController == mySittersController}"
+  # end
 
   def presentSuggestedSitters
     TestFlight.passCheckpoint 'Suggested sitters'
     @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.outerController = self end
     # @suggestedSittersController.title = 'Suggested Sitters'
     @navigationController.pushViewController @suggestedSittersController, animated:true
-    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
+    UIView.animateWithDuration 0.3, animations: lambda { timeSelectionController.setTimeSelectorHeight :short }
   end
 
   def presentSitterDetails(sitter)
@@ -53,10 +60,10 @@ class BookingController < UIViewController
     @sitterDetailsController.sitter = sitter
     # @sitterDetailsController.title = sitter.name
     @navigationController.pushViewController @sitterDetailsController, animated:true
-    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :short }
+    UIView.animateWithDuration 0.3, animations: lambda { timeSelectionController.setTimeSelectorHeight :short }
   end
 
   def mySittersWillAppear
-    UIView.animateWithDuration 0.3, animations: lambda { setTimeSelectorHeight :tall }
+    UIView.animateWithDuration 0.3, animations: lambda { timeSelectionController.setTimeSelectorHeight :tall }
   end
 end

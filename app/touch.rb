@@ -72,7 +72,7 @@ module TouchUtils
         TestFlight.passCheckpoint "Resize #{target.styleClass}"
       when UIGestureRecognizerStateChanged
         target.width = [initialSize.width + pt.x, minWidth].max
-        dragger.x = target.width - dragger.width + fudge
+        # dragger.x = target.width - dragger.width + fudge
       when UIGestureRecognizerStateEnded
         width = (target.width / factor).round * factor
         UIView.animateWithDuration 0.1,

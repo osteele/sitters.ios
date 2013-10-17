@@ -1,21 +1,45 @@
-class BookingController < UIViewController
+class TimeSelectionController < UIViewController
+  include BW::KVO
+  stylesheet :sitters
+
+  attr_accessor :selectedTimeSpan
+  attr_accessor :delegate
+
+  def initWithNibName(name, bundle:bundle)
+    today = NSDate.date.dateAtStartOfDay
+    self.selectedTimeSpan = TimeSpan.new(today, 18, 21)
+    self
+  end
+
+  def viewDidLoad
+    super
+    self.view.stylesheet = :sitters
+    self.view.stylename = :time_selector
+    self.view.styleId = :time_selector
+    self.view.top = 20
+    self.view.height = 120
+    self.view.backgroundColor = UIColor.redColor
+  end
+
   private
 
-  attr_reader :timeSelectorView
   attr_accessor :tallSizeOnlyViews
   attr_accessor :shortSizeOnlyViews
 
-  def createTimeSelector
+  layout do
+    # self.view.backgroundColor = UIColor.redColor
+    # self.view.stylesheet = :sitters
+    self.view.stylename = :time_selector
+    self.view.styleId = :time_selector
+    # createTimeSelector
+  # end
+
+  # def createTimeSelector
     @tallSizeOnlyViews = []
     @shortSizeOnlyViews = []
 
     createDaySelectorViews
     createHourSelectorViews
-
-    @timeSelectorView = subview TimeSelectorView, :time_selector, styleId: :time_selector do
-      createDaySelectorViews
-      createHourSelectorViews
-    end
   end
 
   def createDaySelectorViews
@@ -79,6 +103,7 @@ class BookingController < UIViewController
 
     observe(self, :selectedTimeSpan) do |previousTimeSpan, timeSpan|
       unless previousTimeSpan and previousTimeSpan.date == timeSpan.date
+      # return if previousTimeSpan and previousTimeSpan.date == timeSpan.date
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
@@ -86,7 +111,8 @@ class BookingController < UIViewController
           animations: lambda {
             daySelectionMarker.origin = [selectedMarkerLabel.origin[0] + daySelectionMarkerOffset, selectedMarkerLabel.origin[1]]
           }
-        end
+        delegate.timeSelectionChanged timeSpan if delegate
+      end
     end
   end
 
@@ -108,7 +134,6 @@ class BookingController < UIViewController
 
     minHours = 1.5
     hourRangeLabel = nil
-    leftDragHandle = rightDragHandle = nil
     hourSlider = subview UIView, :hours_bar, styleClass: :hour_range, styleId: :hour_range do
       hourRangeLabel = subview UILabel, styleClass: :hour_range
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
@@ -120,12 +145,14 @@ class BookingController < UIViewController
         subview UIView, styleClass: :graphic
       end
 
-      view = leftDragHandle.superview
+      target = leftDragHandle.superview
       resizeOptions = {xMinimum: firstHourOffset, widthMinimum: (minHours + 0.5) * hourWidth, widthFactor: hourWidth / 2}
-      TouchUtils.dragOnTouch view, handle:leftDragHandle, options:resizeOptions
-      TouchUtils.resizeOnTouch view, handle:rightDragHandle, options:resizeOptions
-      TouchUtils.bounceOnTap view, handle:leftDragHandle
-      TouchUtils.bounceOnTap view, handle:rightDragHandle
+      TouchUtils.dragOnTouch target, handle:leftDragHandle, options:resizeOptions
+      TouchUtils.resizeOnTouch target, handle:rightDragHandle, options:resizeOptions
+      TouchUtils.bounceOnTap target, handle:leftDragHandle
+      TouchUtils.bounceOnTap target, handle:rightDragHandle
+      # FIXME replace this by a constraint
+      observe(target, :frame) do rightDragHandle.x = target.width - 20 end
     end
     hourSlider.layer.cornerRadius = 17
     hourSlider.layer.shadowRadius = 3
@@ -172,30 +199,33 @@ class BookingController < UIViewController
     observe(hourSlider, :frame) do timeSpanHoursUpdater.fire! end
   end
 
+  public
+
   def setTimeSelectorHeight(key)
     return if @timeSelectorHeightKey == key
     @timeSelectorHeightKey = key
+    view = self.view
     case key
     when :short
       @savedTimeSelectorValues = {
-        frame: timeSelectorView.frame,
+        frame: view.frame,
         alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
       }
-      timeSelectorView.top = 64
-      timeSelectorView.height = 55
-      timeSelectorView.setNeedsDisplay
+      view.top = 64
+      view.height = 55
+      view.setNeedsDisplay
       tallSizeOnlyViews.each do |v| v.alpha = 0 end
       shortSizeOnlyViews.each do |v| v.alpha = 1 end
     when :tall
       savedValues = @savedTimeSelectorValues
       return unless savedValues
-      timeSelectorView.frame = savedValues[:frame]
+      view.frame = savedValues[:frame]
       savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
       shortSizeOnlyViews.each do |v| v.alpha = 0 end
       @savedTimeSelectorValues = nil
     end
-    gradient_layer = timeSelectorView.instance_variable_get(:@teacup_gradient_layer)
-    gradient_layer.frame = timeSelectorView.bounds if gradient_layer
+    gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
+    gradient_layer.frame = view.bounds if gradient_layer
   end
 end
 
