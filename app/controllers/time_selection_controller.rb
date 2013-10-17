@@ -11,7 +11,6 @@ class TimeSelectionController < UIViewController
   def viewDidLoad
     super
     self.view.stylename = :time_selector
-    self.view.styleId = :time_selector
     self.view.top = 20
     self.view.height = 120
 
@@ -49,7 +48,7 @@ class TimeSelectionController < UIViewController
     dayLabels = []
     selectionMarkerLabels = []
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
-    daySelectionMarker = subview UIButton, styleClass: :selected_day do
+    daySelectionMarker = subview UIView, :day_selection_marker do
       handle = subview UIView, width: 100, height: 100
       options = {
         xMinimum: firstDayX + daySelectionMarkerOffset,
@@ -59,6 +58,10 @@ class TimeSelectionController < UIViewController
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
+    daySelectionMarker.layer.cornerRadius = 17
+    daySelectionMarker.layer.shadowRadius = 1.5
+    daySelectionMarker.layer.shadowOffset = [0, 2]
+    daySelectionMarker.layer.shadowOpacity = 0.5
     tallSizeOnlyViews << daySelectionMarker
 
     weekdayDates.each_with_index do |date, i|
@@ -68,8 +71,8 @@ class TimeSelectionController < UIViewController
       # the color transition. Animation animates opacity but not color.
       # A custom view could animate its text color, but the current system leaves
       # the possibility for a wider variety of transition effects in the future.
-      label = subview UILabel, text: name, styleClass: :day_of_week, left: x
-      selectionMarkerLabel = subview UILabel, text: name, styleClass: 'day_of_week overlay', left: x
+      label = subview UILabel, :day_of_week, left: x, text: name
+      selectionMarkerLabel = subview UILabel, :day_of_week_overlay, left: x, text: name
       selectionMarkerLabel.userInteractionEnabled = false
       label.when_tapped do
         TestFlight.passCheckpoint "Tap day ###{i+1} (#{name})"
@@ -117,11 +120,11 @@ class TimeSelectionController < UIViewController
     hourWidth = 58
     hoursView = subview UIView do
       [6, 7, 8, 9, 10, 11].each_with_index do |hour, i|
-        subview UIView, styleClass: :hour_blob, left: 10 + i * 58 do
+        subview UIView, :hour_blob, left: 10 + i * 58 do
           # TODO use dateFormatter
-          subview UILabel, text: hour.to_s, styleClass: :hour
-          subview UILabel, text: 'PM', styleClass: :am_pm
-          subview UILabel, text: ':30', styleClass: :half_past
+          subview UILabel, :hour_blob_hour, text: hour.to_s
+          subview UILabel, :hour_blob_am_pm, text: 'PM'
+          subview UILabel, :hour_blob_half_past, text: ':30'
         end
       end
     end
@@ -129,15 +132,15 @@ class TimeSelectionController < UIViewController
 
     minHours = 1.5
     hourRangeLabel = nil
-    hourSlider = subview UIView, :hours_bar, styleClass: :hour_range, styleId: :hour_range do
-      hourRangeLabel = subview UILabel, styleClass: :hour_range
+    hourSlider = subview UIView, :hour_slider do
+      hourRangeLabel = subview UILabel, :hour_slider_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
-      leftDragHandle = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger do
-        subview UIView, styleClass: :graphic
+      leftDragHandle = subview UIView, :hour_left_handle do
+        subview UIImageView, :hour_left_handle_image
       end
-      rightDragHandle = subview UIView, :right_dragger do
-        subview UIImageView, :right_drag_graphic
+      rightDragHandle = subview UIView, :hour_right_handle do
+        subview UIImageView, :hour_right_handle_image
       end
 
       target = leftDragHandle.superview
@@ -158,7 +161,7 @@ class TimeSelectionController < UIViewController
 
     tallSizeOnlyViews << hourSlider
 
-    staticHoursLabel = subview UILabel, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
+    staticHoursLabel = subview UILabel, textAlignment: NSTextAlignmentCenter, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
     shortSizeOnlyViews << staticHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
