@@ -2,28 +2,25 @@ class SitterDetailsController < UIViewController
   attr_accessor :sitter
   attr_accessor :webView
 
+  def stylesheet
+    Teacup::Stylesheet[:sitter_details]
+  end
+
   layout do
-    view.backgroundColor = 0xF9F9F9.uicolor
+    view.stylename = :sitter_details
+    # view.backgroundColor = 0xF9F9F9.uicolor
 
     # headerHeight = 55
     # view.top = headerHeight
     # view.height -= headerHeight * 2
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
-    @webView = subview UIWebView, delegate: self, frame: view.frame
+    @webView = subview UIWebView, :webview, delegate: self #, frame: view.frame
 
     renderTemplate if sitter
 
-    @addButton = subview UILabel,
-      left: 0,
-      top: view.height - 55 - 45,
-      width: 320,
-      height: 55,
-      backgroundColor: 0x6A9CD0.uicolor,
-      textColor: UIColor.whiteColor,
-      text: 'Add to My Seven Sitters',
-      font: UIFont.fontWithName('Helvetica-Light', size:20),
-      textAlignment: NSTextAlignmentCenter;
+    @addButton = subview UILabel, :add_sitter,
+      top: view.height - 55 - 45
 
     @addButton.when_tapped do
       Sitter.addSitter self.sitter

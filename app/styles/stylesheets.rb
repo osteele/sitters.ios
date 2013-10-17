@@ -1,3 +1,27 @@
+Teacup::Stylesheet.new :sitter_details do
+  style :sitter_details,
+    backgroundColor: 0xF9F9F9.uicolor;
+
+  style :webview,
+    constraints: [
+      constrain_top(119),
+      constrain(:left).equals(:superview, :left),
+      constrain(:width).equals(:superview, :width),
+      constrain(:bottom).equals(:superview, :bottom) #.minus(105)
+    ]
+
+  style :add_sitter,
+    left: 0,
+    width: 320,
+    height: 55,
+    backgroundColor: 0x6A9CD0.uicolor,
+    textColor: UIColor.whiteColor,
+    text: 'Add to My Seven Sitters',
+    font: UIFont.fontWithName('Helvetica-Light', size:20),
+    textAlignment: NSTextAlignmentCenter;
+
+end
+
 Teacup::Stylesheet.new :sitters do
   style :sitters,
     top: 120,
