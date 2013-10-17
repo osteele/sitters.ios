@@ -3,7 +3,6 @@ class SitterDetailsController < UIViewController
   attr_accessor :webView
 
   layout do
-    view.styleId = :sitter_details
     view.backgroundColor = 0xF9F9F9.uicolor
 
     headerHeight = 55

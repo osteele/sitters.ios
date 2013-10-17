@@ -23,11 +23,6 @@ module.exports = (grunt) ->
         pretty$release: false
 
     sass:
-      global:
-        options:
-          banner: "/* DO NOT EDIT. Grunt builds this from from app/styles/*.scss. */\n"
-        files:
-          'resources/default.css': ['app/styles/default.scss', 'app/styles/**/*.scss']
       sitter_details:
         files:
           'resources/default.css': 'app/styles/default.scss'
@@ -35,7 +30,7 @@ module.exports = (grunt) ->
           banner: "/* DO NOT EDIT. Grunt builds this from from app/styles/default.scss. */\n"
 
     update:
-      tasks: ['jade', 'sass:global', 'sass:sitter_details']
+      tasks: ['jade', 'sass']
 
     watch:
       options:

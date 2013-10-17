@@ -17,7 +17,6 @@ nbproject
 .dat*.*
 vendor
 node_modules
-resources/default.css
 resources/Settings.bundle
 resources/styles/sitter_details.css
 .env

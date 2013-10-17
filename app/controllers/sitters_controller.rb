@@ -56,7 +56,7 @@ class SittersController < UIViewController
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
-    view = subview UIView, :avatars, styleId: :avatars, origin: [0, 88], size: [320, 300] do
+    view = subview UIView, :avatars, origin: [0, 88], size: [320, 300] do
       for i in 0...7
         sitter = sitters[i]
         view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s#, styleClass: :sitter, width:80, height:80

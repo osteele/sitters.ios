@@ -26,7 +26,6 @@ class TimeSelectionController < UIViewController
 
   layout do
     self.view.stylename = :time_selector
-    self.view.styleId = :time_selector
 
     @tallSizeOnlyViews = []
     @shortSizeOnlyViews = []
