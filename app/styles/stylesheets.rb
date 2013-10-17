@@ -5,6 +5,12 @@ Teacup::Stylesheet.new :booking do
     # height: 120
     gradient:  { colors: [0x6FA1EB.uicolor, 0x4E7EC2.uicolor] }
 
+  style :date,
+    width: 320,
+    height: 20,
+    top: 5,
+    font: UIFont.fontWithName('Helvetica', size:12);
+
   style :hours_bar,
     backgroundColor: UIColor.whiteColor,
     left: 10,
@@ -15,4 +21,11 @@ Teacup::Stylesheet.new :booking do
     top: 0,
     width: 40,
     height: '100%'
+
+  style :right_drag_graphic,
+    width: 6,
+    height: 15,
+    top: 10,
+    left: 9,
+    image: UIImage.imageNamed('images/right-drag-handle')
 end

@@ -5,8 +5,6 @@ class TimeSelectionController < UIViewController
   attr_accessor :delegate
 
   def initWithNibName(name, bundle:bundle)
-    today = NSDate.date.dateAtStartOfDay
-    self.timeSelection = TimeSelection.new(today, 18, 21)
     self
   end
 
@@ -16,6 +14,10 @@ class TimeSelectionController < UIViewController
     self.view.styleId = :time_selector
     self.view.top = 20
     self.view.height = 120
+
+    # do this here instead of initWithName so that views update to the time
+    today = NSDate.date.dateAtStartOfDay
+    self.timeSelection = TimeSelection.new(today, 18, 21)
   end
 
   private
@@ -37,7 +39,7 @@ class TimeSelectionController < UIViewController
   def createDaySelectorViews
     firstDayOfDisplayedWeek = NSDate.date.dateAtStartOfDay
     dayLabelFormatter = dateFormatter('EEEE, MMMM d')
-    dayLabel = subview UILabel, styleClass: :date
+    dayLabel = subview UILabel, :date
 
     firstDayX = 3
     dayspacing = 44
@@ -99,11 +101,12 @@ class TimeSelectionController < UIViewController
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
+        pos = [selectedMarkerLabel.x + daySelectionMarkerOffset, selectedMarkerLabel.y]
+        daySelectionMarker.origin = pos if daySelectionMarker.top == 0 # first time
         UIView.animateWithDuration 0.3,
           animations: lambda {
-            daySelectionMarker.origin = [selectedMarkerLabel.origin[0] + daySelectionMarkerOffset, selectedMarkerLabel.origin[1]]
+            daySelectionMarker.x = pos[0]
           }
-        delegate.timeSelectionChanged timeSpan if delegate
       end
     end
   end
@@ -133,8 +136,8 @@ class TimeSelectionController < UIViewController
       leftDragHandle = subview UIView, :left_dragger, styleClass: :left_dragger, styleId: :left_dragger do
         subview UIView, styleClass: :graphic
       end
-      rightDragHandle = subview UIView, :right_dragger, styleClass: :right_dragger, styleId: :right_dragger do
-        subview UIView, styleClass: :graphic
+      rightDragHandle = subview UIView, :right_dragger do
+        subview UIImageView, :right_drag_graphic
       end
 
       target = leftDragHandle.superview
@@ -163,6 +166,7 @@ class TimeSelectionController < UIViewController
     hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
     periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
     observe(self, :timeSelection) do |_, timeSpan|
+      delegate.timeSelectionChanged timeSpan if delegate
       startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
       endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end

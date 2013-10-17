@@ -8,13 +8,6 @@
     text-align: center;
   }
 
-  .date {
-    width: 320px;
-    height: 20px;
-    top: 5px;
-    font-size: 12px;
-  }
-
   .day_of_week {
     width: 44px;
     height: 34px;
@@ -60,16 +53,6 @@
       .graphic {
         background-image: url(images/left-drag-handle.png);
         left: 4px;
-        top: 10px;
-        width: 6px;
-        height: 15px;
-      }
-    }
-
-    .right_dragger {
-      .graphic {
-        background-image: url(images/right-drag-handle.png);
-        left: 9px;
         top: 10px;
         width: 6px;
         height: 15px;
