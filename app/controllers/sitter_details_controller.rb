@@ -5,19 +5,34 @@ class SitterDetailsController < UIViewController
   layout do
     view.backgroundColor = 0xF9F9F9.uicolor
 
-    headerHeight = 55
-    view.top = headerHeight
-    view.height -= headerHeight * 2
+    # headerHeight = 55
+    # view.top = headerHeight
+    # view.height -= headerHeight * 2
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
     @webView = subview UIWebView, delegate: self, frame: view.frame
 
     renderTemplate if sitter
 
-    # subview UILabel, styleId: :footer, text: 'Add to My Seven Sitters'
+    @addButton = subview UILabel,
+      left: 0,
+      top: view.height - 55 - 45,
+      width: 320,
+      height: 55,
+      backgroundColor: 0x6A9CD0.uicolor,
+      textColor: UIColor.whiteColor,
+      text: 'Add to My Seven Sitters',
+      font: UIFont.fontWithName('Helvetica-Light', size:20),
+      textAlignment: NSTextAlignmentCenter;
+
+    @addButton.when_tapped do
+      Sitter.addSitter self.sitter
+      navigationController.popViewControllerAnimated true
+    end
   end
 
   def sitter=(sitter)
+    @addButton.hidden = ! Sitter.canAdd(sitter) if @addButton
     return if @sitter == sitter
     @sitter = sitter
     renderTemplate
@@ -35,6 +50,7 @@ class SitterDetailsController < UIViewController
   end
 
   def webViewDidFinishLoad(webView)
+    webView.top = 55
     webView.alpha = 1
   end
 end

@@ -25,6 +25,17 @@ class Sitter
     self.added += (self.all - self.added)[0...delta] if 0 < delta
   end
 
+  def self.canAdd(sitter)
+    return false if self.added.length >= 7
+    return false if self.added.include?(sitter)
+    return true
+  end
+
+  def self.addSitter(sitter)
+    # instead of <<, for KVO
+    self.added = self.added + [sitter] if self.canAdd(sitter)
+  end
+
   def initialize(data)
     @name = data['name']
     @age = data['age']
