@@ -1,9 +1,13 @@
 class SittersController < UIViewController
   include BW::KVO
-  stylesheet :sitters
   attr_accessor :delegate
   attr_accessor :timeSelection
   attr_accessor :sitters
+
+  # stylesheet :sitters
+  def stylesheet
+    Teacup::Stylesheet[:sitters]
+  end
 
   def viewDidLoad
     super
@@ -14,25 +18,24 @@ class SittersController < UIViewController
   end
 
   layout do
-    view.styleId = :sitters
+    view.stylename = :sitters
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
-
       createSitterAvatars
 
-      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :big_button, styleId: :recommended, styleClass: :big_button do
-        label = subview UILabel, text: 'View Recommended', userInteractionEnabled: false
-        caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters", userInteractionEnabled: false
+      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button, do
+        label = subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
+        caption = subview UILabel, :big_button_caption, text: "#{Sitter.all.length} connected sitters", userInteractionEnabled: false
       end
       viewRecommended.when_tapped { delegate.presentSuggestedSitters }
 
-      subview UIButton.buttonWithType(UIButtonTypeRoundedRect), styleId: :invite, styleClass: :big_button do
-        subview UILabel, text: 'Invite a Sitter'
-        subview UILabel, styleClass: :caption, text: 'to add a sitter you know'
+      subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :invite_sitter_button, do
+        subview UILabel, :big_button_label, text: 'Invite a Sitter'
+        subview UILabel, :big_button_caption, text: 'to add a sitter you know'
       end
 
-      addSittersLabel = subview UILabel, styleId: :add_sitters
-      addSittersCaption = subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
+      addSittersLabel = subview UILabel, :add_sitters_text
+      addSittersCaption = subview UILabel, :add_sitters_caption
       addSittersLabel.when_tapped { delegate.presentSuggestedSitters }
 
       spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
@@ -53,10 +56,10 @@ class SittersController < UIViewController
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
-    view = subview UIView, styleId: :avatars, origin: [0, 88], size: [320, 300] do
+    view = subview UIView, :avatars, styleId: :avatars, origin: [0, 88], size: [320, 300] do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, sitter: sitter, labelText: (i+1).to_s, styleClass: :sitter
+        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s#, styleClass: :sitter, width:80, height:80
         view.when_tapped do
           if view.sitter then
             delegate.presentSitterDetails view.sitter

@@ -1,8 +1,73 @@
+Teacup::Stylesheet.new :sitters do
+  style :sitters,
+    top: 120
+
+  style :sitter,
+    width: 90,
+    height: 90,
+    backgroundColor: UIColor.clearColor
+
+  style :add_sitters_text,
+    top: 340,
+    width: 320,
+    height: 45,
+    textColor: 0x5481C9.uicolor,
+    font: UIFont.fontWithName('Helvetica-Bold', size:13),
+    textAlignment: NSTextAlignmentCenter
+
+  style :add_sitters_caption,
+    top: 351,
+    left: 10,
+    width: 320,
+    height: 45,
+    textColor: 0x969696.uicolor,
+    font: UIFont.fontWithName('Helvetica', size:12),
+    textAlignment: NSTextAlignmentCenter,
+    text: 'to enjoy complete freedom and spontaneity.'
+
+  style :big_button,
+    top: 390,
+    width: 152,
+    height: 45
+
+  style :recommended_sitters_button, extends: :big_button,
+    left: 6,
+    backgroundColor: 0x5582C3.uicolor,
+    color: 0x5582C3.uicolor
+
+  style :invite_sitter_button, extends: :big_button,
+    left: 163,
+    backgroundColor: 0xA6A6A6.uicolor,
+    color: 0xA6A6A6.uicolor
+
+  style :big_button_label,
+    left: 0,
+    top: -9,
+    width: 150,
+    height: 50,
+    textColor: UIColor.whiteColor,
+    font: UIFont.fontWithName('Helvetica', size:13),
+    textAlignment: NSTextAlignmentCenter
+
+  style :big_button_caption,
+    left: 0,
+    top: 4,
+    width: 150,
+    height: 45,
+    textColor: UIColor.whiteColor,
+    font: UIFont.fontWithName('Helvetica', size:11),
+    textAlignment: NSTextAlignmentCenter
+end
+
 Teacup::Stylesheet.new :booking do
+  style :sitter,
+    width: 90,
+    height: 90
+
   style :time_selector,
-  top: 20,
-  width: 320,
-  height: 120
+    top: 20,
+    width: 320,
+    height: 120
 
   style UILabel,
     textColor: UIColor.whiteColor,
