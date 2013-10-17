@@ -18,7 +18,6 @@ class TimeSelectionController < UIViewController
     self.view.styleId = :time_selector
     self.view.top = 20
     self.view.height = 120
-    self.view.backgroundColor = UIColor.redColor
   end
 
   private
@@ -27,14 +26,9 @@ class TimeSelectionController < UIViewController
   attr_accessor :shortSizeOnlyViews
 
   layout do
-    # self.view.backgroundColor = UIColor.redColor
-    # self.view.stylesheet = :sitters
     self.view.stylename = :time_selector
     self.view.styleId = :time_selector
-    # createTimeSelector
-  # end
 
-  # def createTimeSelector
     @tallSizeOnlyViews = []
     @shortSizeOnlyViews = []
 
@@ -201,7 +195,7 @@ class TimeSelectionController < UIViewController
 
   public
 
-  def setTimeSelectorHeight(key)
+  def setHeight(key)
     return if @timeSelectorHeightKey == key
     @timeSelectorHeightKey = key
     view = self.view

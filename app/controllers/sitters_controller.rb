@@ -1,7 +1,7 @@
 class SittersController < UIViewController
   include BW::KVO
   stylesheet :sitters
-  attr_accessor :outerController
+  attr_accessor :delegate
   attr_accessor :timeSelection
   attr_accessor :sitters
 
@@ -24,7 +24,7 @@ class SittersController < UIViewController
         label = subview UILabel, text: 'View Recommended', userInteractionEnabled: false
         caption = subview UILabel, styleClass: :caption, text: "#{Sitter.all.length} connected sitters", userInteractionEnabled: false
       end
-      viewRecommended.when_tapped { outerController.presentSuggestedSitters }
+      viewRecommended.when_tapped { delegate.presentSuggestedSitters }
 
       subview UIButton.buttonWithType(UIButtonTypeRoundedRect), styleId: :invite, styleClass: :big_button do
         subview UILabel, text: 'Invite a Sitter'
@@ -33,7 +33,7 @@ class SittersController < UIViewController
 
       addSittersLabel = subview UILabel, styleId: :add_sitters
       addSittersCaption = subview UILabel, styleId: :add_sitters_caption, text: 'to enjoy complete freedom and spontaneity.'
-      addSittersLabel.when_tapped { outerController.presentSuggestedSitters }
+      addSittersLabel.when_tapped { delegate.presentSuggestedSitters }
 
       spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
       remainingSitterCount = 7 - Sitter.added.length
@@ -57,10 +57,6 @@ class SittersController < UIViewController
 
   end
 
-  def viewWillAppear(animated)
-    outerController.mySittersWillAppear if outerController
-  end
-
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
@@ -70,9 +66,9 @@ class SittersController < UIViewController
         view = subview SitterCircleView, sitter: sitter, labelText: (i+1).to_s, styleClass: :sitter
         view.when_tapped do
           if view.sitter then
-            outerController.presentSitterDetails view.sitter
+            delegate.presentSitterDetails view.sitter
           else
-            outerController.presentSuggestedSitters
+            delegate.presentSuggestedSitters
           end
         end
         sitterViews << view
