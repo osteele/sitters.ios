@@ -7,6 +7,11 @@ class SitterCircleView < UIView
     view
   end
 
+  def sitter=(sitter)
+    @sitter = sitter
+    self.setNeedsDisplay
+  end
+
   def drawRect(rect)
     if sitter
       layer.shadowOffset = [0, 0.5]

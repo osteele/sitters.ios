@@ -6,9 +6,9 @@ class SettingsController < Formotion::FormController
     end
   end
 
-  def submit
+  def viewDidDisappear(view)
     data = self.form.render
-    # puts data[:settings][:arc_text]
+    Sitter.setAddedCount(data[:sitter_count].to_i)
   end
 
   def self.form
@@ -32,26 +32,27 @@ class SettingsController < Formotion::FormController
           title: 'Parent',
           key: :free,
           type: :check,
+          value: true
         }, {
           title: 'Sitter',
-          value: true,
           key: :basic,
           type: :check,
+        }],
+      }, {
+        title: 'Debug',
+        rows: [{
+          title: 'Sitters',
+          key: :sitter_count,
+          type: :options,
+          items: (0..7).map { |n| n.to_s },
+          value: Sitter.added.length.to_s
         }]
-      # }, {
-      #   title: 'Settings',
-      #   key: :settings,
-      #   rows: [{
-      #     title: 'Arc Text',
-      #     key: :arc_text,
-      #     type: :switch,
-      #     value: NSUserDefaults.standardUserDefaults[:arc_text],
-      #   }]
-      # }, {
-      #   rows: [{
-      #     title: 'Save',
-      #     type: :submit,
-      # }]
+        # {
+        #   title: 'Arc Text',
+        #   key: :arc_text,
+        #   type: :switch,
+        #   value: NSUserDefaults.standardUserDefaults[:arc_text],
+        # }
       }]
     })
   end

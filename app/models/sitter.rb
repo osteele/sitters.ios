@@ -3,6 +3,9 @@ class Sitter
   attr_reader :age
   attr_reader :description
   attr_accessor :active
+  class << self
+    attr_accessor :added
+  end
 
   def self.all
     @sitters ||= json.map { |data| self.new(data) }
@@ -14,6 +17,12 @@ class Sitter
 
   def self.suggested
     return self.all - self.added
+  end
+
+  def self.setAddedCount(n)
+    delta = n - self.added.length
+    self.added = self.added[0...n] if delta < 0
+    self.added += (self.all - self.added)[0...delta] if 0 < delta
   end
 
   def initialize(data)
