@@ -17,19 +17,20 @@ Teacup::Stylesheet.new :sitters do
     textAlignment: NSTextAlignmentCenter;
 
   style :add_sitters_caption,
-    top: 351,
+    top: 353,
     left: 10,
     width: 320,
     height: 45,
     textColor: 0x969696.uicolor,
-    font: UIFont.fontWithName('Helvetica', size:12),
+    font: UIFont.fontWithName('Helvetica', size:11),
     textAlignment: NSTextAlignmentCenter,
     text: 'to enjoy complete freedom and spontaneity.';
 
   style :big_button,
-    top: 390,
+    top: 391,
     width: 152,
-    height: 45;
+    height: 45,
+    layer: { cornerRadius: 3 };
 
   style :recommended_sitters_button, extends: :big_button,
     left: 6,
@@ -52,11 +53,11 @@ Teacup::Stylesheet.new :sitters do
 
   style :big_button_caption,
     left: 0,
-    top: 4,
+    top: 7,
     width: 150,
     height: 45,
     textColor: UIColor.whiteColor,
-    font: UIFont.fontWithName('Helvetica', size:11),
+    font: UIFont.fontWithName('Helvetica-Light', size:11),
     textAlignment: NSTextAlignmentCenter;
 end
 
@@ -92,7 +93,13 @@ Teacup::Stylesheet.new :booking do
     top: 30,
     width: 34,
     height: 34,
-    backgroundColor: UIColor.whiteColor
+    backgroundColor: UIColor.whiteColor,
+    layer: {
+      cornerRadius: 17,
+      shadowRadius: 1.5,
+      shadowOffset: [0, 2],
+      shadowOpacity: 0.5
+    };
 
   style :hour_slider,
     left: 10,
@@ -100,7 +107,14 @@ Teacup::Stylesheet.new :booking do
     width: 195,
     height: 35,
     backgroundColor: UIColor.whiteColor,
-    textColor: 0x5481C9.uicolor
+    textColor: 0x5481C9.uicolor,
+    layer: {
+      cornerRadius: 17,
+      shadowRadius: 3,
+      shadowOffset: [0, 1],
+      shadowOpacity: 0.5
+    }
+;
 
   style :hour_slider_label,
     width: 195,

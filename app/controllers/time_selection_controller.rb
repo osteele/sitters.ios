@@ -57,10 +57,10 @@ class TimeSelectionController < UIViewController
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
-    daySelectionMarker.layer.cornerRadius = 17
-    daySelectionMarker.layer.shadowRadius = 1.5
-    daySelectionMarker.layer.shadowOffset = [0, 2]
-    daySelectionMarker.layer.shadowOpacity = 0.5
+    # daySelectionMarker.layer.cornerRadius = 17
+    # daySelectionMarker.layer.shadowRadius = 1.5
+    # daySelectionMarker.layer.shadowOffset = [0, 2]
+    # daySelectionMarker.layer.shadowOpacity = 0.5
     tallSizeOnlyViews << daySelectionMarker
 
     weekdayDates.each_with_index do |date, i|
@@ -151,10 +151,10 @@ class TimeSelectionController < UIViewController
       # FIXME replace this by a constraint
       observe(target, :frame) do rightDragHandle.x = target.width - 20 end
     end
-    hourSlider.layer.cornerRadius = 17
-    hourSlider.layer.shadowRadius = 3
-    hourSlider.layer.shadowOffset = [0, 1]
-    hourSlider.layer.shadowOpacity = 0.5
+    # hourSlider.layer.cornerRadius = 17
+    # hourSlider.layer.shadowRadius = 3
+    # hourSlider.layer.shadowOffset = [0, 1]
+    # hourSlider.layer.shadowOpacity = 0.5
     # hourSlider.layer.masksToBounds = false
     # hourSlider.layer.shadowPath = UIBezierPath.bezierPathWithRoundedRect(hourSlider.bounds, cornerRadius:17).CGPath
 
