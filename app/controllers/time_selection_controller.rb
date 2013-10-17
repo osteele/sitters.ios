@@ -1,6 +1,5 @@
 class TimeSelectionController < UIViewController
   include BW::KVO
-  stylesheet :sitters
 
   attr_accessor :timeSelection
   attr_accessor :delegate
@@ -13,7 +12,6 @@ class TimeSelectionController < UIViewController
 
   def viewDidLoad
     super
-    self.view.stylesheet = :sitters
     self.view.stylename = :time_selector
     self.view.styleId = :time_selector
     self.view.top = 20

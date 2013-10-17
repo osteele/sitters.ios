@@ -1,4 +1,4 @@
-Teacup::Stylesheet.new :sitters do
+Teacup::Stylesheet.new :booking do
   style :time_selector,
     # top: 20,
     # width: 320

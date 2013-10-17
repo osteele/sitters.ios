@@ -1,6 +1,6 @@
 class BookingController < UIViewController
   include BW::KVO
-  stylesheet :sitters
+  stylesheet :booking
   attr_reader :timeSelectionController, :mySittersController, :suggestedSittersController
 
   def initWithNibName(name, bundle:bundle)
@@ -12,7 +12,6 @@ class BookingController < UIViewController
 
   def viewDidLoad
     super
-    self.view.stylesheet = :sitters
     self.view.stylename = :sitters
     mySittersController.timeSelection = timeSelectionController.timeSelection
   end
