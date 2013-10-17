@@ -9,18 +9,18 @@ Teacup::Stylesheet.new :booking do
     width: 320,
     height: 20,
     top: 5,
-    font: UIFont.fontWithName('Helvetica', size:12);
+    font: UIFont.fontWithName('Helvetica', size:12)
 
   style :hours_bar,
     backgroundColor: UIColor.whiteColor,
     left: 10,
-    top: 75;
+    top: 75
 
   style :right_dragger,
     left: '100%-20',
     top: 0,
     width: 40,
-    height: '100%'
+    height: 35
 
   style :right_drag_graphic,
     width: 6,
