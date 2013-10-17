@@ -12,8 +12,12 @@ class SettingsController < Formotion::FormController
   end
 
   def self.form
+    buildDate = UIApplication.sharedApplication.delegate.buildDate
+    expirationDate = UIApplication.sharedApplication.delegate.expirationDate
+    dateFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle)
+    dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle).setTimeStyle(NSDateFormatterShortStyle)
+
     Formotion::Form.new({
-      # persist_as: :settings,
       sections: [{
         title: 'Registration',
         rows: [{
@@ -38,6 +42,19 @@ class SettingsController < Formotion::FormController
           key: :basic,
           type: :check,
         }],
+      }, {
+        title: 'About',
+        rows: [
+        {
+          title: 'Build time',
+          type: :static,
+          value: dateTimeFormatter.stringFromDate(buildDate)
+        },
+        {
+          title: 'Expiration date',
+          type: :static,
+          value: expirationDate ? dateFormatter.stringFromDate(expirationDate) : 'Never'
+        }]
       }, {
         title: 'Debug',
         rows: [{

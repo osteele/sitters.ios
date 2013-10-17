@@ -1,7 +1,6 @@
 class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
-    initializePixmate
 
     window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
@@ -19,7 +18,22 @@ class AppDelegate
     true
   end
 
+  def buildDate
+    @buildDate ||= dateFromProperty('BUILD_DATE')
+  end
+
+  def expirationDate
+    @expirationDate ||= dateFromProperty('EXPIRATION_DATE')
+  end
+
   private
+
+  def dateFromProperty(propertyName)
+    dateString = NSBundle.mainBundle.objectForInfoDictionaryKey(propertyName)
+    return nil unless dateString
+    dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+    dateDateFormatter.dateFromString(dateString)
+  end
 
   def tabControllers
     [
@@ -32,20 +46,8 @@ class AppDelegate
   end
 
   def isExpired
-    expirationString = NSBundle.mainBundle.objectForInfoDictionaryKey('EXPIRATION_DATE')
-    return false unless expirationString
-    expirationDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-    expirationDate = expirationDateFormatter.dateFromString(expirationString)
-    # puts "Expires #{NSDateFormatter.alloc.init.setDateFormat(NSDateFormatterMediumStyle).stringFromDate(expirationDate)}"
+    return false unless expirationDate
     return expirationDate < NSDate.date
-  end
-
-  def initializePixmate
-    if Device.simulator?
-      stylesheet_path = ENV['PX_STYLESHEET_PATH']
-      PXStylesheet.styleSheetFromFilePath stylesheet_path, withOrigin:0
-      PXStylesheet.currentApplicationStylesheet.monitorChanges = true
-    end
   end
 
   def initializeTestFlight
