@@ -2,7 +2,7 @@ class SettingsController < Formotion::FormController
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Settings', image:UIImage.imageNamed('tabs/settings.png'), tag:5)
+      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Settings', image:UIImage.imageNamed('tabs/settings'), tag:5)
     end
   end
 

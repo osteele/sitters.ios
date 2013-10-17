@@ -79,7 +79,7 @@ class SitterCircleView < UIView
 
   def self.placeholderImage
     @placeholderImage ||= begin
-      placeholder = UIImage.imageNamed('images/sitter-placeholder.png')
+      placeholder = UIImage.imageNamed('images/sitter-placeholder')
       CGImageCreateWithMask(placeholder.CGImage, SitterCircleView.maskImage)
     end
   end

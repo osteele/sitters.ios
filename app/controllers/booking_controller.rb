@@ -6,7 +6,7 @@ class BookingController < UIViewController
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters.png'), tag:1)
+      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters'), tag:1)
     end
   end
 
