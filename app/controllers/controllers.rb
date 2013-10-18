@@ -11,25 +11,18 @@ class ChatController < UIViewController
 
   def viewWillAppear(animated)
     super
-    @locationManager ||= CLLocationManager.alloc.init.tap do |locationManager|
-      locationManager.delegate = self
-      locationManager.desiredAccuracy = KCLLocationAccuracyKilometer
-    end
-
-    @locationManager.startUpdatingLocation
-    Scheduler.after 10 do @locationManager.stopUpdatingLocation end
+    # set this here instead instead of initialization so we need permission until user sees the map
+    mapView.showsUserLocation = true
   end
 
-  def locationManager(locationManager, didUpdateLocations:locations)
-    location = locations.last
-    locationManager.stopUpdatingLocation if 0 < location.horizontalAccuracy and location.horizontalAccuracy < 100
-    mapView.setRegion [location.coordinate, [1, 1]], animated:true
-    # mapView.centerCoordinate = location.coordinate
+  def mapView(mapView, didUpdateUserLocation:userLocation)
+    coordinate = mapView.userLocation.coordinate
+    mapView.setRegion [coordinate, [0.2, 0.2]], animated:true if coordinate
   end
 
   layout do
-    @mapView = subview MKMapView.alloc.initWithFrame([[0, 0],[320, 122]]),
-      showsUserLocation: true,
+    @mapView = subview MKMapView.alloc.initWithFrame([[0, 20],[320, 122]]),
+      delegate: self,
       userTrackingMode: MKUserTrackingModeFollow
   end
 end
