@@ -33,6 +33,12 @@ class SitterCircleView < UIView
       layer.shadowOpacity = 0
     end
 
+    sitterNameFont = UIFont.fontWithName('HelveticaNeue', size:10)
+    numberLabelFont = UIFont.fontWithName('HelveticaNeue', size:14)
+    outerRingWidth = 10
+    labelCircleRadius = 11
+    textRadius = 36
+
     context = UIGraphicsGetCurrentContext()
     CGContextSaveGState context
     CGContextTranslateCTM context, 0, bounds.size.height
@@ -59,11 +65,9 @@ class SitterCircleView < UIView
     CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
     CGContextStrokePath context
 
-    ringWidth = 10
-    imageRect = CGRectMake(ringWidth, ringWidth, bounds.size.width - 2 * ringWidth, bounds.size.height - 2 * ringWidth)
+    imageRect = CGRectMake(outerRingWidth, outerRingWidth, bounds.size.width - 2 * outerRingWidth, bounds.size.height - 2 * outerRingWidth)
     CGContextDrawImage context, imageRect, sitterImage
 
-    labelCircleRadius = 11
     CGContextAddArc context, cx, labelCircleRadius + 3, labelCircleRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
     CGContextFillPath context
@@ -73,12 +77,10 @@ class SitterCircleView < UIView
     CGContextFillPath context
 
     # Sitter name
-    if NSUserDefaults.standardUserDefaults[:arc_text] and sitter
-      radius = 36
-      font = UIFont.fontWithName('HelveticaNeue', size:10)
-      textAttributes = { NSFontAttributeName => font }
+    if sitter
+      textAttributes = { NSFontAttributeName => sitterNameFont }
       sitterNameAS = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
-      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, radius
+      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, textRadius
     end
 
     CGContextRestoreGState context
@@ -86,7 +88,7 @@ class SitterCircleView < UIView
     # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
     labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius, self.width, 2 * labelCircleRadius)
     labelText.drawInRect labelRect, withAttributes: {
-      NSFontAttributeName => UIFont.fontWithName('HelveticaNeue', size:14),
+      NSFontAttributeName => numberLabelFont,
       NSForegroundColorAttributeName => UIColor.blackColor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
