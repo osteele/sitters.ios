@@ -70,7 +70,7 @@ class SittersController < UIViewController
     view = subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s
+        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s, available: false
         view.when_tapped do
           if view.sitter then
             delegate.presentSitterDetails view.sitter
@@ -82,6 +82,7 @@ class SittersController < UIViewController
       end
     end
     HexagonLayout.new.applyTo sitterViews
+    updateSitterAvailability
 
     observe(Sitter, :added) do
       sitters = Sitter.added
