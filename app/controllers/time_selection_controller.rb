@@ -58,6 +58,7 @@ class TimeSelectionController < UIViewController
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
     tallSizeOnlyViews << daySelectionMarker
+    @dayMarker = daySelectionMarker
 
     weekdayDates.each_with_index do |date, i|
       x = firstDayX + i * dayspacing
@@ -199,29 +200,36 @@ class TimeSelectionController < UIViewController
     return if @timeSelectorHeightKey == key
     @timeSelectorHeightKey = key
     view = self.view
+    shortViewTop = 64
+    shortViewHeight = 55
     case key
     when :short
       @savedTimeSelectorValues = {
         frame: view.frame,
+        dayMarkerFrame: @dayMarker.frame,
         hoursSliderFrame: @hoursSlider.frame,
         alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
       }
-      view.top = 64
-      view.height = 55
+      tallViewHeight = view.height
+      view.top = shortViewTop
+      view.height = shortViewHeight
       view.setNeedsDisplay
       tallSizeOnlyViews.each do |v| v.alpha = 0 end
       shortSizeOnlyViews.each do |v| v.alpha = 1 end
       @summaryViewHoursLabel.frame = [[0, 18], [320, 30]]
-      # @hoursSlider.frame =
+      @dayMarker.top = 0
+      @hoursSlider.top = 0
     when :tall
       savedValues = @savedTimeSelectorValues
       return unless savedValues
       view.frame = savedValues[:frame]
+      tallViewTop = view.top
       @hoursSlider.frame = savedValues[:hoursSliderFrame]
+      @dayMarker.frame = savedValues[:dayMarkerFrame]
       savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
       shortSizeOnlyViews.each do |v| v.alpha = 0 end
-      @summaryViewHoursLabel.frame = @hoursSlider.frame
-      @summaryViewHoursLabel.top += 64 - view.top
+      @summaryViewHoursLabel.top = @hoursSlider.top
+      @summaryViewHoursLabel.top += shortViewTop - view.top
       @savedTimeSelectorValues = nil
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)

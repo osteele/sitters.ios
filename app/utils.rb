@@ -2,14 +2,14 @@ NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatt
 UIFontDescriptorTraitBold = 1 << 1 unless Object.const_defined?(:UIFontDescriptorTraitBold)
 
 class UIView < UIResponder
-  def top; self.origin.x; end
+  def top; origin.y; end
   def left; origin.x; end
-  def height; self.size.height; end
-  def width; self.size.width; end
-  def top=(y); self.origin = [self.origin.x, y]; end
-  def left=(x); self.origin = [x, self.origin.y]; end
-  def height=(height); self.size = [self.size.width, height]; end
-  def width=(width); self.size = [width, self.size.height]; end
+  def height; size.height; end
+  def width; size.width; end
+  def top=(y); self.origin = [origin.x, y]; end
+  def left=(x); self.origin = [x, origin.y]; end
+  def height=(height); self.size = [size.width, height]; end
+  def width=(width); self.size = [width, size.height]; end
   alias_method :x, :left
   alias_method :y, :top
   alias_method :x=, :left=
