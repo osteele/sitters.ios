@@ -53,9 +53,20 @@ class SittersController < UIViewController
     end
   end
 
+  private
+
+  attr_reader :sitterViews
+
+  def updateSitterAvailability
+    sitterViews.each do |view|
+      sitter = view.sitter
+      view.available = sitter && timeSelection && sitter.availableAt(timeSelection)
+    end
+  end
+
   def createSitterAvatars
     self.sitters = Sitter.added
-    sitterViews = []
+    @sitterViews = sitterViews = []
     view = subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
@@ -75,21 +86,15 @@ class SittersController < UIViewController
     observe(Sitter, :added) do
       sitters = Sitter.added
       sitterViews.each_with_index do |view, i|
-        view.sitter = sitter = sitters[i]
-        view.available = sitter && @timeSelection && sitter.availableAt(@timeSelection)
+        view.sitter = sitters[i]
       end
+      updateSitterAvailability
     end
 
-    observe(self, :timeSelection) do |_, timeSelection|
+    observe(self, :timeSelection) do
       @timeSelection = timeSelection
-      UIView.animateWithDuration 0.3,
-        animations: lambda {
-          sitterViews.each do |view|
-            sitter = view.sitter
-            view.available = sitter && sitter.availableAt(timeSelection)
-          end
-        }
-      end
+      UIView.animateWithDuration 0.3, animations: lambda { updateSitterAvailability }
+    end
 
     return view
   end
