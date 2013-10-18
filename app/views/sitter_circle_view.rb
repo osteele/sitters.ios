@@ -1,10 +1,17 @@
 class SitterCircleView < UIView
   attr_accessor :sitter
   attr_accessor :labelText
+  attr_accessor :available
 
-  def self.new
-    view = alloc.initWithFrame(CGRectZero)
-    view
+  # def self.new
+  #   view = alloc.initWithFrame(CGRectZero)
+  #   view
+  # end
+
+  def initWithFrame(frame)
+    super
+    self.available = false
+    self
   end
 
   def sitter=(sitter)
@@ -12,11 +19,18 @@ class SitterCircleView < UIView
     self.setNeedsDisplay
   end
 
+  def available=(available)
+    self.alpha = sitter && !available ? 0.5 : 1
+    @available = available
+  end
+
   def drawRect(rect)
     if sitter
       layer.shadowOffset = [0, 0.5]
       layer.shadowOpacity = 0.25
       layer.shadowRadius = 0.5
+    else
+      layer.shadowOpacity = 0
     end
 
     context = UIGraphicsGetCurrentContext()

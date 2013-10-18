@@ -59,7 +59,7 @@ class SittersController < UIViewController
     view = subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s#, styleClass: :sitter, width:80, height:80
+        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s
         view.when_tapped do
           if view.sitter then
             delegate.presentSitterDetails view.sitter
@@ -75,11 +75,8 @@ class SittersController < UIViewController
     observe(Sitter, :added) do
       sitters = Sitter.added
       sitterViews.each_with_index do |view, i|
-        view.sitter = sitters[i]
-        if @timeSelection
-          alpha = if not view.sitter or view.sitter.availableAt(@timeSelection) then 1 else 0.5 end
-          view.alpha = alpha
-        end
+        view.sitter = sitter = sitters[i]
+        view.available = sitter && @timeSelection && sitter.availableAt(@timeSelection)
       end
     end
 
@@ -87,9 +84,9 @@ class SittersController < UIViewController
       @timeSelection = timeSelection
       UIView.animateWithDuration 0.3,
         animations: lambda {
-          sitterViews.map do |view|
-            alpha = if not view.sitter or view.sitter.availableAt(timeSelection) then 1 else 0.5 end
-            view.alpha = alpha unless view.alpha == alpha
+          sitterViews.each do |view|
+            sitter = view.sitter
+            view.available = sitter && sitter.availableAt(timeSelection)
           end
         }
       end
