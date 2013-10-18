@@ -22,11 +22,11 @@ class AppDelegate
   end
 
   def buildDate
-    @buildDate ||= dateFromProperty('BUILD_DATE')
+    @buildDate ||= dateFromProperty('BuildDate')
   end
 
   def expirationDate
-    @expirationDate ||= dateFromProperty('EXPIRATION_DATE')
+    @expirationDate ||= dateFromProperty('ExpirationDate')
   end
 
   def login(&block)

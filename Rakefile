@@ -25,8 +25,8 @@ Motion::Project::App.setup do |app|
   app.pixate.framework = 'vendor/Pixate.framework'
 
   now = DateTime.now
-  app.info_plist['BUILD_DATE'] = now.strftime('%Y-%m-%dT%H:%M:%S%z')
-  app.info_plist['EXPIRATION_DATE'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
+  app.info_plist['BuildDate'] = now.strftime('%Y-%m-%dT%H:%M:%S%z')
+  app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
   for token_name in ['TF_APP_TOKEN']
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
   end

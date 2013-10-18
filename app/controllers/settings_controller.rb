@@ -46,14 +46,14 @@ class SettingsController < Formotion::FormController
         title: 'About',
         rows: [
         {
-          title: 'Build time',
+          title: 'Build',
           type: :static,
           value: dateTimeFormatter.stringFromDate(buildDate)
         },
         {
-          title: 'Expiration date',
+          title: 'Expires',
           type: :static,
-          value: expirationDate ? dateFormatter.stringFromDate(expirationDate) : 'Never'
+          value: expirationDate ? dateTimeFormatter.stringFromDate(expirationDate) : 'Never'
         }]
       }, {
         title: 'Debug',
