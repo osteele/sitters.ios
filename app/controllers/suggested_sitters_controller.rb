@@ -1,33 +1,25 @@
 class SuggestedSittersController < UITableViewController
-  attr_accessor :outerController
+  include BW::KVO
+  attr_accessor :delegate
 
   def viewDidLoad
     super
     view.separatorStyle = UITableViewCellSeparatorStyleNone
+    observe(Sitter, :suggested) do @sitters = nil; view.reloadData end
   end
 
   def sitters
     @sitters ||= Sitter.suggested
   end
 
-  # def viewWillAppear(c1); puts 'SuggestedSittersController viewWillAppear'; end
-
   def numberOfSectionsInTableView(tableView); 1; end
 
   def tableView(tableView, heightForHeaderInSection:section); 52; end
-
-  # def tableView(tableView, viewForHeaderInSection:section)
-  #   UIView.alloc.initWithFrame([[0, 140], [320, 55]])
-  # end
-
   def tableView(tableView, heightForRowAtIndexPath:indexPath); 52; end
-
-  def tableView(tableView, numberOfRowsInSection:section)
-    sitters.length
-  end
+  def tableView(tableView, numberOfRowsInSection:section); sitters.length; end
 
   def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-    outerController.presentSitterDetails sitters[indexPath.row]
+    delegate.presentSitterDetails sitters[indexPath.row]
   end
 
   IMAGE_TAG = 1

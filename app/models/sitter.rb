@@ -5,6 +5,7 @@ class Sitter
   attr_accessor :active
   class << self
     attr_accessor :added
+    attr_accessor :suggested
   end
 
   def self.all
@@ -12,11 +13,22 @@ class Sitter
   end
 
   def self.added
-    @added ||= self.all[0...6]
+    initial_sitter_count = 6
+    @added ||= self.all[0...initial_sitter_count]
+  end
+
+  def self.added=(sitters)
+    self.willChangeValueForKey :added
+    @added = sitters
+    self.didChangeValueForKey :added
+
+    self.willChangeValueForKey :suggested
+    @suggested = nil
+    self.didChangeValueForKey :suggested
   end
 
   def self.suggested
-    return self.all - self.added
+    @suggested ||= @sitters - @added
   end
 
   def self.setAddedCount(n)
