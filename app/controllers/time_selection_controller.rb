@@ -128,7 +128,7 @@ class TimeSelectionController < UIViewController
 
     minHours = 1.5
     hourRangeLabel = nil
-    hourSlider = subview UIView, :hour_slider do
+    hoursSlider = subview UIView, :hour_slider do
       hourRangeLabel = subview UILabel, :hour_slider_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
@@ -150,10 +150,14 @@ class TimeSelectionController < UIViewController
       end
     end
 
-    tallSizeOnlyViews << hourSlider
+    tallSizeOnlyViews << hoursSlider
 
-    staticHoursLabel = subview UILabel, textAlignment: NSTextAlignmentCenter, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
-    shortSizeOnlyViews << staticHoursLabel
+    summaryViewHoursLabel = subview UILabel, textAlignment: NSTextAlignmentCenter, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
+    shortSizeOnlyViews << summaryViewHoursLabel
+
+    # Resizing manipulates these
+    @hoursSlider = hoursSlider
+    @summaryViewHoursLabel = summaryViewHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
     hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
@@ -174,19 +178,19 @@ class TimeSelectionController < UIViewController
       string.addAttribute NSFontAttributeName, value:normalFont.fontWithSize(8), range:NSMakeRange(label.length - 3, 1)
       string.addAttribute NSFontAttributeName, value:normalFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
       hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
-      staticHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
+      summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
     end
 
     timeSpanHoursUpdater = Debounced.new 0.5 do
-      frame = hourSlider.frame
-      startHour = firstHourNumber + ((hourSlider.x + hourSlider.tx - firstHourOffset) / hourWidth * 2).round / 2.0
-      endHour = firstHourNumber + ((hourSlider.x + hourSlider.tx + hourSlider.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
+      frame = hoursSlider.frame
+      startHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx - firstHourOffset) / hourWidth * 2).round / 2.0
+      endHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx + hoursSlider.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
       startHour = [startHour, firstHourNumber].max
       endHour = [endHour, startHour + minHours].max
       self.timeSelection = timeSelection.betweenTimes(startHour, endHour)
     end
 
-    observe(hourSlider, :frame) do timeSpanHoursUpdater.fire! end
+    observe(hoursSlider, :frame) do timeSpanHoursUpdater.fire! end
   end
 
   public
@@ -199,6 +203,7 @@ class TimeSelectionController < UIViewController
     when :short
       @savedTimeSelectorValues = {
         frame: view.frame,
+        hoursSliderFrame: @hoursSlider.frame,
         alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
       }
       view.top = 64
@@ -206,12 +211,17 @@ class TimeSelectionController < UIViewController
       view.setNeedsDisplay
       tallSizeOnlyViews.each do |v| v.alpha = 0 end
       shortSizeOnlyViews.each do |v| v.alpha = 1 end
+      @summaryViewHoursLabel.frame = [[0, 18], [320, 30]]
+      # @hoursSlider.frame =
     when :tall
       savedValues = @savedTimeSelectorValues
       return unless savedValues
       view.frame = savedValues[:frame]
+      @hoursSlider.frame = savedValues[:hoursSliderFrame]
       savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
       shortSizeOnlyViews.each do |v| v.alpha = 0 end
+      @summaryViewHoursLabel.frame = @hoursSlider.frame
+      @summaryViewHoursLabel.top += 64 - view.top
       @savedTimeSelectorValues = nil
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
