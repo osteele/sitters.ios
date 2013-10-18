@@ -44,7 +44,7 @@ class Sitter
   end
 
   def firstName; self.name.split[0]; end
-  def lastName; self.name[/\s(\S+)/, 1] || ''; end
+  def lastName; self.name[/\s(\S+)/, 1]; end
   def description; @description; end
   def age; @age; end
 

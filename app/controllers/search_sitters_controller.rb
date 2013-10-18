@@ -3,11 +3,12 @@ class SearchSittersController < UITableViewController
     super
     self.tap do
       self.tabBarItem = UITabBarItem.alloc.initWithTabBarSystemItem(UITabBarSystemItemSearch, tag:2)
+      self.edgesForExtendedLayout = UIRectEdgeNone
     end
   end
 
   def data
-    @searchResults ||= @sitters = Sitter.all.sort_by { |s| s.lastName }
+    @searchResults ||= @sitters = Sitter.all.select(&:lastName).sort_by(&:lastName)
   end
 
   def viewDidAppear(animated)
