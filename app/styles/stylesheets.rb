@@ -1,4 +1,6 @@
 Teacup::Stylesheet.new :sitter_details do
+  lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
+
   style :sitter_details,
     backgroundColor: 0xF9F9F9.uicolor;
 
@@ -17,12 +19,14 @@ Teacup::Stylesheet.new :sitter_details do
     backgroundColor: 0x6A9CD0.uicolor,
     textColor: UIColor.whiteColor,
     text: 'Add to My Seven Sitters',
-    font: UIFont.fontWithName('Helvetica-Light', size:20),
+    font: lightFont.fontWithSize(20),
     textAlignment: NSTextAlignmentCenter;
-
 end
 
 Teacup::Stylesheet.new :sitters do
+  font = UIFont.fontWithName('Helvetica', size:18)
+  boldFont = UIFont.fontWithName('Helvetica-Bold', size:18)
+
   style :sitters,
     top: 120,
     backgroundColor: 0xF9F9F9.uicolor;
@@ -49,7 +53,7 @@ Teacup::Stylesheet.new :sitters do
     width: 320,
     height: 45,
     textColor: 0x5481C9.uicolor,
-    font: UIFont.fontWithName('Helvetica-Bold', size:13),
+    font: boldFont.fontWithSize(13),
     textAlignment: NSTextAlignmentCenter;
 
   style :add_sitters_caption,
@@ -58,7 +62,7 @@ Teacup::Stylesheet.new :sitters do
     width: 320,
     height: 45,
     textColor: 0x969696.uicolor,
-    font: UIFont.fontWithName('Helvetica', size:11),
+    font: font.fontWithSize(11),
     textAlignment: NSTextAlignmentCenter,
     text: 'to enjoy complete freedom and spontaneity.';
 
@@ -82,7 +86,7 @@ Teacup::Stylesheet.new :sitters do
     width: 150,
     height: 50,
     textColor: UIColor.whiteColor,
-    font: UIFont.fontWithName('Helvetica', size:13),
+    font: font.fontWithSize(13),
     textAlignment: NSTextAlignmentCenter;
 
   style :big_button_caption,
@@ -96,6 +100,8 @@ Teacup::Stylesheet.new :sitters do
 end
 
 Teacup::Stylesheet.new :booking do
+  font = UIFont.fontWithName('Helvetica', size:18)
+
   style :sitter,
     width: 90,
     height: 90;
@@ -113,13 +119,13 @@ Teacup::Stylesheet.new :booking do
     width: 44,
     height: 34,
     top: 30,
-    font: UIFont.fontWithName('Helvetica', size:18);
+    font: font.fontWithSize(18);
 
   style :day_of_week_overlay,
     width: 44,
     height: 34,
     top: 30,
-    font: UIFont.fontWithName('Helvetica', size:18),
+    font: font.fontWithSize(18),
     textColor: 0x5481C9.uicolor;
 
   style :day_selection_marker,
@@ -199,7 +205,7 @@ Teacup::Stylesheet.new :booking do
     top: 8,
     width: 20,
     height: 20,
-    font: UIFont.fontWithName('Helvetica', size:14),
+    font: font.fontWithSize(14),
     textColor: UIColor.whiteColor,
     textAlignment: NSTextAlignmentCenter;
 
@@ -207,7 +213,7 @@ Teacup::Stylesheet.new :booking do
     top: 20,
     width: 20,
     height: 20,
-    font: UIFont.fontWithName('Helvetica', size:9),
+    font: font.fontWithSize(9),
     textColor: UIColor.whiteColor,
     textAlignment: NSTextAlignmentCenter;
 
@@ -217,7 +223,7 @@ Teacup::Stylesheet.new :booking do
     width: 20,
     height: 20,
     textColor: 0xA8C1E5.uicolor,
-    font: UIFont.fontWithName('Helvetica', size:13),
+    font: font.fontWithSize(13),
     textAlignment: NSTextAlignmentRight;
 
   style :time_selector,
@@ -230,5 +236,5 @@ Teacup::Stylesheet.new :booking do
     width: 320,
     height: 20,
     top: 5,
-    font: UIFont.fontWithName('Helvetica', size:12)
+    font: font.fontWithSize(12)
 end
