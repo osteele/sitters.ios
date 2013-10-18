@@ -23,7 +23,7 @@ class BookingController < UIViewController
     @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
     @navigationController.delegate = self
 
-    subview @navigationController.view #, size: [320, 1000]
+    subview @navigationController.view
 
     @timeSelectionController = TimeSelectionController.alloc.init
     @timeSelectionController.delegate = self

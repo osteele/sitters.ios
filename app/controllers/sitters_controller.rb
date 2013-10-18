@@ -13,14 +13,14 @@ class SittersController < UIViewController
     super
 
     fudge = 10
-    @scrollView.frame = self.view.bounds
+    # @scrollView.frame = self.view.bounds
     @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
   end
 
   layout do
     view.stylename = :sitters
 
-    @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds) do
+    @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds), :scroll do
       createSitterAvatars
 
       viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button, do
@@ -56,7 +56,7 @@ class SittersController < UIViewController
   def createSitterAvatars
     self.sitters = Sitter.added
     sitterViews = []
-    view = subview UIView, :avatars, origin: [0, 88], size: [320, 300] do
+    view = subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
         view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s#, styleClass: :sitter, width:80, height:80

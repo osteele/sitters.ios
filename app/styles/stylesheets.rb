@@ -27,6 +27,18 @@ Teacup::Stylesheet.new :sitters do
     top: 120,
     backgroundColor: 0xF9F9F9.uicolor;
 
+  style :scroll,
+    constraints: [
+      constrain(:top).equals(:superview, :top),
+      constrain(:left).equals(:superview, :left),
+      constrain(:width).equals(:superview, :width),
+      constrain(:height).equals(:superview, :height)
+    ]
+
+  style :avatars,
+    origin: [0, 88],
+    size: [320, 300];
+
   style :sitter,
     width: 90,
     height: 90,
@@ -86,22 +98,22 @@ end
 Teacup::Stylesheet.new :booking do
   style :sitter,
     width: 90,
-    height: 90
+    height: 90;
 
   style :time_selector,
     top: 20,
     width: 320,
-    height: 120
+    height: 120;
 
   style UILabel,
     textColor: UIColor.whiteColor,
-    textAlignment: NSTextAlignmentCenter
+    textAlignment: NSTextAlignmentCenter;
 
   style :day_of_week,
     width: 44,
     height: 34,
     top: 30,
-    font: UIFont.fontWithName('Helvetica', size:18)
+    font: UIFont.fontWithName('Helvetica', size:18);
 
   style :day_of_week_overlay,
     width: 44,
@@ -153,7 +165,7 @@ Teacup::Stylesheet.new :booking do
       left: 0,
       top: 0,
       width: 40,
-      height: 35
+      height: 35;
 
   style :hour_right_handle,
     constraints: [
