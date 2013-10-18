@@ -18,31 +18,33 @@ class SettingsController < Formotion::FormController
     dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle).setTimeStyle(NSDateFormatterShortStyle)
 
     Formotion::Form.new({
-      sections: [{
-        title: 'Registration',
-        rows: [{
-          title: 'Email',
-          key: :email,
-          placeholder: 'me@mail.com',
-          type: :email,
-          auto_correction: :no,
-          auto_capitalization: :none
-        }]
-      }, {
-        title: 'Account Type',
-        key: :account_type,
-        select_one: true,
-        rows: [{
-          title: 'Parent',
-          key: :free,
-          type: :check,
-          value: true
-        }, {
-          title: 'Sitter',
-          key: :basic,
-          type: :check,
-        }],
-      }, {
+      sections: [
+      # {
+      #   title: 'Registration',
+      #   rows: [{
+      #     title: 'Email',
+      #     key: :email,
+      #     placeholder: 'me@mail.com',
+      #     type: :email,
+      #     auto_correction: :no,
+      #     auto_capitalization: :none
+      #   }]
+      # }, {
+      #   title: 'Account Type',
+      #   key: :account_type,
+      #   select_one: true,
+      #   rows: [{
+      #     title: 'Parent',
+      #     key: :free,
+      #     type: :check,
+      #     value: true
+      #   }, {
+      #     title: 'Sitter',
+      #     key: :basic,
+      #     type: :check,
+      #   }],
+      # },
+      {
         title: 'About',
         rows: [
         {
