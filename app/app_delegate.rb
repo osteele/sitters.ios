@@ -15,6 +15,9 @@ class AppDelegate
 
     window.styleMode = PXStylingNormal
     window.makeKeyAndVisible
+
+    # login
+
     true
   end
 
@@ -26,7 +29,49 @@ class AppDelegate
     @expirationDate ||= dateFromProperty('EXPIRATION_DATE')
   end
 
+  def login(&block)
+    fb = Firebase.new('https://sevensitters.firebaseio.com/')
+    auth = FirebaseSimpleLogin.new(fb)
+    puts 'checking auth'
+    auth.check do |error, user|
+      puts "auth.check -> #{error}, #{user}"
+      if error or user
+        authDidReturn user, error:error
+      else
+        permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
+        puts 'logging in'
+        auth.login_to_facebook(app_id: 'com.sevensitters.sevensitters', permissions: ['email']) do |error, user|
+          puts "login -> #{error}, #{user}"
+          authDidReturn user, error:error
+        end
+      end
+    end
+  end
+
   private
+
+  def authDidReturn(user, error:error)
+    puts "authDidReturn user=#{user} error=#{error}"
+    @user = user
+    if error
+      puts "showing alert"
+      puts error.localizedDescription
+      puts error.localizedRecoverySuggestion
+      p error.localizedRecoveryOptions
+      UIAlertView.alloc.initWithTitle(error.localizedDescription,
+        message:error.localizedRecoverySuggestion,
+        delegate:nil,
+        cancelButtonTitle:'OK',
+        otherButtonTitles:error.localizedRecoveryOptions).show
+    end
+    if user
+      UIAlertView.alloc.initWithTitle('User signed in',
+        message:user.to_s,
+        delegate:nil,
+        cancelButtonTitle:'OK',
+        otherButtonTitles:nil).show
+    end
+  end
 
   def dateFromProperty(propertyName)
     dateString = NSBundle.mainBundle.objectForInfoDictionaryKey(propertyName)

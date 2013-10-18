@@ -33,13 +33,32 @@ Motion::Project::App.setup do |app|
 
   app.vendor_project 'vendor/TestFlight', :static
 
+  # TestFlight:
   libz = '/usr/lib/libz.dylib'
   app.libs << libz unless app.libs.include?(libz)
 
+  # Firebase:
+  # app.vendor_project('vendor/Firebase.framework', :static, :products => ['Firebase'] ,:headers_dir => 'Headers')
+  # app.libs += ['/usr/lib/libicucore.dylib']
+  # app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
+
+  # Firebase simple login:
+  # app.vendor_project('vendor/FirebaseSimpleLogin.framework', :static, :products => ['FirebaseSimpleLogin'] ,:headers_dir => 'Headers')
+  # app.frameworks += ['Accounts', 'Social']
+
   app.pods do
+    pod 'Firebase', '~> 1.0.0'
+    # pod "Facebook-iOS-SDK"
     pod 'GRMustache'
     pod 'NSDate-Extensions'
   end
+  app.weak_frameworks += %w(AdSupport Social)
+
+  # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
+  FB_APP_ID = ENV['FB_APP_ID']
+  app.info_plist['FacebookAppID'] = FB_APP_ID
+  app.info_plist['FacebookDisplayName'] = 'Seven Sitters'
+  app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FB_APP_ID}"]}]
 
   app.development do
     PROFILE_IDENTIFER_NAME = 'IOS_APP_DEVELOPMENT_PROFILE_ID'

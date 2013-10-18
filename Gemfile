@@ -20,3 +20,7 @@ gem 'motion-pixate'
 # domains
 gem 'formotion'
 gem 'motion-settings-bundle'
+gem 'motion-firebase', :require => [
+  'motion-firebase',
+  'motion-firebase-auth'
+]

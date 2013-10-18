@@ -35,6 +35,7 @@ GEM
     mime-types (1.25)
     motion-cocoapods (1.4.0)
       cocoapods (>= 0.26.2)
+    motion-firebase (2.0.0)
     motion-pixate (2.0)
       sass
     motion-require (0.0.7)
@@ -63,6 +64,7 @@ DEPENDENCIES
   formotion
   launchy
   motion-cocoapods
+  motion-firebase
   motion-pixate
   motion-settings-bundle
   require_all

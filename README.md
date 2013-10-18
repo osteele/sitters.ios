@@ -21,6 +21,8 @@ Download the Pixate SDK into `./vendor`. It should be called `./vendor/Pixate.fr
     $ [[ -d vendor/Pixate.framework/Versions/1.1 ]] && echo 'Pixate found'
     Pixate found
 
+Download the FirebaseSimpleLogin SDK into `./vendor`.
+
 Copy `~/.env.template` to `~/.env` and edit in the token values.
 
 
