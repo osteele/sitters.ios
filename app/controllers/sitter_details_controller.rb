@@ -8,28 +8,27 @@ class SitterDetailsController < UIViewController
 
   layout do
     view.stylename = :sitter_details
-    # view.backgroundColor = 0xF9F9F9.uicolor
-
-    # headerHeight = 55
-    # view.top = headerHeight
-    # view.height -= headerHeight * 2
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
-    @webView = subview UIWebView, :webview, delegate: self #, frame: view.frame
+    @webView = subview UIWebView, :webview, delegate: self
 
-    renderTemplate if sitter
-
-    @addButton = subview UILabel, :add_sitter,
-      top: view.height - 55 - 45
-
-    @addButton.when_tapped do
+    @addBSitterButton = subview UILabel, :add_sitter_button
+    @addBSitterButton.when_tapped do
       Sitter.addSitter self.sitter
       navigationController.popViewControllerAnimated true
     end
+
+    auto do
+      # metrics 'timesel_bottom' => 119
+      vertical '|-119-[webview]-0-[add_sitter_button(55)]-45-|'
+      horizontal '|-0-[add_sitter_button(320)]-0-|'
+    end
+
+    renderTemplate if sitter
   end
 
   def sitter=(sitter)
-    @addButton.hidden = ! Sitter.canAdd(sitter) if @addButton
+    @addBSitterButton.hidden = ! Sitter.canAdd(sitter) if @addBSitterButton
     return if @sitter == sitter
     @sitter = sitter
     renderTemplate
@@ -37,6 +36,7 @@ class SitterDetailsController < UIViewController
 
   def renderTemplate
     return unless webView
+    webView.hidden = true
     webView.alpha = 0
     @template ||= begin
       templatePath ||= NSBundle.mainBundle.pathForResource('sitter_details', ofType:'html')
@@ -47,7 +47,7 @@ class SitterDetailsController < UIViewController
   end
 
   def webViewDidFinishLoad(webView)
-    webView.top = 55
+    webView.hidden = false
     webView.alpha = 1
   end
 end

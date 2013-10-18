@@ -9,13 +9,13 @@ gem 'require_all'
 gem 'rest-client'
 
 # foundation
-gem 'teacup'
 gem 'bubble-wrap'
-gem 'sugarcube', :require => [
-  'sugarcube-color'
-  # 'sugarcube-repl',
-]
+gem 'sugarcube', :require => ['sugarcube-color']
+
+# layout
+gem 'teacup'
 gem 'motion-pixate'
+gem 'motion-layout'
 
 # domains
 gem 'formotion'
