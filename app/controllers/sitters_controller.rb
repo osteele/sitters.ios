@@ -58,19 +58,21 @@ class SittersController < UIViewController
   attr_reader :sitterViews
 
   def updateSitterAvailability
-    sitterViews.each do |view|
-      sitter = view.sitter
-      view.available = sitter && timeSelection && sitter.availableAt(timeSelection)
+    @sitterControllers.each do |controller|
+      sitter = controller.sitter
+      controller.available = sitter && timeSelection && sitter.availableAt(timeSelection)
     end
   end
 
   def createSitterAvatars
     self.sitters = Sitter.added
+    @sitterControllers = []
     @sitterViews = sitterViews = []
     view = subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
-        view = subview SitterCircleView, :sitter, sitter: sitter, labelText: (i+1).to_s, available: false
+        controller = SitterCircleController.alloc.initWithSitter(sitter, labelString:(i+1).to_s)
+        view = subview controller.view, :sitter, width: 90, height: 90
         view.when_tapped do
           if view.sitter then
             delegate.presentSitterDetails view.sitter
@@ -78,6 +80,7 @@ class SittersController < UIViewController
             delegate.presentSuggestedSitters
           end
         end
+        @sitterControllers << controller
         sitterViews << view
       end
     end
@@ -86,7 +89,7 @@ class SittersController < UIViewController
 
     observe(Sitter, :added) do
       sitters = Sitter.added
-      sitterViews.each_with_index do |view, i|
+      @sitterControllers.each_with_index do |view, i|
         view.sitter = sitters[i]
       end
       updateSitterAvailability

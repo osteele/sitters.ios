@@ -1,37 +1,40 @@
-class SitterCircleView < UIView
+class SitterCircleController < UIViewController
   attr_accessor :sitter
   attr_accessor :labelText
   attr_accessor :available
 
-  # def self.new
-  #   view = alloc.initWithFrame(CGRectZero)
-  #   view
-  # end
-
-  def initWithFrame(frame)
-    super
-    self.available = false
+  def initWithSitter(sitter, labelString:label)
+    initWithNibName(nil, bundle:nil)
+    @sitter = sitter
+    @labelText = label
+    @available = false
     self
+  end
+
+  def viewDidLoad
+    super
+    view.layer.delegate = self
+    view.layer.bounds = view.bounds
+    view.layer.setNeedsDisplay
   end
 
   def sitter=(sitter)
     @sitter = sitter
-    self.setNeedsDisplay
+    view.setNeedsDisplay
   end
 
   def available=(available)
     @available = available
-    # self.alpha = sitter && !available ? 0.5 : 1
+    view.setNeedsDisplay
   end
 
-  def drawRect(rect)
-    # if sitter
-    #   layer.shadowOffset = [0, 0.5]
-    #   layer.shadowOpacity = 0.25
-    #   layer.shadowRadius = 0.5
-    # else
-    #   layer.shadowOpacity = 0
-    # end
+  def displayLayer(layer)
+    view.layer.contents = self.layerImage
+  end
+
+  def layerImage
+    bounds = view.bounds
+    UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
 
     sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:9)
     sitterNameColor = sitter && !available ? 0xaaaaaa.uicolor : UIColor.blackColor
@@ -95,28 +98,32 @@ class SitterCircleView < UIView
     CGContextRestoreGState context
 
     # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-    labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius + 2, self.width, 2 * labelCircleRadius)
+    labelRect = CGRectMake(0, bounds.size.height - 2 * labelCircleRadius + 2, bounds.size.width, 2 * labelCircleRadius)
     labelText.drawInRect labelRect, withAttributes: {
       NSFontAttributeName => numberLabelFont,
       NSForegroundColorAttributeName => numberLabelColor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
+
+    layerImage = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return layerImage.CGImage
   end
 
   def sitterImage
-    SitterCircleView.sitterImage(sitter)
+    SitterCircleController.sitterImage(sitter)
   end
 
   def self.placeholderImage
     @placeholderImage ||= begin
       placeholder = UIImage.imageNamed('images/sitter-placeholder')
-      CGImageCreateWithMask(placeholder.CGImage, SitterCircleView.maskImage)
+      CGImageCreateWithMask(placeholder.CGImage, self.maskImage)
     end
   end
 
   def self.sitterImage(sitter)
     return self.placeholderImage unless sitter and sitter.image
-    CGImageCreateWithMask(sitter.image.CGImage, SitterCircleView.maskImage)
+    CGImageCreateWithMask(sitter.image.CGImage, self.maskImage)
   end
 
   private

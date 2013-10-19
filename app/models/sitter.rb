@@ -76,7 +76,7 @@ class Sitter
   end
 
   def maskedImage
-    @maskedImage ||= UIImage.imageWithCGImage(SitterCircleView.sitterImage(self))
+    @maskedImage ||= UIImage.imageWithCGImage(SitterCircleController.sitterImage(self))
   end
 
   private
