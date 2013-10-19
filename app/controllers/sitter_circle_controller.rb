@@ -16,6 +16,14 @@ class SitterCircleController < UIViewController
     view.layer.delegate = self
     view.layer.bounds = view.bounds
     view.layer.setNeedsDisplay
+
+    imageLayer = @imageLayer = CALayer.layer
+    imageLayer.contents = sitterImage
+    view.layer.addSublayer imageLayer
+
+    labelLayer = @labelLayer = CALayer.layer
+    labelLayer.contents = sitterImage
+    view.layer.addSublayer labelLayer
   end
 
   def sitter=(sitter)
@@ -28,8 +36,16 @@ class SitterCircleController < UIViewController
     view.setNeedsDisplay
   end
 
+  def layoutSublayersOfLayer(layer)
+    @labelLayer.bounds = view.bounds
+    @labelLayer.position = [45,45]
+
+    @imageLayer.bounds = view.bounds
+    @imageLayer.position = [45,45]
+  end
+
   def displayLayer(layer)
-    view.layer.contents = self.layerImage
+    @labelLayer.contents = self.layerImage
   end
 
   def layerImage
@@ -65,15 +81,17 @@ class SitterCircleController < UIViewController
 
     # Inner circle: fill and frame
     CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
-    CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
+    # CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
+    CGContextSetBlendMode context, KCGBlendModeClear
     CGContextFillPath context
+    CGContextSetBlendMode context, KCGBlendModeNormal
 
     CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
     CGContextSetStrokeColorWithColor context, frameColor
     CGContextStrokePath context
 
-    imageRect = CGRectMake(outerRingWidth, outerRingWidth, bounds.size.width - 2 * outerRingWidth, bounds.size.height - 2 * outerRingWidth)
-    CGContextDrawImage context, imageRect, sitterImage
+    # imageRect = CGRectMake(outerRingWidth, outerRingWidth, bounds.size.width - 2 * outerRingWidth, bounds.size.height - 2 * outerRingWidth)
+    # CGContextDrawImage context, imageRect, sitterImage
     if sitter and not available
       CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
       CGContextSetFillColorWithColor context, BubbleWrap.rgba_color(255, 255, 255, 0.7).CGColor
