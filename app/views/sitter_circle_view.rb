@@ -20,8 +20,8 @@ class SitterCircleView < UIView
   end
 
   def available=(available)
-    self.alpha = sitter && !available ? 0.5 : 1
     @available = available
+    self.alpha = sitter && !available ? 0.5 : 1
   end
 
   def drawRect(rect)
@@ -33,11 +33,11 @@ class SitterCircleView < UIView
       layer.shadowOpacity = 0
     end
 
-    sitterNameFont = UIFont.fontWithName('HelveticaNeue', size:10)
-    numberLabelFont = UIFont.fontWithName('HelveticaNeue', size:14)
+    sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:9)
+    numberLabelFont = UIFont.fontWithName('Helvetica', size:14)
     outerRingWidth = 10
     labelCircleRadius = 11
-    textRadius = 36
+    sitterNameRadius = 36
 
     context = UIGraphicsGetCurrentContext()
     CGContextSaveGState context
@@ -80,7 +80,7 @@ class SitterCircleView < UIView
     if sitter
       textAttributes = { NSFontAttributeName => sitterNameFont }
       sitterNameAS = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
-      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, textRadius
+      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, sitterNameRadius
     end
 
     CGContextRestoreGState context
