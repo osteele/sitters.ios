@@ -21,23 +21,30 @@ class SitterCircleView < UIView
 
   def available=(available)
     @available = available
-    self.alpha = sitter && !available ? 0.5 : 1
+    # self.alpha = sitter && !available ? 0.5 : 1
   end
 
   def drawRect(rect)
-    if sitter
-      layer.shadowOffset = [0, 0.5]
-      layer.shadowOpacity = 0.25
-      layer.shadowRadius = 0.5
-    else
-      layer.shadowOpacity = 0
-    end
+    # if sitter
+    #   layer.shadowOffset = [0, 0.5]
+    #   layer.shadowOpacity = 0.25
+    #   layer.shadowRadius = 0.5
+    # else
+    #   layer.shadowOpacity = 0
+    # end
 
     sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:9)
-    numberLabelFont = UIFont.fontWithName('Helvetica', size:14)
+    sitterNameColor = sitter && !available ? 0xaaaaaa.uicolor : UIColor.blackColor
+    numberLabelFont = UIFont.fontWithName('Helvetica', size:13)
+    numberLabelColor = sitter ? UIColor.blackColor : 0xaaaaaa.uicolor
+    frameColor = 0xcccccc.uicolor.CGColor
     outerRingWidth = 10
     labelCircleRadius = 11
     sitterNameRadius = 36
+
+    cx = cy = bounds.size.width / 2
+    outerRadius = bounds.size.width / 2 - 1
+    innerRadius = outerRadius - 10
 
     context = UIGraphicsGetCurrentContext()
     CGContextSaveGState context
@@ -45,31 +52,33 @@ class SitterCircleView < UIView
     CGContextScaleCTM context, 1, -1
 
     # Outer circle: fill and frame
-    cx = cy = bounds.size.width / 2
-    outerRadius = bounds.size.width / 2 - 1
     CGContextAddArc context, cx, cy, outerRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
 
     CGContextAddArc context, cx, cy, outerRadius, 0, 2 * Math::PI, 0
-    CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
+    CGContextSetStrokeColorWithColor context, frameColor
     CGContextStrokePath context
 
     # Inner circle: fill and frame
-    innerRadius = outerRadius - 10
     CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
     CGContextFillPath context
 
     CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
-    CGContextSetStrokeColorWithColor context, UIColor.grayColor.CGColor
+    CGContextSetStrokeColorWithColor context, frameColor
     CGContextStrokePath context
 
     imageRect = CGRectMake(outerRingWidth, outerRingWidth, bounds.size.width - 2 * outerRingWidth, bounds.size.height - 2 * outerRingWidth)
     CGContextDrawImage context, imageRect, sitterImage
+    if sitter and not available
+      CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
+      CGContextSetFillColorWithColor context, BubbleWrap.rgba_color(255, 255, 255, 0.7).CGColor
+      CGContextFillPath context
+    end
 
     CGContextAddArc context, cx, labelCircleRadius + 3, labelCircleRadius, 0, 2 * Math::PI, 0
-    CGContextSetFillColorWithColor context, UIColor.grayColor.CGColor
+    CGContextSetFillColorWithColor context, 0xaaaaaa.uicolor.CGColor # UIColor.grayColor.CGColor
     CGContextFillPath context
 
     CGContextAddArc context, cx, labelCircleRadius + 2, labelCircleRadius, 0, 2 * Math::PI, 0
@@ -78,7 +87,7 @@ class SitterCircleView < UIView
 
     # Sitter name
     if sitter
-      textAttributes = { NSFontAttributeName => sitterNameFont }
+      textAttributes = { NSFontAttributeName => sitterNameFont, NSForegroundColorAttributeName => sitterNameColor }
       sitterNameAS = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
       GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, sitterNameRadius
     end
@@ -86,10 +95,10 @@ class SitterCircleView < UIView
     CGContextRestoreGState context
 
     # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-    labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius, self.width, 2 * labelCircleRadius)
+    labelRect = CGRectMake(0, self.height - 2 * labelCircleRadius + 2, self.width, 2 * labelCircleRadius)
     labelText.drawInRect labelRect, withAttributes: {
       NSFontAttributeName => numberLabelFont,
-      NSForegroundColorAttributeName => UIColor.blackColor,
+      NSForegroundColorAttributeName => numberLabelColor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
   end
