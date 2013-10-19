@@ -1,7 +1,9 @@
 class BookingController < UIViewController
   include BW::KVO
   stylesheet :booking
-  attr_reader :timeSelectionController, :mySittersController, :suggestedSittersController
+  attr_reader :timeSelectionController
+  attr_reader :mySittersController
+  attr_reader :suggestedSittersController
 
   def initWithNibName(name, bundle:bundle)
     super
@@ -49,9 +51,30 @@ class BookingController < UIViewController
 
   def presentSitterDetails(sitter)
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
-    @sitterDetailsController ||= SitterDetailsController.alloc.init
+    @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
     @sitterDetailsController.sitter = sitter
+    @sitterDetailsController.action = case
+      when Sitter.canAdd(sitter) then :add
+      when sitter.availableAt(timeSelectionController.timeSelection) then :reserve
+      else :request
+      end
     # @sitterDetailsController.title = sitter.name
     @navigationController.pushViewController @sitterDetailsController, animated:true
+  end
+
+  def action(action, sitter:sitter)
+    msg = case action
+      when :add
+        Sitter.addSitter sitter
+        "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
+      when :reserve then "%s will babysit for you at the specified time."
+      when :request then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
+    end
+
+    UIAlertView.alloc.initWithTitle('Request Sent',
+      message:msg % sitter.firstName,
+      delegate:nil,
+      cancelButtonTitle:'OK',
+      otherButtonTitles:nil).show
   end
 end

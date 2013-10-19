@@ -13,17 +13,11 @@ Teacup::Stylesheet.new :sitter_details do
     ]
 
   style :add_sitter_button,
-    # left: 0,
-    # width: 320,
-    # height: 55,
     backgroundColor: 0x6A9CD0.uicolor,
     textColor: UIColor.whiteColor,
     text: 'Add to My Seven Sitters',
     font: lightFont.fontWithSize(20),
     textAlignment: NSTextAlignmentCenter;
-    # constraints: [
-      # constrain_height(55)
-    # ]
 
 end
 

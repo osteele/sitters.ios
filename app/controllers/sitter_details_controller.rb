@@ -1,6 +1,8 @@
 class SitterDetailsController < UIViewController
   attr_accessor :sitter
   attr_accessor :webView
+  attr_accessor :action
+  attr_accessor :delegate
 
   def stylesheet
     Teacup::Stylesheet[:sitter_details]
@@ -12,26 +14,34 @@ class SitterDetailsController < UIViewController
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
     @webView = subview UIWebView, :webview, delegate: self
 
-    @addBSitterButton = subview UILabel, :add_sitter_button
-    @addBSitterButton.when_tapped do
-      Sitter.addSitter self.sitter
+    @addSitterButton = subview UILabel, :add_sitter_button
+    @addSitterButton.when_tapped do
+      delegate.action @action, sitter:sitter
       navigationController.popViewControllerAnimated true
     end
 
     auto do
       # metrics 'timesel_bottom' => 119
       vertical '|-119-[webview]-0-[add_sitter_button(55)]-45-|'
-      horizontal '|-0-[add_sitter_button(320)]-0-|'
+      horizontal '|-0-[add_sitter_button]-0-|'
     end
 
     renderTemplate if sitter
   end
 
   def sitter=(sitter)
-    @addBSitterButton.hidden = ! Sitter.canAdd(sitter) if @addBSitterButton
     return if @sitter == sitter
     @sitter = sitter
     renderTemplate
+  end
+
+  def updateButtonText
+    return unless @addSitterButton and @action
+    @addSitterButton.text = case action
+      when :add then 'Add to My Seven Sitters'
+      when :reserve then 'Book this sitter'
+      when :request then 'Request this sitter'
+    end
   end
 
   def renderTemplate
@@ -49,5 +59,6 @@ class SitterDetailsController < UIViewController
   def webViewDidFinishLoad(webView)
     webView.hidden = false
     webView.alpha = 1
+    updateButtonText
   end
 end
