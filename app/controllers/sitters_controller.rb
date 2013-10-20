@@ -55,10 +55,10 @@ class SittersController < UIViewController
 
   private
 
-  attr_reader :sitterViews
+  attr_reader :sitterViewControllers
 
   def updateSitterAvailability
-    @sitterControllers.each do |controller|
+    sitterViewControllers.each do |controller|
       sitter = controller.sitter
       controller.available = sitter && timeSelection && sitter.availableAt(timeSelection)
     end
@@ -66,13 +66,15 @@ class SittersController < UIViewController
 
   def createSitterAvatars
     self.sitters = Sitter.added
-    @sitterControllers = []
-    @sitterViews = sitterViews = []
-    view = subview UIView, :avatars do
+    @sitterViewControllers = []
+    sitterViews = []
+    subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
         controller = SitterCircleController.alloc.initWithSitter(sitter, labelString:(i+1).to_s)
+        addChildViewController controller
         view = subview controller.view, :sitter, width: 90, height: 90
+        controller.didMoveToParentViewController self
         view.when_tapped do
           if view.sitter then
             delegate.presentSitterDetails view.sitter
@@ -80,16 +82,17 @@ class SittersController < UIViewController
             delegate.presentSuggestedSitters
           end
         end
-        @sitterControllers << controller
+        @sitterViewControllers << controller
         sitterViews << view
       end
     end
+
     HexagonLayout.new.applyTo sitterViews
     updateSitterAvailability
 
     observe(Sitter, :added) do
       sitters = Sitter.added
-      @sitterControllers.each_with_index do |view, i|
+      sitterViewControllers.each_with_index do |view, i|
         view.sitter = sitters[i]
       end
       updateSitterAvailability
@@ -99,7 +102,5 @@ class SittersController < UIViewController
       @timeSelection = timeSelection
       UIView.animateWithDuration 0.3, animations: lambda { updateSitterAvailability }
     end
-
-    return view
   end
 end
