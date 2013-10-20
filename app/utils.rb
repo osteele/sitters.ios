@@ -51,11 +51,24 @@ class Debounced
     @delay = delay
     @block = block
     @scheduler = Scheduler.new
+    @nextTime = nil
   end
 
   def fire!
     return if @scheduler.pending
-    @scheduler.after @delay, &@block
+    now = NSDate.date.timeIntervalSince1970
+    if @nextTime and now < @nextTime
+      @scheduler.after @delay, do fireAndDelay end
+    else
+      fireAndDelay
+    end
+  end
+
+  private
+
+  def fireAndDelay
+    @block.call
+    @nextTime = NSDate.date.timeIntervalSince1970 + @delay
   end
 end
 
