@@ -12,13 +12,12 @@ Teacup::Stylesheet.new :sitter_details do
       # constrain(:bottom).equals(:superview, :bottom)
     ]
 
-  style :add_sitter_button,
+  style :action_button,
     backgroundColor: 0x6A9CD0.uicolor,
     textColor: UIColor.whiteColor,
     text: 'Add to My Seven Sitters',
     font: lightFont.fontWithSize(20),
     textAlignment: NSTextAlignmentCenter;
-
 end
 
 Teacup::Stylesheet.new :sitters do

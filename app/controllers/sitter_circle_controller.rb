@@ -1,12 +1,12 @@
 class SitterCircleController < UIViewController
   attr_accessor :sitter
-  attr_accessor :labelText
+  attr_accessor :labelString
   attr_accessor :available
 
   def initWithSitter(sitter, labelString:label)
     initWithNibName(nil, bundle:nil)
     @sitter = sitter
-    @labelText = label
+    @labelString = label
     @available = false
     self
   end
@@ -17,18 +17,18 @@ class SitterCircleController < UIViewController
     view.layer.bounds = view.bounds
     view.layer.setNeedsDisplay
 
-    imageLayer = @imageLayer = CALayer.layer
+    self.imageLayer = CALayer.layer
     imageLayer.contents = sitterImage
     view.layer.addSublayer imageLayer
 
-    ringLayer = @ringLayer = CALayer.layer
+    self.ringLayer = CALayer.layer
     ringLayer.shadowColor = UIColor.blackColor.CGColor
     ringLayer.shadowOffset = [0, 0.5]
     ringLayer.shadowOpacity = 0.5
     ringLayer.shadowRadius = 1.5
     view.layer.addSublayer ringLayer
 
-    numberLabelLayer = @numberLabelLayer = CALayer.layer
+    self.numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
     numberLabelLayer.shadowOffset = [0, -1.5]
     numberLabelLayer.shadowRadius = 1
@@ -37,34 +37,46 @@ class SitterCircleController < UIViewController
   end
 
   def sitter=(sitter)
-    return if @sitter = sitter
+    return if @sitter == sitter
     @sitter = sitter
-    @imageLayer.contents = sitterImage
+    imageLayer.contents = sitterImage
     view.setNeedsDisplay
   end
 
   def available=(available)
-    return if @available = available
+    return if @available == available
     @available = available
-    view.setNeedsDisplay
     displayLayer(nil)
+    view.setNeedsDisplay
   end
 
   def layoutSublayersOfLayer(layer)
-    @imageLayer.bounds = view.bounds
-    @imageLayer.position = [view.width / 2, view.height / 2]
+    center = [view.width / 2, view.height / 2]
 
-    @ringLayer.bounds = view.bounds
-    @ringLayer.position = [view.width / 2, view.height / 2]
+    imageLayer.bounds = view.bounds
+    imageLayer.position = center
+    imageLayer.contentsRect = [[-0.1, -0.1], [1.2, 1.2]]
+    # imageLayer.contentsGravity = KCAGravityCenter
 
-    @numberLabelLayer.bounds = view.bounds
-    @numberLabelLayer.position = [view.width / 2, view.height / 2]
+    ringLayer.bounds = view.bounds
+    ringLayer.position = center
+    # ringLayer.contentsGravity = KCAGravityCenter
+
+    numberLabelLayer.bounds = view.bounds
+    numberLabelLayer.position = center
+    # numberLabelLayer.contentsGravity = KCAGravityCenter
   end
 
   def displayLayer(layer)
-    @ringLayer.contents = self.ringLayerImage
-    @numberLabelLayer.contents = self.numberLayerImage
+    ringLayer.contents = ringLayerImage
+    numberLabelLayer.contents = numberLayerImage
   end
+
+  private
+
+  attr_accessor :imageLayer
+  attr_accessor :ringLayer
+  attr_accessor :numberLabelLayer
 
   def ringLayerImage
     bounds = view.bounds
@@ -132,7 +144,7 @@ class SitterCircleController < UIViewController
     CGContextFillPath context
 
     labelRect = CGRectMake(0, bounds.size.height - 2 * labelCircleRadius + 2, bounds.size.width, 2 * labelCircleRadius)
-    labelText.drawInRect labelRect, withAttributes: {
+    labelString.drawInRect labelRect, withAttributes: {
       NSFontAttributeName => numberLabelFont,
       NSForegroundColorAttributeName => numberLabelColor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
@@ -150,20 +162,23 @@ class SitterCircleController < UIViewController
   def self.placeholderImage
     @placeholderImage ||= begin
       placeholder = UIImage.imageNamed('images/sitter-placeholder')
-      CGImageCreateWithMask(placeholder.CGImage, self.maskImage)
+      CGImageCreateWithMask(placeholder.CGImage, self.sitterCircleMaskImage)
     end
   end
 
+  public
+
   def self.sitterImage(sitter)
     return self.placeholderImage unless sitter and sitter.image
-    CGImageCreateWithMask(sitter.image.CGImage, self.maskImage)
+    CGImageCreateWithMask(sitter.image.CGImage, self.sitterCircleMaskImage)
   end
 
   private
 
-  def self.maskImage
-    @maskImage ||= begin
-      width = 160
+  def self.sitterCircleMaskImage
+    width = 160
+
+    @sitterCircleMaskImages ||= begin
       graySpace = CGColorSpaceCreateDeviceGray()
       context = CGBitmapContextCreate(nil, width, width, 8, 0, graySpace, KCGImageAlphaNone)
 
@@ -172,12 +187,6 @@ class SitterCircleController < UIViewController
       CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
       CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
       CGContextFillPath context
-
-      # radius = 11 * 160 / 90
-      # cy = radius - 2
-      # CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
-      # CGContextSetFillColorWithColor context, UIColor.blackColor.CGColor
-      # CGContextFillPath context
 
       cgMask = CGBitmapContextCreateImage(context)
     end
