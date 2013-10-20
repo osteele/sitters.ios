@@ -16,8 +16,10 @@ class SitterCircleController
   end
 
   def viewDidLoad
-    # super
     @loaded = true
+
+    keynoteShadowRadiusRatio = 0.25
+    keynoteShadowOffsetRatio = 0.5
 
     view.layer.delegate = self
     view.layer.bounds = view.bounds
@@ -29,15 +31,15 @@ class SitterCircleController
 
     @ringLayer = CALayer.layer
     ringLayer.shadowColor = UIColor.blackColor.CGColor
-    ringLayer.shadowOffset = [0, 0.5]
+    ringLayer.shadowOffset = [0, 1 * keynoteShadowOffsetRatio]
     ringLayer.shadowOpacity = 0.5
-    ringLayer.shadowRadius = 1.5
+    ringLayer.shadowRadius = 3 * keynoteShadowRadiusRatio
     view.layer.addSublayer ringLayer
 
     @numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
-    numberLabelLayer.shadowOffset = [0, -1.5]
-    numberLabelLayer.shadowRadius = 1
+    numberLabelLayer.shadowOffset = [0, -3 * keynoteShadowOffsetRatio]
+    numberLabelLayer.shadowRadius = 2 * keynoteShadowRadiusRatio
     numberLabelLayer.shadowOpacity = 0.20
     view.layer.addSublayer numberLabelLayer
 
@@ -61,9 +63,10 @@ class SitterCircleController
   def layoutSublayersOfLayer(layer)
     center = [view.width / 2, view.height / 2]
 
+    sitterImageIngress = 0.09
     imageLayer.bounds = view.bounds
     imageLayer.position = center
-    imageLayer.contentsRect = [[-0.1, -0.1], [1.2, 1.2]]
+    imageLayer.contentsRect = [[-sitterImageIngress, -sitterImageIngress], [1 + 2 * sitterImageIngress, 1 + 2 * sitterImageIngress]]
     # imageLayer.contentsGravity = KCAGravityCenter
 
     ringLayer.bounds = view.bounds
@@ -146,7 +149,7 @@ class SitterCircleController
 
     numberLabelFont = UIFont.fontWithName('Helvetica', size:13)
     numberLabelColor = sitter ? UIColor.blackColor : 0xaaaaaa.uicolor
-    labelCircleRadius = 11
+    labelCircleRadius = 13
 
     CGContextAddArc context, cx, bounds.size.height - labelCircleRadius - 2, labelCircleRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
