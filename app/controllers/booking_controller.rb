@@ -49,7 +49,7 @@ class BookingController < UIViewController
     @navigationController.pushViewController @suggestedSittersController, animated:true
   end
 
-  def presentSitterDetails(sitter)
+  def presentDetailsForSitter(sitter)
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
     @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
     @sitterDetailsController.sitter = sitter

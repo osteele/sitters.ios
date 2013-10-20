@@ -1,39 +1,47 @@
-class SitterCircleController < UIViewController
+class SitterCircleController
+  attr_accessor :view
   attr_accessor :sitter
   attr_accessor :labelString
   attr_accessor :available
 
   def initWithSitter(sitter, labelString:label)
-    initWithNibName(nil, bundle:nil)
+    # initWithNibName(nil, bundle:nil)
+    @view = UIView.alloc.initWithFrame([[0,0],[90,90]])
+
     @sitter = sitter
     @labelString = label
     @available = false
+
     self
   end
 
   def viewDidLoad
-    super
+    # super
+    @loaded = true
+
     view.layer.delegate = self
     view.layer.bounds = view.bounds
     view.layer.setNeedsDisplay
 
-    self.imageLayer = CALayer.layer
+    @imageLayer = CALayer.layer
     imageLayer.contents = sitterImage
     view.layer.addSublayer imageLayer
 
-    self.ringLayer = CALayer.layer
+    @ringLayer = CALayer.layer
     ringLayer.shadowColor = UIColor.blackColor.CGColor
     ringLayer.shadowOffset = [0, 0.5]
     ringLayer.shadowOpacity = 0.5
     ringLayer.shadowRadius = 1.5
     view.layer.addSublayer ringLayer
 
-    self.numberLabelLayer = CALayer.layer
+    @numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
     numberLabelLayer.shadowOffset = [0, -1.5]
     numberLabelLayer.shadowRadius = 1
     numberLabelLayer.shadowOpacity = 0.20
     view.layer.addSublayer numberLabelLayer
+
+    updateLayerContents
   end
 
   def sitter=(sitter)
@@ -46,7 +54,7 @@ class SitterCircleController < UIViewController
   def available=(available)
     return if @available == available
     @available = available
-    displayLayer(nil)
+    updateLayerContents
     view.setNeedsDisplay
   end
 
@@ -67,16 +75,17 @@ class SitterCircleController < UIViewController
     # numberLabelLayer.contentsGravity = KCAGravityCenter
   end
 
-  def displayLayer(layer)
+  def updateLayerContents
+    return unless @loaded
     ringLayer.contents = ringLayerImage
     numberLabelLayer.contents = numberLayerImage
   end
 
   private
 
-  attr_accessor :imageLayer
-  attr_accessor :ringLayer
-  attr_accessor :numberLabelLayer
+  attr_reader :imageLayer
+  attr_reader :ringLayer
+  attr_reader :numberLabelLayer
 
   def ringLayerImage
     bounds = view.bounds

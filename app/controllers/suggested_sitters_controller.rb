@@ -19,7 +19,7 @@ class SuggestedSittersController < UITableViewController
   def tableView(tableView, numberOfRowsInSection:section); sitters.length; end
 
   def tableView(tableView, didSelectRowAtIndexPath:indexPath)
-    delegate.presentSitterDetails sitters[indexPath.row]
+    delegate.presentDetailsForSitter sitters[indexPath.row]
   end
 
   IMAGE_TAG = 1

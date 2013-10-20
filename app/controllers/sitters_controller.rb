@@ -15,6 +15,7 @@ class SittersController < UIViewController
     fudge = 10
     # @scrollView.frame = self.view.bounds
     @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
+    sitterControllers.each(&:viewDidLoad)
   end
 
   layout do
@@ -55,10 +56,10 @@ class SittersController < UIViewController
 
   private
 
-  attr_reader :sitterViewControllers
+  attr_reader :sitterControllers
 
   def updateSitterAvailability
-    sitterViewControllers.each do |controller|
+    sitterControllers.each do |controller|
       sitter = controller.sitter
       controller.available = sitter && timeSelection && sitter.availableAt(timeSelection)
     end
@@ -66,23 +67,21 @@ class SittersController < UIViewController
 
   def createSitterAvatars
     self.sitters = Sitter.added
-    @sitterViewControllers = []
+    @sitterControllers = []
     sitterViews = []
     subview UIView, :avatars do
       for i in 0...7
         sitter = sitters[i]
         controller = SitterCircleController.alloc.initWithSitter(sitter, labelString:(i+1).to_s)
-        addChildViewController controller
         view = subview controller.view, :sitter, width: 90, height: 90
-        controller.didMoveToParentViewController self
         view.when_tapped do
-          if view.sitter then
-            delegate.presentSitterDetails view.sitter
+          if controller.sitter then
+            delegate.presentDetailsForSitter controller.sitter
           else
             delegate.presentSuggestedSitters
           end
         end
-        @sitterViewControllers << controller
+        @sitterControllers << controller
         sitterViews << view
       end
     end
@@ -92,7 +91,7 @@ class SittersController < UIViewController
 
     observe(Sitter, :added) do
       sitters = Sitter.added
-      sitterViewControllers.each_with_index do |view, i|
+      sitterControllers.each_with_index do |view, i|
         view.sitter = sitters[i]
       end
       updateSitterAvailability
