@@ -1,3 +1,6 @@
+KEYNOTE_SHADOW_OFFSET_RATIO = 0.5
+KEYNOTE_SHADOW_RADIUS_RATIO = 0.25
+
 class SitterCircleController
   attr_accessor :view
   attr_accessor :sitter
@@ -18,9 +21,6 @@ class SitterCircleController
   def viewDidLoad
     @loaded = true
 
-    keynoteShadowRadiusRatio = 0.25
-    keynoteShadowOffsetRatio = 0.5
-
     view.layer.delegate = self
     view.layer.bounds = view.bounds
     view.layer.setNeedsDisplay
@@ -31,15 +31,15 @@ class SitterCircleController
 
     @ringLayer = CALayer.layer
     ringLayer.shadowColor = UIColor.blackColor.CGColor
-    ringLayer.shadowOffset = [0, 1 * keynoteShadowOffsetRatio]
-    ringLayer.shadowOpacity = 0.5
-    ringLayer.shadowRadius = 3 * keynoteShadowRadiusRatio
+    ringLayer.shadowOffset = [0, 1 * KEYNOTE_SHADOW_OFFSET_RATIO]
+    # ringLayer.shadowOpacity = 0.5
+    ringLayer.shadowRadius = 3 * KEYNOTE_SHADOW_RADIUS_RATIO
     view.layer.addSublayer ringLayer
 
     @numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
-    numberLabelLayer.shadowOffset = [0, -3 * keynoteShadowOffsetRatio]
-    numberLabelLayer.shadowRadius = 2 * keynoteShadowRadiusRatio
+    numberLabelLayer.shadowOffset = [0, -3 * KEYNOTE_SHADOW_OFFSET_RATIO]
+    numberLabelLayer.shadowRadius = 2 * KEYNOTE_SHADOW_RADIUS_RATIO
     numberLabelLayer.shadowOpacity = 0.20
     view.layer.addSublayer numberLabelLayer
 
@@ -63,15 +63,17 @@ class SitterCircleController
   def layoutSublayersOfLayer(layer)
     center = [view.width / 2, view.height / 2]
 
-    sitterImageIngress = 0.09
+    imageIngress = 0.09
+    imageIngress = 0.15 if not sitter
     imageLayer.bounds = view.bounds
     imageLayer.position = center
-    imageLayer.contentsRect = [[-sitterImageIngress, -sitterImageIngress], [1 + 2 * sitterImageIngress, 1 + 2 * sitterImageIngress]]
-    # imageLayer.contentsGravity = KCAGravityCenter
+    imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
+    imageLayer.backgroundColor = sitter ? UIColor.clearColor : 0xA5A5A5.uicolor.CGColor
+    imageLayer.cornerRadius = view.width / 2
+    # imageLayer.maskToBounds = true
 
     ringLayer.bounds = view.bounds
     ringLayer.position = center
-    # ringLayer.contentsGravity = KCAGravityCenter
 
     numberLabelLayer.bounds = view.bounds
     numberLabelLayer.position = center
@@ -82,6 +84,8 @@ class SitterCircleController
     return unless @loaded
     ringLayer.contents = ringLayerImage
     numberLabelLayer.contents = numberLayerImage
+    ringLayer.shadowOpacity = sitter ? 0.5 : 0
+    ringLayer.shadowRadius = sitter ? 3 * KEYNOTE_SHADOW_RADIUS_RATIO : 0
   end
 
   private
@@ -95,8 +99,8 @@ class SitterCircleController
     UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
 
     sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:9)
-    sitterNameColor = sitter && !available ? 0xaaaaaa.uicolor : UIColor.blackColor
-    outerRingWidth = 10
+    sitterNameColor = available ? UIColor.blackColor : 0xaaaaaa.uicolor
+    outerRingWidth = 11
     sitterNameRadius = 36
 
     cx = cy = bounds.size.width / 2
@@ -134,7 +138,6 @@ class SitterCircleController
     end
 
     CGContextRestoreGState context
-
     layerImage = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
     return layerImage.CGImage
@@ -149,13 +152,14 @@ class SitterCircleController
 
     numberLabelFont = UIFont.fontWithName('Helvetica', size:13)
     numberLabelColor = sitter ? UIColor.blackColor : 0xaaaaaa.uicolor
-    labelCircleRadius = 13
+    labelCircleRadius = 12
+    labelNameDeltaY = 4
 
-    CGContextAddArc context, cx, bounds.size.height - labelCircleRadius - 2, labelCircleRadius, 0, 2 * Math::PI, 0
+    CGContextAddArc context, cx, bounds.size.height - labelCircleRadius - 1, labelCircleRadius, 0, 2 * Math::PI, 0
     CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
     CGContextFillPath context
 
-    labelRect = CGRectMake(0, bounds.size.height - 2 * labelCircleRadius + 2, bounds.size.width, 2 * labelCircleRadius)
+    labelRect = CGRectMake(0, bounds.size.height - 2 * labelCircleRadius + labelNameDeltaY, bounds.size.width, 2 * labelCircleRadius)
     labelString.drawInRect labelRect, withAttributes: {
       NSFontAttributeName => numberLabelFont,
       NSForegroundColorAttributeName => numberLabelColor,
