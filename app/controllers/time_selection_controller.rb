@@ -4,6 +4,9 @@ class TimeSelectionController < UIViewController
   attr_accessor :timeSelection
   attr_accessor :delegate
 
+  SHORT_VIEW_TOP = 64
+  SHORT_VIEW_HEIGHT = 55
+
   def initWithNibName(name, bundle:bundle)
     self
   end
@@ -200,8 +203,6 @@ class TimeSelectionController < UIViewController
     return if @timeSelectorHeightKey == key
     @timeSelectorHeightKey = key
     view = self.view
-    shortViewTop = 64
-    shortViewHeight = 55
     case key
     when :short
       @savedTimeSelectorValues = {
@@ -211,8 +212,8 @@ class TimeSelectionController < UIViewController
         alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
       }
       tallViewHeight = view.height
-      view.top = shortViewTop
-      view.height = shortViewHeight
+      view.top = SHORT_VIEW_TOP
+      view.height = SHORT_VIEW_HEIGHT
       view.setNeedsDisplay
       tallSizeOnlyViews.each do |v| v.alpha = 0 end
       shortSizeOnlyViews.each do |v| v.alpha = 1 end
@@ -229,7 +230,7 @@ class TimeSelectionController < UIViewController
       savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
       shortSizeOnlyViews.each do |v| v.alpha = 0 end
       @summaryViewHoursLabel.top = @hoursSlider.top
-      @summaryViewHoursLabel.top += shortViewTop - view.top
+      @summaryViewHoursLabel.top += SHORT_VIEW_TOP - view.top
       @savedTimeSelectorValues = nil
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)

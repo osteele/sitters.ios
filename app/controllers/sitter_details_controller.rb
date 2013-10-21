@@ -21,7 +21,7 @@ class SitterDetailsController < UIViewController
     end
 
     auto do
-      metrics 'header_h' => 119, 'action_button_h' => 55, 'footer_h' => 45
+      metrics 'header_h' => 55, 'action_button_h' => 55, 'footer_h' => 45
       vertical '|-header_h-[webview]-0-[action_button(action_button_h)]-footer_h-|'
       horizontal '|-0-[action_button]-0-|'
     end
@@ -52,7 +52,6 @@ class SitterDetailsController < UIViewController
   def renderTemplate
     return unless webview
     webview.hidden = true
-    webview.alpha = 0
     @template ||= begin
       templatePath ||= NSBundle.mainBundle.pathForResource('sitter_details', ofType:'html')
       GRMustacheTemplate.templateFromContentsOfFile(templatePath, error:nil)
@@ -63,7 +62,6 @@ class SitterDetailsController < UIViewController
 
   def webViewDidFinishLoad(webview)
     webview.hidden = false
-    webview.alpha = 1
     updateButtonText
   end
 end

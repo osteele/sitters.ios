@@ -1,15 +1,14 @@
 Teacup::Stylesheet.new :sitter_details do
   lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
 
-  style :sitter_details,
-    backgroundColor: 0xF9F9F9.uicolor;
+  # style :sitter_details,
+  #   backgroundColor: 0xF9F9F9.uicolor;
 
   style :webview,
+    backgroundColor: 0xF9F9F9.uicolor,
     constraints: [
-      # constrain_top(119),
       constrain(:left).equals(:superview, :left),
       constrain(:width).equals(:superview, :width),
-      # constrain(:bottom).equals(:superview, :bottom)
     ]
 
   style :action_button,
