@@ -13,7 +13,7 @@ require_all 'tasks'
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.short_version = app.version = '0.2.1'
+  app.short_version = app.version = '0.2.2'
   app.icons = ['icon-120.png']
   app.interface_orientations = [:portrait]
 
