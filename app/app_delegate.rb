@@ -2,19 +2,19 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
-    window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
     end
 
-    # window.rootViewController = SuggestedSittersController.alloc.init
-    # window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
-    # window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
+    # @window.rootViewController = SuggestedSittersController.alloc.init
+    # @window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
+    # @window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
 
-    window.rootViewController = ExpiredController.alloc.init if isExpired
+    @window.rootViewController = ExpiredController.alloc.init if isExpired
+    @window.rootViewController.wantsFullScreenLayout = true
 
-    window.styleMode = PXStylingNormal
-    window.makeKeyAndVisible
+    @window.makeKeyAndVisible
 
     # login
 
@@ -102,5 +102,45 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
+  end
+end
+
+class HelloViewController < UIViewController
+  def loadView
+    self.view = HelloView.alloc.init
+  end
+end
+
+class HelloView < UIView
+  def drawRect(rect)
+    if @moved
+      bgcolor = begin
+        red, green, blue = rand(100), rand(100), rand(100)
+        UIColor.colorWithRed(red/100.0, green:green/100.0, blue:blue/100.0, alpha:1.0)
+      end
+      text = "ZOMG!"
+    else
+      bgcolor = UIColor.blackColor
+      text = @touches ? "Touched #{@touches} times!" : "Hello RubyMotion!"
+    end
+
+    bgcolor.set
+    UIBezierPath.bezierPathWithRect(frame).fill
+
+    font = UIFont.systemFontOfSize(24)
+    UIColor.whiteColor.set
+    text.drawAtPoint(CGPoint.new(10, 20), withFont:font)
+  end
+
+  def touchesMoved(touches, withEvent:event)
+    @moved = true
+    setNeedsDisplay
+  end
+
+  def touchesEnded(touches, withEvent:event)
+    @moved = false
+    @touches ||= 0
+    @touches += 1
+    setNeedsDisplay
   end
 end

@@ -14,7 +14,6 @@ gem 'sugarcube', :require => ['sugarcube-color']
 
 # layout
 gem 'teacup'
-gem 'motion-pixate'
 gem 'motion-layout'
 
 # domains
