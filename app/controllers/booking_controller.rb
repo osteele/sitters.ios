@@ -64,17 +64,46 @@ class BookingController < UIViewController
 
   def action(action, sitter:sitter)
     msg = case action
-      when :add
-        Sitter.addSitter sitter
-        "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
+      when :add then "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
       when :reserve then "%s will babysit for you at the specified time."
       when :request then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
     end
 
+    sitterActionDelegate = SitterActionDelegate.new(sitter:sitter, action:action, delegate:self)
+    @actionDelegates ||= []
+    @actionDelegates << sitterActionDelegate
+
     UIAlertView.alloc.initWithTitle('Request Sent',
       message:msg % sitter.firstName,
-      delegate:nil,
+      delegate:sitterActionDelegate,
       cancelButtonTitle:'OK',
       otherButtonTitles:nil).show
+  end
+
+  def actionDelegateDidComplete(sitterActionDelegate)
+    @actionDelegates -= [sitterActionDelegate]
+  end
+end
+
+class SitterActionDelegate
+  attr_reader :sitter, :action, :delegate
+
+  def initialize(options)
+    @sitter = options[:sitter]
+    @action = options[:action]
+    @delegate = options[:delegate]
+  end
+
+  def alertView(alertView, clickedButtonAtIndex:index)
+    return unless action == :add
+    Scheduler.after 10 do
+      Sitter.addSitter sitter
+      delegate.actionDelegateDidComplete self
+      UIAlertView.alloc.initWithTitle('Sitter Confirmed',
+        message:"%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName,
+        delegate:nil,
+        cancelButtonTitle:'OK',
+        otherButtonTitles:nil).show
+    end
   end
 end

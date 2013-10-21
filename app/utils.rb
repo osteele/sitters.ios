@@ -29,13 +29,13 @@ end
 class Scheduler
   attr_reader :pending
 
-  def self.after(delay, &block)
-    self.new.after(delay, &block)
+  def self.after(seconds, &block)
+    self.new.after(seconds, &block)
   end
 
-  def after(delay, &block)
+  def after(seconds, &block)
     @block = block
-    @timer = NSTimer.scheduledTimerWithTimeInterval(delay, target:self, selector:'fire', userInfo:nil, repeats:false)
+    @timer = NSTimer.scheduledTimerWithTimeInterval(seconds, target:self, selector:'fire', userInfo:nil, repeats:false)
     @pending = true
     return self
   end
@@ -47,8 +47,8 @@ class Scheduler
 end
 
 class Debounced
-  def initialize(delay, &block)
-    @delay = delay
+  def initialize(seconds, &block)
+    @delay = seconds
     @block = block
     @scheduler = Scheduler.new
     @nextTime = nil
