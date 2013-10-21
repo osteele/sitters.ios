@@ -16,13 +16,19 @@ class ChatController < UIViewController
   end
 
   def mapView(mapView, didUpdateUserLocation:userLocation)
+    return unless mapView.userLocation.location
     coordinate = mapView.userLocation.coordinate
-    mapView.setRegion [coordinate, [0.2, 0.2]], animated:true if coordinate
+    mapView.setRegion [coordinate, [0.2, 0.2]], animated:true
   end
 
   layout do
     @mapView = subview MKMapView.alloc.initWithFrame([[0, 20],[320, 122]]),
       delegate: self,
       userTrackingMode: MKUserTrackingModeFollow
+
+    subview UIImageView,
+      top: 20 + 122,
+      size: [320, 325],
+      image: UIImage.imageNamed('images/chat-placeholder')
   end
 end
