@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-require 'rest_client'
 require 'json'
+require 'launchy'
+require 'rest_client'
 
 TF_ENDPOINT = 'http://testflightapp.com/api/builds.json'
+
+task :testflight => 'testflight:upload'
 
 namespace :testflight do
   task :upload => 'archive:distribution' do

@@ -35,7 +35,8 @@ Copy `~/.env.template` to `~/.env` and edit in the token values.
 
 # Uploading a Build
 1. `rake testflight:upload`
-2. If the provisioning profile changed it from from `~/Library/MobileDevice/'Provisioning Profiles'`.
+2. If the provisioning profile changed, upload the new profile from `~/Library/MobileDevice/'Provisioning Profiles'`.
+`rake profiles:open` will open this folder.
 3. Open the TestFlight build page and add users.
 
 # App Store Release Checklist
