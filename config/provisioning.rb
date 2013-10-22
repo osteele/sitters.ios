@@ -9,6 +9,8 @@ end
 
 # Motion::Project::App.setup do |app|
 def set_provisioning_profile(app)
+  app.codesign_certificate = 'iPhone Distribution: Oliver Steele (P636ZTRQYX)'
+
   app.development do
     set_provisioning_profile_to app, ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID')
     # set_provisioning_profile_to app, ENV.require('IOS_APP_PRODUCTION_PROFILE_ID')
