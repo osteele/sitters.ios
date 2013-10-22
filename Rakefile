@@ -7,7 +7,7 @@ require 'date'
 Bundler.require
 
 Dotenv.load
-require File.join(File.dirname(__FILE__), 'config/settings.rb')
+require_all 'config'
 require_all 'tasks'
 
 Motion::Project::App.setup do |app|
@@ -46,6 +46,8 @@ Motion::Project::App.setup do |app|
     pod 'NSDate-Extensions'
   end
   app.weak_frameworks += %w(AdSupport Social)
+
+  set_provisioning_profile app
 
   # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
   FB_APP_ID = ENV['FB_APP_ID']
