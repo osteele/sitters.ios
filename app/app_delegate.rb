@@ -9,6 +9,12 @@ class AppDelegate
       applicationDidFinishSyncing application
     end
 
+    firebase['expirationDate'].on(:value) do |snapshot|
+      dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+      date = dateDateFormatter.dateFromString(snapshot.value)
+      didExpire if date and buildDate < date
+    end
+
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @window.rootViewController = SplashController.alloc.init
     @window.makeKeyAndVisible
@@ -16,6 +22,8 @@ class AppDelegate
   end
 
   def applicationDidFinishSyncing(application)
+    return if @expired
+
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
     end
@@ -24,11 +32,15 @@ class AppDelegate
     # @window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
     # @window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
 
-    @window.rootViewController = ExpiredController.alloc.init if isExpired
+    didExpire if isExpired
     @window.rootViewController.wantsFullScreenLayout = true
 
     # login
+  end
 
+  def didExpire
+    @expired = true
+    @window.rootViewController = ExpiredController.alloc.init
   end
 
   def buildDate
