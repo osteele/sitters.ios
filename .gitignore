@@ -22,3 +22,7 @@ resources/styles/sitter_details.css
 .env
 
 resources/sitter_details.html
+*.pch
+*.bridgesupport
+*.o
+*.a

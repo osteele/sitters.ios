@@ -31,13 +31,15 @@ Motion::Project::App.setup do |app|
   app.libs << libz unless app.libs.include?(libz)
 
   # Firebase:
-  # app.vendor_project('vendor/Firebase.framework', :static, :products => ['Firebase'] ,:headers_dir => 'Headers')
+  # app.vendor_project 'vendor/Firebase.framework', :static, :products => ['Firebase'] ,:headers_dir => 'Headers'
   # app.libs += ['/usr/lib/libicucore.dylib']
   # app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
 
   # Firebase simple login:
-  # app.vendor_project('vendor/FirebaseSimpleLogin.framework', :static, :products => ['FirebaseSimpleLogin'] ,:headers_dir => 'Headers')
+  # app.vendor_project 'vendor/FirebaseSimpleLogin.framework', :static, :products => ['FirebaseSimpleLogin'] ,:headers_dir => 'Headers'
   # app.frameworks += ['Accounts', 'Social']
+
+  app.vendor_project 'lib/OSUtils', :static #, :products => ['OSUtils'])
 
   app.pods do
     pod 'Firebase', '~> 1.0.0'

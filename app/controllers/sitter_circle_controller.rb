@@ -133,8 +133,8 @@ class SitterCircleController
     # Sitter name
     if sitter
       textAttributes = { NSFontAttributeName => sitterNameFont, NSForegroundColorAttributeName => sitterNameColor }
-      sitterNameAS = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
-      GraphicsUtils.showStringOnArc context, sitterNameAS, cx, cy, sitterNameRadius
+      sitterName = NSAttributedString.alloc.initWithString(sitter.firstName.upcase, attributes:textAttributes)
+      sitterName.drawOnArc cx, cy, sitterNameRadius
     end
 
     CGContextRestoreGState context

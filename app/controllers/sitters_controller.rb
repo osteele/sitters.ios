@@ -4,6 +4,8 @@ class SittersController < UIViewController
   attr_accessor :timeSelection
   attr_accessor :sitters
 
+  SITTER_GRID_COUNT = 7
+
   # stylesheet :sitters
   def stylesheet
     Teacup::Stylesheet[:sitters]
@@ -70,7 +72,7 @@ class SittersController < UIViewController
     @sitterControllers = []
     sitterViews = []
     subview UIView, :avatars do
-      for i in 0...7
+      for i in 0...SITTER_GRID_COUNT
         sitter = sitters[i]
         controller = SitterCircleController.alloc.initWithSitter(sitter, labelString:(i+1).to_s)
         view = subview controller.view, :sitter, width: 90, height: 90
