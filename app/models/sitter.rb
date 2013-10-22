@@ -9,7 +9,11 @@ class Sitter
   end
 
   def self.all
-    @sitters ||= json.map { |data| self.new(data) }
+    @sitters
+  end
+
+  def self.initializeFromJSON(json)
+    @sitters = json.map { |data| self.new(data) }
   end
 
   def self.added

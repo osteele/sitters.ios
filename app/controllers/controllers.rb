@@ -1,3 +1,13 @@
+class SplashController < UIViewController
+  layout do
+    screenHeight = UIScreen.mainScreen.bounds.size.height
+    subview UIImageView,
+      width: 320,
+      height: screenHeight,
+      image: UIImage.imageNamed(screenHeight == 480 ? 'Default' : 'Default-568h')
+  end
+end
+
 class ExpiredController < UIViewController
   layout do
     textView = subview UITextView, top: 20, width: 320, height: 80,
