@@ -56,6 +56,7 @@ class SitterCircleController
     @sitter = sitter
     imageLayer.contents = sitterImage
     view.setNeedsDisplay
+    view.layer.setNeedsDisplay
   end
 
   def available=(available)
@@ -68,12 +69,8 @@ class SitterCircleController
   def layoutSublayersOfLayer(layer)
     center = [view.width / 2, view.height / 2]
 
-    imageIngress = 0.09
-    imageIngress = 0.15 if not sitter
     imageLayer.bounds = view.bounds
     imageLayer.position = center
-    imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
-    imageLayer.backgroundColor = sitter ? UIColor.clearColor : 0xA5A5A5.uicolor.CGColor
     imageLayer.cornerRadius = view.width / 2
     # imageLayer.masksToBounds = true
 
@@ -87,10 +84,16 @@ class SitterCircleController
 
   def updateLayerContents
     return unless @loaded
+    imageIngress = 0.09
+    imageIngress = 0.15 if not sitter
+    imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
+    imageLayer.backgroundColor = sitter ? UIColor.clearColor : 0xA5A5A5.uicolor.CGColor
+
     ringLayer.contents = createRingLayerImage
-    numberLabelLayer.contents = createNumberLayerImage
     ringLayer.shadowOpacity = sitter ? 0.5 : 0
     ringLayer.shadowRadius = sitter ? 3 * KeynoteShadowRadiusRatio : 0
+
+    numberLabelLayer.contents = createNumberLayerImage
   end
 
   private
