@@ -1,23 +1,28 @@
-KEYNOTE_SHADOW_OFFSET_RATIO = 0.5
-KEYNOTE_SHADOW_RADIUS_RATIO = 0.25
-
+# This class controls a view, but it is not a UIViewController.
+#
+# This is because it semantically controls the view, but does not control a significant
+# rectangular subset of the superview or implement its own response to view, transition, containment, layout, and rotation
+# events as views in the view containment hierarchy are assumed to do -- it was more work to splice this in as a subview
+# controller than to let it manage a subview in a different controller's views.
 class SitterCircleController
   attr_accessor :view
   attr_accessor :sitter
   attr_accessor :labelString
   attr_accessor :available
 
-  def initWithSitter(sitter, labelString:label)
-    # initWithNibName(nil, bundle:nil)
-    @view = UIView.alloc.initWithFrame([[0,0],[90,90]])
+  ViewSize = 90
 
+  def initWithSitter(sitter, labelString:label)
     @sitter = sitter
     @labelString = label
     @available = false
 
+    @view = UIView.alloc.initWithFrame([[0,0],[ViewSize,ViewSize]])
+
     self
   end
 
+  # The owner must call this
   def viewDidLoad
     @loaded = true
 
@@ -31,15 +36,15 @@ class SitterCircleController
 
     @ringLayer = CALayer.layer
     ringLayer.shadowColor = UIColor.blackColor.CGColor
-    ringLayer.shadowOffset = [0, 1 * KEYNOTE_SHADOW_OFFSET_RATIO]
-    # ringLayer.shadowOpacity = 0.5
-    ringLayer.shadowRadius = 3 * KEYNOTE_SHADOW_RADIUS_RATIO
+    ringLayer.shadowOffset = [0, 1 * KeynoteShadowOffsetRatio]
+    # ringLayer.shadowOpacity = 0.K
+    ringLayer.shadowRadius = 3 * KeynoteShadowRadiusRatio
     view.layer.addSublayer ringLayer
 
     @numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
-    numberLabelLayer.shadowOffset = [0, -3 * KEYNOTE_SHADOW_OFFSET_RATIO]
-    numberLabelLayer.shadowRadius = 2 * KEYNOTE_SHADOW_RADIUS_RATIO
+    numberLabelLayer.shadowOffset = [0, -3 * KeynoteShadowOffsetRatio]
+    numberLabelLayer.shadowRadius = 2 * KeynoteShadowRadiusRatio
     numberLabelLayer.shadowOpacity = 0.20
     view.layer.addSublayer numberLabelLayer
 
@@ -70,7 +75,7 @@ class SitterCircleController
     imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
     imageLayer.backgroundColor = sitter ? UIColor.clearColor : 0xA5A5A5.uicolor.CGColor
     imageLayer.cornerRadius = view.width / 2
-    # imageLayer.maskToBounds = true
+    # imageLayer.masksToBounds = true
 
     ringLayer.bounds = view.bounds
     ringLayer.position = center
@@ -82,10 +87,10 @@ class SitterCircleController
 
   def updateLayerContents
     return unless @loaded
-    ringLayer.contents = ringLayerImage
-    numberLabelLayer.contents = numberLayerImage
+    ringLayer.contents = createRingLayerImage
+    numberLabelLayer.contents = createNumberLayerImage
     ringLayer.shadowOpacity = sitter ? 0.5 : 0
-    ringLayer.shadowRadius = sitter ? 3 * KEYNOTE_SHADOW_RADIUS_RATIO : 0
+    ringLayer.shadowRadius = sitter ? 3 * KeynoteShadowRadiusRatio : 0
   end
 
   private
@@ -94,7 +99,7 @@ class SitterCircleController
   attr_reader :ringLayer
   attr_reader :numberLabelLayer
 
-  def ringLayerImage
+  def createRingLayerImage
     bounds = view.bounds
     UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
 
@@ -143,7 +148,7 @@ class SitterCircleController
     return layerImage.CGImage
   end
 
-  def numberLayerImage
+  def createNumberLayerImage
     bounds = view.bounds
     cx = cy = bounds.size.width / 2
 
@@ -172,7 +177,7 @@ class SitterCircleController
   end
 
   def sitterImage
-    SitterCircleController.sitterImage(sitter)
+    self.class.sitterImage(sitter)
   end
 
   def self.placeholderImage

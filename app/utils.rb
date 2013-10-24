@@ -1,6 +1,3 @@
-NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
-UIFontDescriptorTraitBold = 1 << 1 unless Object.const_defined?(:UIFontDescriptorTraitBold)
-
 class UIView < UIResponder
   def top; origin.y; end
   def left; origin.x; end
@@ -21,11 +18,14 @@ class UIView < UIResponder
   def ty=(ty); transform = self.transform; transform.ty = ty; self.transform = transform; end
 end
 
+# Returns an NSDateFormatter for `template` for the current locale.
+# This is not cached. It's the caller's responsibility to update this if the locale changes.
 def dateFormatter(template)
   template = NSDateFormatter.dateFormatFromTemplate(template, options:0, locale:NSLocale.currentLocale)
   dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat(template)
 end
 
+# `Scheduler.after seconds, &block` calls `block` after `seconds` seconds.
 class Scheduler
   attr_reader :pending
 
@@ -46,6 +46,8 @@ class Scheduler
   end
 end
 
+# `fire!` calls `block`, except that it delays or coalesces calls to ensure that it is not called
+# more than once per `seconds` seconds.
 class Debounced
   def initialize(seconds, &block)
     @delay = seconds
@@ -72,8 +74,9 @@ class Debounced
   end
 end
 
-# Don't need the overhead of a UICollectionViewLayout and associated classes,
-# since there'too few cells for a flyweight and there's just the one fixed layout.
+# This implements a subset of the functionality of a UICollectionViewLayout and associated classes.
+# It's much simpler than the full protocol since there's too few cells to require a flyweight,
+# and there's just the one fixed layout.
 class HexagonLayout
   attr_accessor :cellWidth, :cellHeight, :leftMargin
 
@@ -85,11 +88,11 @@ class HexagonLayout
 
   def applyTo(views)
     views.each_with_index do |view, i|
-      view.origin = positionAt(i)
+      view.origin = originForIndex(i)
     end
   end
 
-  def positionAt(n)
+  def originForIndex(n)
     cellsPerEvenRow = 2
     cellsPerOddRow = cellsPerEvenRow + 1
     cellsPerRowPair = cellsPerEvenRow + cellsPerOddRow

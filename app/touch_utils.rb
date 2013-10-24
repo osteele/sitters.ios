@@ -1,4 +1,7 @@
 module TouchUtils
+  # Attach a pan recognizer to `handle` that drags `target` horizontally.
+  # If òptions[:resize]`, the target is simultaneously resized, such that its right edge stays at position.
+  # `target` is assumed to be a subview of `target` (so that `target.origin` is modified, but `handle.origin` is not).
   def self.dragOnTouch(target, handle:dragger, options:options)
     xMin = options[:xMinimum] || 0
     xMax = options[:xMaximum]
@@ -52,6 +55,8 @@ module TouchUtils
     end
   end
 
+  # Attach a pan recognizer to `handle` that resizes `target` horizontally.
+  # `target` is assumed to be a subview of `target` (so that `target.size` is modified, but `handle.origin` is not).
   def self.resizeOnTouch(target, handle:dragger, options:options)
     xMin = options[:xMinimum] || 0
     minWidth = options[:widthMinimum] || 0
@@ -78,6 +83,8 @@ module TouchUtils
     end
   end
 
+  # Attach a pan recognizer to `handle` that resizes `target` horizontally.
+  # `target` is assumed to be a subview of `target` (so that `target.size` is modified, but `handle.origin` is not).
   def self.bounceOnTap(target, handle:view)
     view.when_tapped do
       initialX = target.x
@@ -93,6 +100,7 @@ module TouchUtils
       step = Proc.new do
         dur, dx, options = animations.shift
         UIView.animateWithDuration dur, delay:0, options:options,
+          # TODO should this modify the transform instead of the origin?
           animations: lambda { target.x = initialX + dx },
           completion: lambda { |finished| step.call if animations.any? }
       end
