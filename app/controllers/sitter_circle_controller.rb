@@ -103,10 +103,10 @@ class SitterCircleController
     bounds = view.bounds
     UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
 
-    sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:9)
+    sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:8)
     sitterNameColor = available ? UIColor.blackColor : 0xaaaaaa.uicolor
     outerRingWidth = 11
-    sitterNameRadius = 36
+    sitterNameRadius = 39
 
     cx = cy = bounds.size.width / 2
     outerRadius = bounds.size.width / 2 - 1
