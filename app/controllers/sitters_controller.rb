@@ -14,9 +14,9 @@ class SittersController < UIViewController
   def viewDidLoad
     super
 
-    fudge = 10
-    # @scrollView.frame = self.view.bounds
-    @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, @scrollView.frame.size.height + fudge)
+    navBarHeight = 60
+    contentHeight = @scrollView.subviews.map(&:bottom).max
+    @scrollView.contentSize = CGSizeMake(@scrollView.frame.size.width, contentHeight + navBarHeight)
     sitterControllers.each(&:viewDidLoad)
   end
 

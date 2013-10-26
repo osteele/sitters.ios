@@ -1,6 +1,8 @@
 class UIView < UIResponder
   def top; origin.y; end
   def left; origin.x; end
+  def right; origin.x + size.width; end
+  def bottom; origin.y + size.height; end
   def height; size.height; end
   def width; size.width; end
   def top=(y); self.origin = [origin.x, y]; end
