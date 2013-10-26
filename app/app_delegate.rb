@@ -4,10 +4,13 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
-    # firebase['demo/sitters'].once(:value) do |snapshot|
-    #   Sitter.initializeFromJSON snapshot.value
-    #   didFinishLoadingData
-    # end
+    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @window.rootViewController = SplashController.alloc.init
+
+    withSyncedData('demo/sitters') do |data|
+      Sitter.initializeFromJSON data
+      didFinishLoadingData
+    end
 
     firebase['expirationDate'].on(:value) do |snapshot|
       dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -15,10 +18,7 @@ class AppDelegate
       didExpire if date and buildDate < date
     end
 
-    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    # @window.rootViewController = SplashController.alloc.init
     didExpire if isExpired
-    didFinishLoadingData
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
     true
@@ -67,6 +67,16 @@ class AppDelegate
   end
 
   private
+
+  def withSyncedData(key, &block)
+    data = DataCache.instance.withJSONCache(key, version:1)
+    return block.call data if data
+    firebase[key].once(:value) do |snapshot|
+      data = snapshot.value
+      DataCache.instance.withJSONCache(key, version:1) do data end
+      block.call data
+    end
+  end
 
   def authDidReturn(user, error:error)
     puts "authDidReturn user=#{user} error=#{error}"

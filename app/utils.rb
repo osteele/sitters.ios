@@ -117,7 +117,7 @@ class DataCache
       db = FMDatabase.databaseWithPath(cacheDbURL.path)
       db.open
       db.executeUpdate <<-SQL
-        CREATE TABLE json (
+        CREATE TABLE json_cache (
             key VARCHAR(50) PRIMARY KEY
           , version INT
           , json TEXT
@@ -130,18 +130,16 @@ class DataCache
 
   def withJSONCache(key, version:version, &block)
     db = self.database
-    puts "query"
-    results = db.executeQuery('SELECT json FROM json WHERE key=? AND version=?;', withArgumentsInArray:[key, version])
+    results = db.executeQuery('SELECT json FROM json_cache WHERE key=? AND version=?;', withArgumentsInArray:[key, version])
     if results.next
-      puts "cache hit"
       json = results.dataNoCopyForColumn(:json)
       data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:nil)
     else
-      puts "cache miss"
+      return unless block
       data = block.call
       json = BW::JSON.generate(data)
       values = { key: key, version: version, json: json }
-      db.executeUpdate 'INSERT OR REPLACE INTO json (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
+      db.executeUpdate 'INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
         withParameterDictionary:values
     end
     return data
