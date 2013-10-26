@@ -5,6 +5,13 @@ class SplashController < UIViewController
       width: 320,
       height: screenHeight,
       image: UIImage.imageNamed(screenHeight == 480 ? 'Default' : 'Default-568h')
+    spinner = subview UIActivityIndicatorView.alloc.initWithActivityIndicatorStyle(UIActivityIndicatorViewStyleWhiteLarge), :spinner
+      # autoresizingMask: UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin
+    auto do
+      horizontal '|-[spinner]-|'
+      vertical '|-[spinner]-|'
+    end
+    spinner.startAnimating
   end
 end
 
