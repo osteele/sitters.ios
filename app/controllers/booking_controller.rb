@@ -1,9 +1,6 @@
 class BookingController < UIViewController
   include BW::KVO
   stylesheet :booking
-  attr_reader :timeSelectionController
-  attr_reader :mySittersController
-  attr_reader :suggestedSittersController
 
   def initWithNibName(name, bundle:bundle)
     super
@@ -19,16 +16,11 @@ class BookingController < UIViewController
   end
 
   layout do
-    @mySittersController = SittersController.alloc.init
-    @mySittersController.delegate = self
-
-    @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController)
-    @navigationController.delegate = self
+    @mySittersController = SittersController.alloc.init.tap do |c| c.delegate = self end
+    @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController).tap do |c| c.delegate = self end
+    @timeSelectionController = TimeSelectionController.alloc.init.tap do |c| c.delegate = self end
 
     subview @navigationController.view
-
-    @timeSelectionController = TimeSelectionController.alloc.init
-    @timeSelectionController.delegate = self
     subview @timeSelectionController.view
   end
 
@@ -37,29 +29,24 @@ class BookingController < UIViewController
   end
 
   def navigationController(navigationController, willShowViewController:targetController, animated:flag)
-    UIView.animateWithDuration 0.3, animations: lambda {
-      timeSelectionController.setHeight targetController == mySittersController ? :tall : :short
-    }
+    mode = targetController == mySittersController ? :interactive : :summary
+    timeSelectionController.setMode mode, animated:true
   end
 
   def presentSuggestedSitters
     TestFlight.passCheckpoint 'Suggested sitters'
-    @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.delegate = self end
-    # @suggestedSittersController.title = 'Suggested Sitters'
-    @navigationController.pushViewController @suggestedSittersController, animated:true
+    navigationController.pushViewController suggestedSittersController, animated:true
   end
 
   def presentDetailsForSitter(sitter)
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
-    @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
-    @sitterDetailsController.sitter = sitter
-    @sitterDetailsController.action = case
+    sitterDetailsController.sitter = sitter
+    sitterDetailsController.action = case
       when Sitter.canAdd(sitter) then :add
       when sitter.availableAt(timeSelectionController.timeSelection) then :reserve
       else :request
       end
-    # @sitterDetailsController.title = sitter.name
-    @navigationController.pushViewController @sitterDetailsController, animated:true
+    navigationController.pushViewController sitterDetailsController, animated:true
   end
 
   def action(action, sitter:sitter)
@@ -82,6 +69,20 @@ class BookingController < UIViewController
 
   def actionDelegateDidComplete(sitterActionDelegate)
     @actionDelegates -= [sitterActionDelegate]
+  end
+
+  private
+
+  def navigationController; @navigationController; end
+  attr_reader :timeSelectionController
+  attr_reader :mySittersController
+
+  def sitterDetailsController
+    @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
+  end
+
+  def suggestedSittersController
+    @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.delegate = self end
   end
 end
 

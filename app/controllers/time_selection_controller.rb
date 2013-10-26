@@ -6,6 +6,7 @@ class TimeSelectionController < UIViewController
 
   SHORT_VIEW_TOP = 64
   SHORT_VIEW_HEIGHT = 55
+  TALL_VIEW_HEIGHT = 120
 
   def initWithNibName(name, bundle:bundle)
     self
@@ -24,14 +25,14 @@ class TimeSelectionController < UIViewController
 
   private
 
-  attr_accessor :tallSizeOnlyViews
-  attr_accessor :shortSizeOnlyViews
+  attr_accessor :interactiveModeOnlyViews
+  attr_accessor :summaryModeOnlyViews
 
   layout do
     self.view.stylename = :time_selector
 
-    @tallSizeOnlyViews = []
-    @shortSizeOnlyViews = []
+    @interactiveModeOnlyViews = []
+    @summaryModeOnlyViews = []
 
     createDaySelectorViews
     createHourSelectorViews
@@ -60,7 +61,7 @@ class TimeSelectionController < UIViewController
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
-    tallSizeOnlyViews << daySelectionMarker
+    interactiveModeOnlyViews << daySelectionMarker
     @dayMarker = daySelectionMarker
 
     weekdayDates.each_with_index do |date, i|
@@ -80,8 +81,8 @@ class TimeSelectionController < UIViewController
       dayLabels << label
       selectionMarkerLabels << selectionMarkerLabel
     end
-    self.tallSizeOnlyViews += dayLabels
-    self.tallSizeOnlyViews += selectionMarkerLabels
+    self.interactiveModeOnlyViews += dayLabels
+    self.interactiveModeOnlyViews += selectionMarkerLabels
 
     daySelectionMarker.superview.bringSubviewToFront daySelectionMarker
     selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
@@ -128,7 +129,7 @@ class TimeSelectionController < UIViewController
         end
       end
     end
-    tallSizeOnlyViews << hoursView
+    interactiveModeOnlyViews << hoursView
 
     minHours = 1.5
     hourRangeLabel = nil
@@ -154,10 +155,10 @@ class TimeSelectionController < UIViewController
       end
     end
 
-    tallSizeOnlyViews << hoursSlider
+    interactiveModeOnlyViews << hoursSlider
 
     summaryViewHoursLabel = subview UILabel, textAlignment: NSTextAlignmentCenter, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
-    shortSizeOnlyViews << summaryViewHoursLabel
+    summaryModeOnlyViews << summaryViewHoursLabel
 
     # Resizing manipulates these
     @hoursSlider = hoursSlider
@@ -187,6 +188,7 @@ class TimeSelectionController < UIViewController
 
     timeSpanHoursUpdater = Debounced.new 0.5 do
       frame = hoursSlider.frame
+      summaryViewHoursLabel.frame = frame
       startHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx - firstHourOffset) / hourWidth * 2).round / 2.0
       endHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx + hoursSlider.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
       startHour = [startHour, firstHourNumber].max
@@ -199,38 +201,36 @@ class TimeSelectionController < UIViewController
 
   public
 
-  def setHeight(key)
+  def setMode(key, animated:animated)
     return if @timeSelectorHeightKey == key
+
+    if animated
+      UIView.animateWithDuration 0.3, animations: lambda { setMode(key, animated:false) }
+      return
+    end
+
     @timeSelectorHeightKey = key
     view = self.view
     case key
-    when :short
+    when :summary
+      saveFrameViews = [view, @summaryViewHoursLabel]
+      saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
       @savedTimeSelectorValues = {
-        frame: view.frame,
-        dayMarkerFrame: @dayMarker.frame,
-        hoursSliderFrame: @hoursSlider.frame,
-        alpha: tallSizeOnlyViews.map { |v| [v, v.alpha] }
+        alpha: saveAlphaViews.map { |v| [v, v.alpha] },
+        frame: saveFrameViews.map { |v| [v, v.frame] }
       }
-      tallViewHeight = view.height
       view.top = SHORT_VIEW_TOP
       view.height = SHORT_VIEW_HEIGHT
       view.setNeedsDisplay
-      tallSizeOnlyViews.each do |v| v.alpha = 0 end
-      shortSizeOnlyViews.each do |v| v.alpha = 1 end
-      @summaryViewHoursLabel.frame = [[0, 18], [320, 30]]
-      @dayMarker.top = 0
-      @hoursSlider.top = 0
-    when :tall
+      interactiveModeOnlyViews.each do |v| v.alpha = 0 end
+      summaryModeOnlyViews.each do |v| v.alpha = 1 end
+      @summaryViewHoursLabel.origin = [0, 18]
+      @summaryViewHoursLabel.width = 320
+    when :interactive
       savedValues = @savedTimeSelectorValues
       return unless savedValues
-      view.frame = savedValues[:frame]
-      tallViewTop = view.top
-      @hoursSlider.frame = savedValues[:hoursSliderFrame]
-      @dayMarker.frame = savedValues[:dayMarkerFrame]
       savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
-      shortSizeOnlyViews.each do |v| v.alpha = 0 end
-      @summaryViewHoursLabel.top = @hoursSlider.top
-      @summaryViewHoursLabel.top += SHORT_VIEW_TOP - view.top
+      savedValues[:frame].each do |v, frame| v.frame = frame end
       @savedTimeSelectorValues = nil
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
