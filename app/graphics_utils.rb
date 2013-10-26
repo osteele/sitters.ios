@@ -1,3 +1,14 @@
+module GraphicsUtils
+  def self.imageForBounds(bounds, &block)
+    UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
+    context = UIGraphicsGetCurrentContext()
+    block.call context
+    image = UIGraphicsGetImageFromCurrentImageContext()
+    UIGraphicsEndImageContext()
+    return image
+  end
+end
+
 # Exposed for debugging.
 # TODO remove these or move them to an options argument
 TextArcSettings = {

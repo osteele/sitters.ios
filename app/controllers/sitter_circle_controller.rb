@@ -44,9 +44,15 @@ class SitterCircleController
     @numberLabelLayer = CALayer.layer
     numberLabelLayer.shadowColor = UIColor.blackColor.CGColor
     numberLabelLayer.shadowOffset = [0, -3 * KeynoteShadowOffsetRatio]
-    numberLabelLayer.shadowRadius = 2 * KeynoteShadowRadiusRatio
     numberLabelLayer.shadowOpacity = 0.20
+    numberLabelLayer.shadowRadius = 2 * KeynoteShadowRadiusRatio
     view.layer.addSublayer numberLabelLayer
+
+    labelCircleRadius = 12
+    numberLabelLayer.contentsGravity = KCAGravityResize
+    numberLabelLayer.backgroundColor = UIColor.whiteColor.CGColor
+    numberLabelLayer.cornerRadius = labelCircleRadius
+    numberLabelLayer.bounds = [[0, 0], [2 * labelCircleRadius, 2 * labelCircleRadius]]
 
     updateLayerContents
   end
@@ -67,7 +73,7 @@ class SitterCircleController
   end
 
   def layoutSublayersOfLayer(layer)
-    center = [view.width / 2, view.height / 2]
+    center = CGPointMake(view.width / 2, view.height / 2)
 
     imageLayer.bounds = view.bounds
     imageLayer.position = center
@@ -77,9 +83,7 @@ class SitterCircleController
     ringLayer.bounds = view.bounds
     ringLayer.position = center
 
-    numberLabelLayer.bounds = view.bounds
-    numberLabelLayer.position = center
-    # numberLabelLayer.contentsGravity = KCAGravityCenter
+    numberLabelLayer.position = [center.x, view.height - numberLabelLayer.bounds.size.height / 2 - 1]
   end
 
   def updateLayerContents
@@ -127,7 +131,6 @@ class SitterCircleController
 
     # Inner circle
     CGContextAddArc context, cx, cy, innerRadius, 0, 2 * Math::PI, 0
-    # CGContextSetFillColorWithColor context, 0xA6A6A6.uicolor.CGColor
     CGContextSetBlendMode context, KCGBlendModeClear
     CGContextFillPath context
     CGContextSetBlendMode context, KCGBlendModeNormal
@@ -152,31 +155,18 @@ class SitterCircleController
   end
 
   def createNumberLayerImage
-    bounds = view.bounds
-    cx = cy = bounds.size.width / 2
-
-    UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
-    context = UIGraphicsGetCurrentContext()
-
-    numberLabelFont = UIFont.fontWithName('Helvetica', size:13)
-    numberLabelColor = sitter ? UIColor.blackColor : 0xaaaaaa.uicolor
-    labelCircleRadius = 12
+    bounds = numberLabelLayer.bounds
     labelNameDeltaY = 4
-
-    CGContextAddArc context, cx, bounds.size.height - labelCircleRadius - 1, labelCircleRadius, 0, 2 * Math::PI, 0
-    CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
-    CGContextFillPath context
-
-    labelRect = CGRectMake(0, bounds.size.height - 2 * labelCircleRadius + labelNameDeltaY, bounds.size.width, 2 * labelCircleRadius)
-    labelString.drawInRect labelRect, withAttributes: {
-      NSFontAttributeName => numberLabelFont,
-      NSForegroundColorAttributeName => numberLabelColor,
+    labelAttributes = {
+      NSFontAttributeName: UIFont.fontWithName('Helvetica', size:13),
+      NSForegroundColorAttributeName: sitter ? UIColor.blackColor : 0xaaaaaa.uicolor,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
+    labelRect = [[0, labelNameDeltaY], bounds.size]
 
-    layerImage = UIGraphicsGetImageFromCurrentImageContext()
-    UIGraphicsEndImageContext()
-    return layerImage.CGImage
+    return GraphicsUtils::imageForBounds(bounds) do |context|
+      labelString.drawInRect labelRect, withAttributes:labelAttributes
+    end.CGImage
   end
 
   def sitterImage
