@@ -44,6 +44,7 @@ Motion::Project::App.setup do |app|
   app.pods do
     pod 'Firebase', '~> 1.0.0'
     # pod "Facebook-iOS-SDK"
+    pod 'FMDB'
     pod 'GRMustache'
     pod 'NSDate-Extensions'
   end

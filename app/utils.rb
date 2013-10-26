@@ -102,3 +102,48 @@ class HexagonLayout
     [leftMargin + col * cellWidth, row * cellHeight]
   end
 end
+
+class DataCache
+  def self.instance
+    Dispatch.once { @instance ||= new }
+    @instance
+  end
+
+  def database
+    @db ||= begin
+      cachesDirectoryURL = NSFileManager.defaultManager.URLsForDirectory(NSCachesDirectory, inDomains:NSUserDomainMask).first
+      cacheDbURL = cachesDirectoryURL.URLByAppendingPathComponent('cache.db')
+      puts cacheDbURL.path
+      db = FMDatabase.databaseWithPath(cacheDbURL.path)
+      db.open
+      db.executeUpdate <<-SQL
+        CREATE TABLE json (
+            key VARCHAR(50) PRIMARY KEY
+          , version INT
+          , json TEXT
+          , updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+          , UNIQUE(key));
+      SQL
+      db
+    end
+  end
+
+  def withJSONCache(key, version:version, &block)
+    db = self.database
+    puts "query"
+    results = db.executeQuery('SELECT json FROM json WHERE key=? AND version=?;', withArgumentsInArray:[key, version])
+    if results.next
+      puts "cache hit"
+      json = results.dataNoCopyForColumn(:json)
+      data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:nil)
+    else
+      puts "cache miss"
+      data = block.call
+      json = BW::JSON.generate(data)
+      values = { key: key, version: version, json: json }
+      db.executeUpdate 'INSERT OR REPLACE INTO json (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
+        withParameterDictionary:values
+    end
+    return data
+  end
+end

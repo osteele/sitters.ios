@@ -86,20 +86,10 @@ class Sitter
   private
 
   def self.json
-    @json ||= begin
+    DataCache.instance.withJSONCache('sitters', version:1) do
       path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
-      stream = NSInputStream.inputStreamWithFileAtPath(path)
-      stream.open
-      begin
-        NSJSONSerialization.JSONObjectWithStream(stream, options:0, error:nil)
-      ensure
-        stream.close
-      end
+      json = NSData.dataWithContentsOfFile(path)
+      NSJSONSerialization.JSONObjectWithData(json, options:0, error:nil)
     end
-  end
-
-  def self.save(data)
-    stream = NSOutputStream.outputStreamToFileAtPath(stream, append:false)
-    writeJSONObject:data, toStream:stream, options:0, error:nil
   end
 end

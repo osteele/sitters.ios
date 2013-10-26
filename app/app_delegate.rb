@@ -4,8 +4,9 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
-    # firebase['demo']['sitters'].once(:value) do |snapshot|
+    # firebase['demo/sitters'].once(:value) do |snapshot|
     #   Sitter.initializeFromJSON snapshot.value
+    #   didFinishLoadingData
     # end
 
     firebase['expirationDate'].on(:value) do |snapshot|
@@ -16,13 +17,18 @@ class AppDelegate
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     # @window.rootViewController = SplashController.alloc.init
-    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
-      controller.viewControllers = tabControllers
-    end
     didExpire if isExpired
+    didFinishLoadingData
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
     true
+  end
+
+  def didFinishLoadingData()
+    return if isExpired
+    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+      controller.viewControllers = tabControllers
+    end
   end
 
   def didExpire
@@ -103,7 +109,7 @@ class AppDelegate
   end
 
   def isExpired
-    return false unless expirationDate
+    return @expired unless expirationDate
     return expirationDate < NSDate.date
   end
 
