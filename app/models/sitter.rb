@@ -9,7 +9,7 @@ class Sitter
   end
 
   def self.all
-    @sitters
+    @sitters ||= self.initializeFromJSON(self.json)
   end
 
   def self.initializeFromJSON(json)
@@ -88,8 +88,18 @@ class Sitter
   def self.json
     @json ||= begin
       path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
-      content = NSString.stringWithContentsOfFile(path ,encoding:NSUTF8StringEncoding, error:nil)
-      NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
+      stream = NSInputStream.inputStreamWithFileAtPath(path)
+      stream.open
+      begin
+        NSJSONSerialization.JSONObjectWithStream(stream, options:0, error:nil)
+      ensure
+        stream.close
+      end
     end
+  end
+
+  def self.save(data)
+    stream = NSOutputStream.outputStreamToFileAtPath(stream, append:false)
+    writeJSONObject:data, toStream:stream, options:0, error:nil
   end
 end

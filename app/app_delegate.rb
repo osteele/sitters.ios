@@ -4,10 +4,9 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
-    firebase['demo']['sitters'].once(:value) do |snapshot|
-      Sitter.initializeFromJSON snapshot.value
-      applicationDidFinishSyncing application
-    end
+    # firebase['demo']['sitters'].once(:value) do |snapshot|
+    #   Sitter.initializeFromJSON snapshot.value
+    # end
 
     firebase['expirationDate'].on(:value) do |snapshot|
       dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
@@ -16,26 +15,14 @@ class AppDelegate
     end
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @window.rootViewController = SplashController.alloc.init
-    @window.makeKeyAndVisible
-    true
-  end
-
-  def applicationDidFinishSyncing(application)
-    return if @expired
-
+    # @window.rootViewController = SplashController.alloc.init
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
     end
-
-    # @window.rootViewController = SuggestedSittersController.alloc.init
-    # @window.rootViewController = SitterDetailsController.alloc.init.tap do |c| c.sitter = Sitter.all.first end
-    # @window.rootViewController = SettingsController.alloc.initWithForm(SettingsController.form)
-
     didExpire if isExpired
     @window.rootViewController.wantsFullScreenLayout = true
-
-    # login
+    @window.makeKeyAndVisible
+    true
   end
 
   def didExpire
