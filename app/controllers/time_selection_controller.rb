@@ -1,8 +1,19 @@
 class TimeSelectionController < UIViewController
   include BW::KVO
 
-  ShortViewTop = 64
+  # Semantics
+  FirstHourNumber = 18
+  Hours = FirstHourNumber..23
+  MinHours = 1.5
+
+  # Graphics and Animation
+  AnimationDuration = 0.3
+  DayFirstX = 3
+  DaySpacing = 44
+  HourFirstX = 10
+  HourSpacing = 58
   ShortViewHeight = 55
+  ShortViewTop = 64
 
   attr_accessor :timeSelection
   attr_accessor :delegate
@@ -19,7 +30,7 @@ class TimeSelectionController < UIViewController
 
     # do this here instead of initWithName so that views update to the time
     today = NSDate.date.dateAtStartOfDay
-    self.timeSelection = TimeSelection.new(today, 18, 21)
+    self.timeSelection = TimeSelection.new(today, FirstHourNumber, FirstHourNumber + 3)
   end
 
   private
@@ -42,20 +53,15 @@ class TimeSelectionController < UIViewController
     dayLabelFormatter = dateFormatter('EEEE, MMMM d')
     dayLabel = subview UILabel, :date
 
-    firstDayX = 3
-    dayspacing = 44
-
     daySelectionMarker = nil
     daySelectionMarkerOffset = 5
-    dayLabels = []
-    selectionMarkerLabels = []
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
     daySelectionMarker = subview UIView, :day_selection_marker do
       handle = subview UIView, width: 100, height: 100
       options = {
-        xMinimum: firstDayX + daySelectionMarkerOffset,
-        xMaximum: firstDayX + daySelectionMarkerOffset + 6 * dayspacing,
-        widthFactor: dayspacing
+        xMinimum: DayFirstX + daySelectionMarkerOffset,
+        xMaximum: DayFirstX + daySelectionMarkerOffset + (7 - 1) * DaySpacing,
+        widthFactor: DaySpacing
       }
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
@@ -63,8 +69,9 @@ class TimeSelectionController < UIViewController
     interactiveModeOnlyViews << daySelectionMarker
     @dayMarker = daySelectionMarker
 
+    selectionMarkerLabels = []
     weekdayDates.each_with_index do |date, i|
-      x = firstDayX + i * dayspacing
+      x = DayFirstX + i * DaySpacing
       name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(date)
       # Create a separate view for the selection marker label so that we can animate
       # the color transition. Animation animates opacity but not color.
@@ -77,11 +84,10 @@ class TimeSelectionController < UIViewController
         TestFlight.passCheckpoint "Tap day ###{i+1} (#{name})"
         self.timeSelection = timeSelection.onDate(date)
       end
-      dayLabels << label
+      self.interactiveModeOnlyViews << label
+      self.interactiveModeOnlyViews << selectionMarkerLabel
       selectionMarkerLabels << selectionMarkerLabel
     end
-    self.interactiveModeOnlyViews += dayLabels
-    self.interactiveModeOnlyViews += selectionMarkerLabels
 
     daySelectionMarker.superview.bringSubviewToFront daySelectionMarker
     selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
@@ -90,7 +96,7 @@ class TimeSelectionController < UIViewController
       selectionMarkerLabels.each do |label|
         dx = label.origin.x - daySelectionMarker.origin.x + daySelectionMarkerOffset
         label.alpha = 1 - [[dx.abs / 45.0, 1].min, 0].max
-        dayIndex = ((daySelectionMarker.origin.x + daySelectionMarkerOffset - firstDayX) / dayspacing).round
+        dayIndex = ((daySelectionMarker.origin.x + daySelectionMarkerOffset - DayFirstX) / DaySpacing).round
         dayIndex = [[dayIndex, 0].max, weekdayDates.length - 1].min
         date = weekdayDates[dayIndex]
         self.timeSelection = timeSelection.onDate(date) unless timeSelection.date == date
@@ -99,38 +105,29 @@ class TimeSelectionController < UIViewController
 
     observe(self, :timeSelection) do |previousTimeSelection, timeSpan|
       unless previousTimeSelection and previousTimeSelection.date == timeSpan.date
-      # return if previousTimeSelection and previousTimeSelection.date == timeSpan.date
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
-        pos = [selectedMarkerLabel.x + daySelectionMarkerOffset, selectedMarkerLabel.y]
+        pos = CGPointMake(selectedMarkerLabel.x + daySelectionMarkerOffset, selectedMarkerLabel.y)
         daySelectionMarker.origin = pos if daySelectionMarker.top == 0 # first time
-        UIView.animateWithDuration 0.3,
-          animations: lambda {
-            daySelectionMarker.x = pos[0]
-          }
+        UIView.animateWithDuration AnimationDuration, animations: lambda { daySelectionMarker.x = pos.x }
       end
     end
   end
 
   def createHourSelectorViews
-    firstHourOffset = 10
-    firstHourNumber = 18
-    hourWidth = 58
-    hours = 6..11
     hoursView = subview UIView do
-      hours.each_with_index do |hour, i|
-        subview UIView, :hour_blob, left: 10 + i * 58 do
+      Hours.each_with_index do |hour, i|
+        subview UIView, :hour_blob, left: HourFirstX + i * HourSpacing do
           # TODO use dateFormatter
-          subview UILabel, :hour_blob_hour, text: hour.to_s
-          subview UILabel, :hour_blob_am_pm, text: 'PM'
-          subview UILabel, :hour_blob_half_past, text: ':30'
+          subview UILabel, :hour_blob_hour, text: (hour % 12).to_s
+          subview UILabel, :hour_blob_am_pm
+          subview UILabel, :hour_blob_half_past
         end
       end
     end
     interactiveModeOnlyViews << hoursView
 
-    minHours = 1.5
     hourRangeLabel = nil
     hoursSlider = subview UIView, :hour_slider do
       hourRangeLabel = subview UILabel, :hour_slider_label
@@ -145,7 +142,7 @@ class TimeSelectionController < UIViewController
       end
 
       target = leftDragHandle.superview
-      dragOptions = {xMinimum: firstHourOffset, widthMinimum: (minHours + 0.5) * hourWidth, widthFactor: hourWidth / 2}
+      dragOptions = {xMinimum: HourFirstX, widthMinimum: (MinHours + 0.5) * HourSpacing, widthFactor: HourSpacing / 2}
       TouchUtils.dragOnTouch target, handle:dragHandle, options:dragOptions
       TouchUtils.dragOnTouch target, handle:leftDragHandle, options:dragOptions.merge(resize:true)
       TouchUtils.resizeOnTouch target, handle:rightDragHandle, options:dragOptions
@@ -156,7 +153,7 @@ class TimeSelectionController < UIViewController
 
     interactiveModeOnlyViews << hoursSlider
 
-    summaryViewHoursLabel = subview UILabel, textAlignment: NSTextAlignmentCenter, textColor: UIColor.whiteColor, origin: [0, 18], size: [320, 30], alpha: 0
+    summaryViewHoursLabel = subview UILabel, :summaryHours
     summaryModeOnlyViews << summaryViewHoursLabel
 
     # Resizing manipulates these
@@ -174,24 +171,22 @@ class TimeSelectionController < UIViewController
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
       label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
       labelFont = hourRangeLabel.font
-      boldFontName = UIFont.fontWithName(labelFont.familyName, size:15).fontDescriptor.fontDescriptorWithSymbolicTraits(UIFontDescriptorTraitBold).postscriptName
-      boldFont = UIFont.fontWithName(boldFontName, size:15)
-      normalFont = UIFont.fontWithName(labelFont.familyName, size: labelFont.pointSize)
+      boldFont = labelFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
       string = NSMutableAttributedString.alloc.initWithString(label)
       string.addAttribute NSFontAttributeName, value:boldFont, range:NSMakeRange(0, label.length)
-      string.addAttribute NSFontAttributeName, value:normalFont.fontWithSize(8), range:NSMakeRange(label.length - 3, 1)
-      string.addAttribute NSFontAttributeName, value:normalFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
+      string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(8), range:NSMakeRange(label.length - 3, 1)
+      string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
       hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
       summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
     end
 
-    timeSpanHoursUpdater = Debounced.new 0.5 do
+    timeSpanHoursUpdater = Debounced.new 0.25 do
       frame = hoursSlider.frame
       summaryViewHoursLabel.frame = frame
-      startHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx - firstHourOffset) / hourWidth * 2).round / 2.0
-      endHour = firstHourNumber + ((hoursSlider.x + hoursSlider.tx + hoursSlider.width - firstHourOffset) / hourWidth * 2).round / 2.0 - 0.5
-      startHour = [startHour, firstHourNumber].max
-      endHour = [endHour, startHour + minHours].max
+      startHour = FirstHourNumber + ((hoursSlider.left - HourFirstX) * 2 / HourSpacing).round / 2.0
+      endHour = FirstHourNumber + ((hoursSlider.right - HourFirstX) * 2 / HourSpacing).round / 2.0 - 0.5
+      startHour = [startHour, FirstHourNumber].max
+      endHour = [endHour, startHour + MinHours].max
       self.timeSelection = timeSelection.betweenTimes(startHour, endHour)
     end
 
@@ -204,7 +199,7 @@ class TimeSelectionController < UIViewController
     return if @timeSelectorHeightKey == key
 
     if animated
-      UIView.animateWithDuration 0.3, animations: lambda { setMode(key, animated:false) }
+      UIView.animateWithDuration AnimationDuration, animations: lambda { setMode(key, animated:false) }
       return
     end
 

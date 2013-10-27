@@ -210,17 +210,19 @@ Teacup::Stylesheet.new :booking do
     width: 20,
     height: 20,
     font: font.fontWithSize(9),
-    textColor: UIColor.whiteColor,
-    textAlignment: NSTextAlignmentCenter;
+    text: 'PM',
+    textAlignment: NSTextAlignmentCenter,
+    textColor: UIColor.whiteColor;
 
   style :hour_blob_half_past,
     left: 26,
     top: 13,
     width: 20,
     height: 20,
-    textColor: 0xA8C1E5.uicolor,
     font: font.fontWithSize(13),
-    textAlignment: NSTextAlignmentRight;
+    text: ':30',
+    textAlignment: NSTextAlignmentRight,
+    textColor: 0xA8C1E5.uicolor;
 
   style :time_selector,
     # top: 20,
@@ -232,5 +234,12 @@ Teacup::Stylesheet.new :booking do
     width: 320,
     height: 20,
     top: 5,
-    font: font.fontWithSize(12)
+    font: font.fontWithSize(12);
+
+  style :summaryHours,
+    textAlignment: NSTextAlignmentCenter,
+    textColor: UIColor.whiteColor,
+    origin: [0, 18],
+    size: [320, 30],
+    alpha: 0;
 end

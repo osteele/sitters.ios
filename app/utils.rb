@@ -1,3 +1,10 @@
+class UIFont
+  def fontWithSymbolicTraits(traits)
+    fontName = fontDescriptor.fontDescriptorWithSymbolicTraits(traits).postscriptName
+    return UIFont.fontWithName(fontName, size:pointSize)
+  end
+end
+
 class UIView < UIResponder
   def top; origin.y; end
   def left; origin.x; end
