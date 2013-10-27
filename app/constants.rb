@@ -1,3 +1,5 @@
+ISODateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+
 # Conversion factors from the Keynote design deck to iOS resolution.
 # These allow the numbers in the Keynote inspector to be used as constants below.
 KeynoteShadowOffsetRatio = 0.5

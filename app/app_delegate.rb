@@ -1,8 +1,11 @@
 FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
 class AppDelegate
+  include BW::KVO
+
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
+    Account.instance.check
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @window.rootViewController = SplashController.alloc.init
@@ -12,38 +15,27 @@ class AppDelegate
       didFinishLoadingData
     end
 
-    firebase['expirationDate'].on(:value) do |snapshot|
-      dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-      date = dateDateFormatter.dateFromString(snapshot.value)
-      didExpire if date and buildDate < date
+    observe(ExpirationChecker.instance, 'expired') do |_, value|
+      @window.rootViewController = ExpiredController.alloc.init if value
     end
 
-    Account.instance.check
-
-    didExpire if isExpired
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
     true
   end
 
   def didFinishLoadingData()
-    return if isExpired
+    return if ExpirationChecker.instance.expired
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
     end
   end
 
-  def didExpire
-    @expired = true
-    @window.rootViewController = ExpiredController.alloc.init
-  end
-
   def buildDate
-    @buildDate ||= dateFromProperty('BuildDate')
-  end
-
-  def expirationDate
-    @expirationDate ||= dateFromProperty('ExpirationDate')
+    @buildDate ||= begin
+        dateString = NSBundle.mainBundle.objectForInfoDictionaryKey('BuildDate')
+        ISODateFormatter.dateFromString(dateString)
+      end
   end
 
   def firebase
@@ -54,19 +46,15 @@ class AppDelegate
 
   def withSyncedData(key, &block)
     data = DataCache.instance.withJSONCache(key, version:1)
-    return block.call data if data
-    firebase[key].once(:value) do |snapshot|
-      data = snapshot.value
-      DataCache.instance.withJSONCache(key, version:1) do data end
-      block.call data
+    if data
+      Dispatch::Queue.main.async do block.call data end
+    else
+      firebase[key].once(:value) do |snapshot|
+        data = snapshot.value
+        DataCache.instance.withJSONCache(key, version:1) do data end
+        block.call data
+      end
     end
-  end
-
-  def dateFromProperty(propertyName)
-    dateString = NSBundle.mainBundle.objectForInfoDictionaryKey(propertyName)
-    return nil unless dateString
-    dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-    dateDateFormatter.dateFromString(dateString)
   end
 
   def tabControllers
@@ -77,11 +65,6 @@ class AppDelegate
       ChatController.alloc.init,
       SettingsController.alloc.initWithForm(SettingsController.form)
     ]
-  end
-
-  def isExpired
-    return @expired unless expirationDate
-    return expirationDate < NSDate.date
   end
 
   def initializeTestFlight

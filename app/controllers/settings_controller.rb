@@ -26,7 +26,7 @@ class SettingsController < Formotion::FormController
     account = Account.instance
     user = account.user
     buildDate = app.buildDate
-    expirationDate = app.expirationDate
+    expirationDate = ExpirationChecker.instance.expirationDate
     dateFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle)
     dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle).setTimeStyle(NSDateFormatterShortStyle)
 
