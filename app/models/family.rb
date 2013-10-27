@@ -1,4 +1,5 @@
 class Family
+  include BW::KVO
   InitialSitterCount = 6
   MaxSitterCount = 7
 
@@ -8,6 +9,38 @@ class Family
   def self.instance
     Dispatch.once { @instance ||= new }
     @instance
+  end
+
+  def initialize
+    setupUserData
+    observe(Account.instance, :user) do setupUserData end
+  end
+
+  # TODO move some of this into Account
+  # TODO refactor
+  # TODO cache
+  # TODO initialize from stored value
+  # TODO update when sitter list changes
+  def setupUserData
+    app = UIApplication.sharedApplication.delegate
+    firebase = app.firebase
+    accountsFB = firebase['account']
+    familiesFB = firebase['family']
+    providerNames = [nil, 'password', 'facebook', 'twitter']
+    @userFB.off if @userFB
+    @userFB = nil
+    user = Account.instance.user
+    if user
+      userProvider = providerNames[user.provider]
+      accountKey = "#{userProvider}/#{user.userId}"
+      @userFB = firebase['account'][accountKey]
+      @userFB.once(:value) do |snapshot|
+        unless snapshot.value
+          familyFB = familiesFB << {parents: {userProvider => user.userId}, sitter_ids: self.sitters.map(&:id)}
+          accountsFB[accountKey] = {displayName: user.displayName, email: user.thirdPartyUserData['email'], family_id: familyFB.name}
+        end
+      end
+    end
   end
 
   def sitters

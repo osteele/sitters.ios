@@ -8,6 +8,7 @@ class AppDelegate
     Account.instance.check
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
+    @window.backgroundColor = '#A6A6A6'.to_color
     @window.rootViewController = SplashController.alloc.init
 
     withSyncedData('demo/sitters') do |data|

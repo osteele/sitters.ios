@@ -1,4 +1,5 @@
 class Sitter
+  attr_reader :id
   attr_reader :name
   attr_reader :age
   attr_reader :description
@@ -13,6 +14,7 @@ class Sitter
   end
 
   def initialize(data)
+    @id = data['id']
     @name = data['name']
     @age = data['age']
     @description = data['description']
