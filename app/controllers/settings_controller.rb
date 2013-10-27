@@ -1,8 +1,15 @@
 class SettingsController < Formotion::FormController
+  include BW::KVO
+
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do
       self.tabBarItem = UITabBarItem.alloc.initWithTitle('Settings', image:UIImage.imageNamed('tabs/settings'), tag:5)
+      observe(UIApplication.sharedApplication.delegate, :user) do
+        self.form = self.class.form
+        @form.controller = self
+        self.tableView.reloadData
+      end
     end
   end
 
@@ -12,67 +19,71 @@ class SettingsController < Formotion::FormController
   end
 
   def self.form
-    buildDate = UIApplication.sharedApplication.delegate.buildDate
-    expirationDate = UIApplication.sharedApplication.delegate.expirationDate
+    app = UIApplication.sharedApplication.delegate
+    user = app.user
+    buildDate = app.buildDate
+    expirationDate = app.expirationDate
     dateFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle)
     dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle).setTimeStyle(NSDateFormatterShortStyle)
 
-    Formotion::Form.new({
-      sections: [
-      # {
-      #   title: 'Registration',
-      #   rows: [{
-      #     title: 'Email',
-      #     key: :email,
-      #     placeholder: 'me@mail.com',
-      #     type: :email,
-      #     auto_correction: :no,
-      #     auto_capitalization: :none
-      #   }]
-      # }, {
-      #   title: 'Account Type',
-      #   key: :account_type,
-      #   select_one: true,
-      #   rows: [{
-      #     title: 'Parent',
-      #     key: :free,
-      #     type: :check,
-      #     value: true
-      #   }, {
-      #     title: 'Sitter',
-      #     key: :basic,
-      #     type: :check,
-      #   }],
-      # },
-      {
-        title: 'About',
-        rows: [
-        {
-          title: 'Build',
-          type: :static,
-          value: dateTimeFormatter.stringFromDate(buildDate)
-        },
-        {
-          title: 'Expires',
-          type: :static,
-          value: expirationDate ? dateTimeFormatter.stringFromDate(expirationDate) : 'Never'
-        }]
-      }, {
-        title: 'Debug',
-        rows: [{
-          title: 'Sitters',
-          key: :sitter_count,
-          type: :options,
-          items: (0..7).map { |n| n.to_s },
-          value: Sitter.added.length.to_s
-        }]
-        # {
-        #   title: 'Arc Text',
-        #   key: :arc_text,
-        #   type: :switch,
-        #   value: NSUserDefaults.standardUserDefaults[:arc_text],
-        # }
-      }]
-    })
+
+    form = Formotion::Form.new
+
+    form.build_section do |section|
+      section.title = 'Account'
+      section.build_row do |row|
+        row.title = user ? "#{user.thirdPartyUserData['displayName']}" : 'none'
+        row.type = :static
+      end if user
+      section.build_row do |row|
+        row.title = "#{user.thirdPartyUserData['location']['name']}"
+        row.type = :static
+      end if user and user.thirdPartyUserData['location'] and user.thirdPartyUserData['location']['name']
+      section.build_row do |row|
+        row.title = 'Sign In'
+        row.type = :button
+        row.key = :login
+      end unless user
+      section.build_row do |row|
+        row.title = 'Sign Out'
+        row.type = :button
+        row.key = :logout
+      end if user
+    end
+
+    form.row(:login).on_tap do |row|
+      app.login
+    end if form.row(:login)
+
+    form.row(:logout).on_tap do |row|
+      app.logout
+    end if form.row(:logout)
+
+    form.build_section do |section|
+      section.title = 'About'
+      section.build_row do |row|
+        row.title = 'Build'
+        row.type = :static
+        row.value = dateTimeFormatter.stringFromDate(buildDate)
+      end
+      section.build_row do |row|
+        row.title = 'Expires'
+        row.type = :static
+        row.value = expirationDate ? dateTimeFormatter.stringFromDate(expirationDate) : 'Never'
+      end if expirationDate
+    end
+
+    form.build_section do |section|
+      section.title = 'Debug'
+      section.build_row do |row|
+        row.title = 'Sitters'
+        row.key = :sitter_count
+        row.type = :options
+        row.items = (0..7).map { |n| n.to_s }
+        row.value = Sitter.added.length.to_s
+      end
+    end
+
+    return form
   end
 end

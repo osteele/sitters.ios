@@ -1,6 +1,8 @@
 FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
 class AppDelegate
+  attr_accessor :user
+
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
@@ -16,6 +18,10 @@ class AppDelegate
       dateDateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
       date = dateDateFormatter.dateFromString(snapshot.value)
       didExpire if date and buildDate < date
+    end
+
+    auth.check do |error, user|
+      self.user = user
     end
 
     didExpire if isExpired
@@ -48,22 +54,27 @@ class AppDelegate
     @fb ||= Firebase.new(FirebaseNS)
   end
 
-  def login(&block)
-    auth = FirebaseSimpleLogin.new(firebase)
-    puts 'checking auth'
+  def auth
+    @auth ||= FirebaseSimpleLogin.new(firebase)
+  end
+
+  def login
     auth.check do |error, user|
-      puts "auth.check -> #{error}, #{user}"
       if error or user
         authDidReturn user, error:error
       else
         permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
-        puts 'logging in'
-        auth.login_to_facebook(app_id: 'com.sevensitters.sevensitters', permissions: ['email']) do |error, user|
-          puts "login -> #{error}, #{user}"
+        auth.login_to_facebook(app_id: '245805915569604', permissions: ['email']) do |error, user|
           authDidReturn user, error:error
         end
       end
     end
+  end
+
+  def logout
+    auth.logout
+    # TODO instead observe .info/authenticated
+    self.user = nil
   end
 
   private
@@ -79,25 +90,13 @@ class AppDelegate
   end
 
   def authDidReturn(user, error:error)
-    puts "authDidReturn user=#{user} error=#{error}"
-    @user = user
+    self.user = user
     if error
-      puts "showing alert"
-      puts error.localizedDescription
-      puts error.localizedRecoverySuggestion
-      p error.localizedRecoveryOptions
       UIAlertView.alloc.initWithTitle(error.localizedDescription,
         message:error.localizedRecoverySuggestion,
         delegate:nil,
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
-    end
-    if user
-      UIAlertView.alloc.initWithTitle('User signed in',
-        message:user.to_s,
-        delegate:nil,
-        cancelButtonTitle:'OK',
-        otherButtonTitles:nil).show
     end
   end
 

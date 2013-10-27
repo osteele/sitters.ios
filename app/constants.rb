@@ -4,6 +4,6 @@ KeynoteShadowOffsetRatio = 0.5
 KeynoteShadowRadiusRatio = 0.25
 
 # RubyMotion 2.11 doesn't define these
-NSCachesDirectory = 13
+NSCachesDirectory = 13 unless Object.const_defined?(:NSCachesDirectory)
 NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
 UIFontDescriptorTraitBold = 1 << 1 unless Object.const_defined?(:UIFontDescriptorTraitBold)
