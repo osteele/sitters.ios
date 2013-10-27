@@ -5,17 +5,20 @@ class SettingsController < Formotion::FormController
     super
     self.tap do
       self.tabBarItem = UITabBarItem.alloc.initWithTitle('Settings', image:UIImage.imageNamed('tabs/settings'), tag:5)
-      observe(UIApplication.sharedApplication.delegate, :user) do
-        self.form = self.class.form
-        @form.controller = self
-        self.tableView.reloadData
-      end
+      observe(Family.instance, :sitters) do update_form end
+      observe(UIApplication.sharedApplication.delegate, :user) do update_form end
     end
   end
 
   def viewDidDisappear(view)
     data = self.form.render
-    Sitter.setAddedCount(data[:sitter_count].to_i)
+    Family.instance.setSitterCount(data[:sitter_count].to_i)
+  end
+
+  def update_form
+    self.form = self.class.form
+    @form.controller = self
+    self.tableView.reloadData
   end
 
   def self.form
@@ -80,7 +83,7 @@ class SettingsController < Formotion::FormController
         row.key = :sitter_count
         row.type = :options
         row.items = (0..7).map { |n| n.to_s }
-        row.value = Sitter.added.length.to_s
+        row.value = Family.instance.sitters.length.to_s
       end
     end
 

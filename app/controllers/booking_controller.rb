@@ -42,7 +42,7 @@ class BookingController < UIViewController
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
     sitterDetailsController.sitter = sitter
     sitterDetailsController.action = case
-      when Sitter.canAdd(sitter) then :add
+      when Family.instance.canAddSitter(sitter) then :add
       when sitter.availableAt(timeSelectionController.timeSelection) then :reserve
       else :request
       end
@@ -98,7 +98,7 @@ class SitterActionDelegate
   def alertView(alertView, clickedButtonAtIndex:index)
     return unless action == :add
     Scheduler.after 10 do
-      Sitter.addSitter sitter
+      Family.instance.addSitter sitter
       delegate.actionDelegateDidComplete self
       UIAlertView.alloc.initWithTitle('Sitter Confirmed',
         message:"%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName,

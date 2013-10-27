@@ -44,14 +44,14 @@ class SittersController < UIViewController
       spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
 
       updateAddSitterText = lambda do
-        sitters = Sitter.added
-        remainingSitterCount = 7 - Sitter.added.length
+        sitters = Family.instance.sitters
+        remainingSitterCount = 7 - sitters.length
         toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
         pl = remainingSitterCount == 1 ? '' : 's'
         addSittersLabel.text = "Add #{toSevenString} more sitter#{pl}"
         [addSittersLabel, addSittersCaption].each do |v| v.alpha = remainingSitterCount == 0 ? 0 : 1 end
       end
-      observe(Sitter, :added) do updateAddSitterText.call end
+      observe(Family.instance, :sitters) do updateAddSitterText.call end
       updateAddSitterText.call
     end
   end
@@ -68,7 +68,7 @@ class SittersController < UIViewController
   end
 
   def createSitterAvatars
-    self.sitters = Sitter.added
+    self.sitters = Family.instance.sitters
     @sitterControllers = []
     sitterViews = []
     subview UIView, :avatars do
@@ -91,8 +91,8 @@ class SittersController < UIViewController
     HexagonLayout.new.applyTo sitterViews
     updateSitterAvailability
 
-    observe(Sitter, :added) do
-      sitters = Sitter.added
+    observe(Family.instance, :sitters) do
+      sitters = Family.instance.sitters
       sitterControllers.each_with_index do |view, i|
         view.sitter = sitters[i]
       end

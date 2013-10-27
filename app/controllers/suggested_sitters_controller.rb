@@ -10,11 +10,11 @@ class SuggestedSittersController < UITableViewController
   def viewDidLoad
     super
     view.separatorStyle = UITableViewCellSeparatorStyleNone
-    observe(Sitter, :suggested) do @sitters = nil; view.reloadData end
+    observe(Family.instance, :suggested_sitters) do @sitters = nil; view.reloadData end
   end
 
   def sitters
-    @sitters ||= Sitter.suggested
+    @sitters ||= Family.instance.suggested_sitters
   end
 
   def numberOfSectionsInTableView(tableView); 1; end
