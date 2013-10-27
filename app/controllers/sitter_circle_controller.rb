@@ -91,7 +91,7 @@ class SitterCircleController
     imageIngress = 0.09
     imageIngress = 0.15 if not sitter
     imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
-    imageLayer.backgroundColor = sitter ? UIColor.clearColor : 0xA5A5A5.uicolor.CGColor
+    imageLayer.backgroundColor = sitter ? UIColor.clearColor : '#A5A5A5'.to_color.CGColor
 
     ringLayer.contents = createRingLayerImage
     ringLayer.shadowOpacity = sitter ? 0.5 : 0
@@ -111,7 +111,7 @@ class SitterCircleController
     UIGraphicsBeginImageContextWithOptions bounds.size, false, 0
 
     sitterNameFont = UIFont.fontWithName('Helvetica-Bold', size:8)
-    sitterNameColor = available ? UIColor.blackColor : 0xaaaaaa.uicolor
+    sitterNameColor = available ? UIColor.blackColor : '#AAAAAA'.to_color
     outerRingWidth = 11
     sitterNameRadius = 39
 
@@ -159,7 +159,7 @@ class SitterCircleController
     labelNameDeltaY = 4
     labelAttributes = {
       NSFontAttributeName: UIFont.fontWithName('Helvetica', size:13),
-      NSForegroundColorAttributeName: sitter ? UIColor.blackColor : 0xaaaaaa.uicolor,
+      NSForegroundColorAttributeName: sitter ? UIColor.blackColor : '#AAAAAA'.to_color,
       NSParagraphStyleAttributeName => NSMutableParagraphStyle.alloc.init.tap { |s| s.alignment = NSTextAlignmentCenter }
     }
     labelRect = [[0, labelNameDeltaY], bounds.size]

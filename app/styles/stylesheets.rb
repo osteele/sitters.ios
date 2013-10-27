@@ -2,17 +2,17 @@ Teacup::Stylesheet.new :sitter_details do
   lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
 
   # style :sitter_details,
-  #   backgroundColor: 0xF9F9F9.uicolor;
+  #   backgroundColor: '#F9F9F9'.to_color;
 
   style :webview,
-    backgroundColor: 0xF9F9F9.uicolor,
+    backgroundColor: '#F9F9F9'.to_color,
     constraints: [
       constrain(:left).equals(:superview, :left),
       constrain(:width).equals(:superview, :width),
     ]
 
   style :action_button,
-    backgroundColor: 0x6A9CD0.uicolor,
+    backgroundColor: '#6A9CD0'.to_color,
     textColor: UIColor.whiteColor,
     text: 'Add to My Seven Sitters',
     font: lightFont.fontWithSize(20),
@@ -25,7 +25,7 @@ Teacup::Stylesheet.new :sitters do
 
   style :sitters,
     top: 120,
-    backgroundColor: 0xF9F9F9.uicolor;
+    backgroundColor: '#F9F9F9'.to_color;
 
   style :scroll,
     constraints: [
@@ -48,7 +48,7 @@ Teacup::Stylesheet.new :sitters do
     top: 340,
     width: 320,
     height: 45,
-    textColor: 0x5481C9.uicolor,
+    textColor: '#5481C9'.to_color,
     font: boldFont.fontWithSize(13),
     textAlignment: NSTextAlignmentCenter;
 
@@ -57,7 +57,7 @@ Teacup::Stylesheet.new :sitters do
     left: 10,
     width: 320,
     height: 45,
-    textColor: 0x969696.uicolor,
+    textColor: '#969696'.to_color,
     font: font.fontWithSize(11),
     textAlignment: NSTextAlignmentCenter,
     text: 'to enjoy complete freedom and spontaneity.';
@@ -70,11 +70,11 @@ Teacup::Stylesheet.new :sitters do
 
   style :recommended_sitters_button, extends: :big_button,
     left: 6,
-    backgroundColor: 0x5582C3.uicolor;
+    backgroundColor: '#5582C3'.to_color;
 
   style :invite_sitter_button, extends: :big_button,
     left: 163,
-    backgroundColor: 0xA6A6A6.uicolor;
+    backgroundColor: '#A6A6A6'.to_color;
 
   style :big_button_label,
     left: 0,
@@ -122,7 +122,7 @@ Teacup::Stylesheet.new :booking do
     height: 34,
     top: 30,
     font: font.fontWithSize(18),
-    textColor: 0x5481C9.uicolor;
+    textColor: '#5481C9'.to_color;
 
   style :day_selection_marker,
     left: 8,
@@ -153,7 +153,7 @@ Teacup::Stylesheet.new :booking do
   style :hour_slider_label,
     width: 195,
     height: 35,
-    textColor: 0x5481C9.uicolor;
+    textColor: '#5481C9'.to_color;
 
   style :hour_drag_handle,
     constraints: [
@@ -222,13 +222,13 @@ Teacup::Stylesheet.new :booking do
     font: font.fontWithSize(13),
     text: ':30',
     textAlignment: NSTextAlignmentRight,
-    textColor: 0xA8C1E5.uicolor;
+    textColor: '#A8C1E5'.to_color;
 
   style :time_selector,
     # top: 20,
     # width: 320
     # height: 120
-    gradient:  { colors: [0x6FA1EB.uicolor, 0x4E7EC2.uicolor] }
+    gradient:  { colors: ['#6FA1EB'.to_color, '#4E7EC2'.to_color] }
 
   style :date,
     width: 320,

@@ -66,7 +66,7 @@ class SearchSittersController < UITableViewController
     cell.detailTextLabel.origin = [150, cell.detailTextLabel.origin.y]
 
     description = NSMutableAttributedString.alloc.initWithString("#{sitter.name} (#{sitter.age} years old)")
-    description.addAttribute NSForegroundColorAttributeName, value:'#5988C4'.uicolor, range:NSMakeRange(0, description.length)
+    description.addAttribute NSForegroundColorAttributeName, value:'#5988C4'.to_color, range:NSMakeRange(0, description.length)
     description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + '-Bold', size:14), range:NSMakeRange(0, sitter.name.length)
     description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:12), range:NSMakeRange(sitter.name.length, description.length - sitter.name.length)
 

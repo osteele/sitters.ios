@@ -10,7 +10,6 @@ gem 'rest-client'
 
 # foundation
 gem 'bubble-wrap'
-gem 'sugarcube', :require => ['sugarcube-color']
 
 # layout
 gem 'teacup'

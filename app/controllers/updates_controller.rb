@@ -45,7 +45,7 @@ class UpdatesController < UITableViewController
       cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
       layout cell.contentView do
         subview UIImageView, tag: ImageTag, width: 44, height: 44, left: 10, top: 0
-        subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: -3, textColor: 0x5988C4.uicolor
+        subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: -3, textColor: '#5988C4'.to_color
         subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 14, font: plainFont
         subview UILabel, tag: TimestampTag, width: 200, height: 40, left: 110, top: -3,
           font: plainFont, textAlignment: NSTextAlignmentRight
