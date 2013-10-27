@@ -12,6 +12,22 @@ class Account
     end
   end
 
+  def user=(user)
+    self.willChangeValueForKey :user
+    @user = user
+    class << user
+      def displayName
+        self.thirdPartyUserData['displayName']
+      end
+
+      def locationName
+        location = self.thirdPartyUserData['location']
+        location ? location['name'] : nil
+      end
+    end if user
+    self.didChangeValueForKey :user
+  end
+
   def auth
     app = UIApplication.sharedApplication.delegate
     @auth ||= FirebaseSimpleLogin.new(app.firebase)

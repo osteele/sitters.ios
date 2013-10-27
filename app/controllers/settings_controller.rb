@@ -45,13 +45,13 @@ class SettingsController < Formotion::FormController
         row.key = :logout
       end if user
       section.build_row do |row|
-        row.title = user ? "#{user.thirdPartyUserData['displayName']}" : 'none'
         row.type = :static
+        row.title = user.displayName
       end if user
       section.build_row do |row|
-        row.title = "#{user.thirdPartyUserData['location']['name']}"
         row.type = :static
-      end if user and user.thirdPartyUserData['location'] and user.thirdPartyUserData['location']['name']
+        row.title = user.locationName
+      end if user and user.locationName
     end
 
     form.row(:login).on_tap do |row|
@@ -80,8 +80,8 @@ class SettingsController < Formotion::FormController
       section.title = 'Debug'
       section.build_row do |row|
         row.title = 'Sitters'
-        row.key = :sitter_count
         row.type = :options
+        row.key = :sitter_count
         row.items = (0..7).map { |n| n.to_s }
         row.value = Family.instance.sitters.length.to_s
       end
