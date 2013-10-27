@@ -1,8 +1,6 @@
 FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
 class AppDelegate
-  attr_accessor :user
-
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
 
@@ -20,9 +18,7 @@ class AppDelegate
       didExpire if date and buildDate < date
     end
 
-    auth.check do |error, user|
-      self.user = user
-    end
+    Account.instance.check
 
     didExpire if isExpired
     @window.rootViewController.wantsFullScreenLayout = true
@@ -54,29 +50,6 @@ class AppDelegate
     @fb ||= Firebase.new(FirebaseNS)
   end
 
-  def auth
-    @auth ||= FirebaseSimpleLogin.new(firebase)
-  end
-
-  def login
-    auth.check do |error, user|
-      if error or user
-        authDidReturn user, error:error
-      else
-        permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
-        auth.login_to_facebook(app_id: '245805915569604', permissions: ['email']) do |error, user|
-          authDidReturn user, error:error
-        end
-      end
-    end
-  end
-
-  def logout
-    auth.logout
-    # TODO instead observe .info/authenticated
-    self.user = nil
-  end
-
   private
 
   def withSyncedData(key, &block)
@@ -86,17 +59,6 @@ class AppDelegate
       data = snapshot.value
       DataCache.instance.withJSONCache(key, version:1) do data end
       block.call data
-    end
-  end
-
-  def authDidReturn(user, error:error)
-    self.user = user
-    if error
-      UIAlertView.alloc.initWithTitle(error.localizedDescription,
-        message:error.localizedRecoverySuggestion,
-        delegate:nil,
-        cancelButtonTitle:'OK',
-        otherButtonTitles:error.localizedRecoveryOptions).show
     end
   end
 
