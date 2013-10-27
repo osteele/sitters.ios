@@ -1,12 +1,11 @@
 class TimeSelectionController < UIViewController
   include BW::KVO
 
+  ShortViewTop = 64
+  ShortViewHeight = 55
+
   attr_accessor :timeSelection
   attr_accessor :delegate
-
-  SHORT_VIEW_TOP = 64
-  SHORT_VIEW_HEIGHT = 55
-  TALL_VIEW_HEIGHT = 120
 
   def initWithNibName(name, bundle:bundle)
     self
@@ -219,8 +218,8 @@ class TimeSelectionController < UIViewController
         alpha: saveAlphaViews.map { |v| [v, v.alpha] },
         frame: saveFrameViews.map { |v| [v, v.frame] }
       }
-      view.top = SHORT_VIEW_TOP
-      view.height = SHORT_VIEW_HEIGHT
+      view.top = ShortViewTop
+      view.height = ShortViewHeight
       view.setNeedsDisplay
       interactiveModeOnlyViews.each do |v| v.alpha = 0 end
       summaryModeOnlyViews.each do |v| v.alpha = 1 end

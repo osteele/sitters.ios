@@ -1,8 +1,11 @@
 class Sitter
+  InitialCount = 6
+
   attr_reader :name
   attr_reader :age
   attr_reader :description
   attr_accessor :active
+
   class << self
     attr_accessor :added
     attr_accessor :suggested
@@ -17,8 +20,7 @@ class Sitter
   end
 
   def self.added
-    initial_sitter_count = 6
-    @added ||= self.all[0...initial_sitter_count]
+    @added ||= self.all[0...InitialCount]
   end
 
   def self.added=(sitters)
@@ -27,7 +29,7 @@ class Sitter
     self.didChangeValueForKey :added
 
     self.willChangeValueForKey :suggested
-    @suggested = nil
+    @suggested ||= @sitters - @added
     self.didChangeValueForKey :suggested
   end
 

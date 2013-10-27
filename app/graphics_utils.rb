@@ -9,17 +9,17 @@ module GraphicsUtils
   end
 end
 
-# Exposed for debugging.
-# TODO remove these or move them to an options argument
-TextArcSettings = {
-  dRadius: 0,
-  mid: -0.5,
-  tracking: 1.05,
-  left: 0.5,
-  baseline: -0.5
-}
-
 class NSAttributedString
+  # Exposed for debugging.
+  # TODO remove these or move them to an options argument
+  TextArcSettings = {
+    dRadius: 0,
+    mid: -0.5,
+    tracking: 1.05,
+    left: 0.5,
+    baseline: -0.5
+  }
+
   def drawOnArc(cx, cy, radius)
     context = UIGraphicsGetCurrentContext()
     radius += TextArcSettings[:dRadius]

@@ -1,5 +1,10 @@
 class SuggestedSittersController < UITableViewController
   include BW::KVO
+
+  ImageTag = 1
+  TitleTag = 2
+  DescriptionTag = 3
+
   attr_accessor :delegate
 
   def viewDidLoad
@@ -22,10 +27,6 @@ class SuggestedSittersController < UITableViewController
     delegate.presentDetailsForSitter sitters[indexPath.row]
   end
 
-  IMAGE_TAG = 1
-  TITLE_TAG = 2
-  DESCRIPTION_TAG = 3
-
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
@@ -33,9 +34,9 @@ class SuggestedSittersController < UITableViewController
     unless cell
       cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
       layout cell.contentView do
-        subview UIImageView, tag: IMAGE_TAG, width: 47, height: 47, left: 10, top: 5
-        subview UILabel, tag: TITLE_TAG, width: 255, height: 40, left: 65, top: -3
-        subview UILabel, tag: DESCRIPTION_TAG, width: 255, height: 40, left: 65, top: 14, font: UIFont.fontWithName(fontName, size:14)
+        subview UIImageView, tag: ImageTag, width: 47, height: 47, left: 10, top: 5
+        subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: -3
+        subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 14, font: UIFont.fontWithName(fontName, size:14)
       end
     end
 
@@ -46,9 +47,9 @@ class SuggestedSittersController < UITableViewController
     description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + '-Bold', size:14), range:NSMakeRange(0, sitter.name.length)
     description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:12), range:NSMakeRange(sitter.name.length, description.length - sitter.name.length)
 
-    cell.viewWithTag(IMAGE_TAG).image = sitter.maskedImage
-    cell.viewWithTag(TITLE_TAG).attributedText = description
-    cell.viewWithTag(DESCRIPTION_TAG).text = sitter.description
+    cell.viewWithTag(ImageTag).image = sitter.maskedImage
+    cell.viewWithTag(TitleTag).attributedText = description
+    cell.viewWithTag(DescriptionTag).text = sitter.description
     cell
   end
 end

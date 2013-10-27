@@ -1,7 +1,7 @@
-SitterGridCount = 7
-
 class SittersController < UIViewController
   include BW::KVO
+  GridCount = 7
+
   attr_accessor :delegate
   attr_accessor :timeSelection
   attr_accessor :sitters
@@ -72,7 +72,7 @@ class SittersController < UIViewController
     @sitterControllers = []
     sitterViews = []
     subview UIView, :avatars do
-      for i in 0...SitterGridCount
+      for i in 0...GridCount
         sitter = sitters[i]
         controller = SitterCircleController.alloc.initWithSitter(sitter, labelString:(i+1).to_s)
         view = subview controller.view, :sitter, width: 90, height: 90
