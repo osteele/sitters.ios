@@ -7,18 +7,19 @@ require 'date'
 Bundler.require
 
 Dotenv.load
+BUILD_DATE = DateTime.now
+require './version'
 require_all 'config'
 require_all 'tasks'
 
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.short_version = app.version = '0.2.3'
+  app.short_version = app.version = BUILD_VERSION
   app.icons = ['icon-120.png']
   app.interface_orientations = [:portrait]
 
-  now = DateTime.now
-  app.info_plist['BuildDate'] = now.strftime('%Y-%m-%dT%H:%M:%S%z')
+  app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
   for token_name in ['TF_APP_TOKEN']
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]

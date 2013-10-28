@@ -34,7 +34,7 @@ class AppDelegate
   def buildDate
     @buildDate ||= begin
       dateString = NSBundle.mainBundle.objectForInfoDictionaryKey('BuildDate')
-      ISODateFormatter.dateFromString(dateString)
+      ISO8601DateFormatter.dateFromString(dateString)
     end
   end
 

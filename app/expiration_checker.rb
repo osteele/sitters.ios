@@ -17,7 +17,7 @@ class ExpirationChecker
 
     app = UIApplication.sharedApplication.delegate
     app.firebase['expirationDate'].on(:value) do |snapshot|
-      date = ISODateFormatter.dateFromString(snapshot.value)
+      date = ISO8601DateFormatter.dateFromString(snapshot.value)
       self.expired = true if date and buildDate < date
     end
   end
@@ -36,6 +36,6 @@ class ExpirationChecker
   def dateFromProperty(propertyName)
     dateString = NSBundle.mainBundle.objectForInfoDictionaryKey(propertyName)
     return nil unless dateString
-    return ISODateFormatter.dateFromString(dateString)
+    return ISO8601DateFormatter.dateFromString(dateString)
   end
 end

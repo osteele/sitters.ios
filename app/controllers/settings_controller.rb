@@ -23,14 +23,10 @@ class SettingsController < Formotion::FormController
 
   def self.form
     app = UIApplication.sharedApplication.delegate
+    form = Formotion::Form.new
+
     account = Account.instance
     user = account.user
-    buildDate = app.buildDate
-    expirationDate = ExpirationChecker.instance.expirationDate
-    dateFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle)
-    dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterShortStyle).setTimeStyle(NSDateFormatterShortStyle)
-
-    form = Formotion::Form.new
 
     form.build_section do |section|
       section.title = 'Account'
@@ -62,18 +58,25 @@ class SettingsController < Formotion::FormController
       account.logout
     end if form.row(:logout)
 
-    form.build_section do |section|
-      section.title = 'About'
-      section.build_row do |row|
-        row.title = 'Build'
-        row.type = :static
-        row.value = dateTimeFormatter.stringFromDate(buildDate)
+    if false
+      buildDate = app.buildDate
+      expirationDate = ExpirationChecker.instance.expirationDate
+      dateFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterMediumStyle)
+      dateTimeFormatter = NSDateFormatter.alloc.init.setDateStyle(NSDateFormatterMediumStyle).setTimeStyle(NSDateFormatterShortStyle)
+
+      form.build_section do |section|
+        section.title = 'About'
+        section.build_row do |row|
+          row.title = 'Build'
+          row.type = :static
+          row.value = dateTimeFormatter.stringFromDate(buildDate)
+        end
+        section.build_row do |row|
+          row.title = 'Expires'
+          row.type = :static
+          row.value = expirationDate ? dateTimeFormatter.stringFromDate(expirationDate) : 'Never'
+        end if expirationDate
       end
-      section.build_row do |row|
-        row.title = 'Expires'
-        row.type = :static
-        row.value = expirationDate ? dateTimeFormatter.stringFromDate(expirationDate) : 'Never'
-      end if expirationDate
     end
 
     form.build_section do |section|
