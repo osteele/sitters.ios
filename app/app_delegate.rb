@@ -1,5 +1,7 @@
 class AppDelegate
   include BW::KVO
+  ApplicationDidLoadDataNotification = NSNotification.notificationWithName('ApplicationDidLoadData', object:nil)
+  BackgroundColor = '#A6A6A6'.to_color
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
@@ -7,28 +9,28 @@ class AppDelegate
     Account.instance.check
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @window.backgroundColor = '#A6A6A6'.to_color
-    @window.rootViewController = SplashController.alloc.init
+    @window.backgroundColor = BackgroundColor
+    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+      controller.viewControllers = tabControllers
+      splashView = SplashController.alloc.init.view
+      controller.view.addSubview splashView
+      App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
+        UIView.animateWithDuration 0.3, animations: -> { splashView.alpha = 0 }, completion: -> _ { splashView.removeFromSuperview }
+      end
+    end
 
     withSyncedData('demo/sitters') do |data|
       Sitter.initializeFromJSON data
-      didFinishLoadingData
+      NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
     end
 
-    observe(ExpirationChecker.instance, 'expired') do |_, value|
-      @window.rootViewController = ExpiredController.alloc.init if value
+    observe(ExpirationChecker.instance, 'expired') do |_, expired|
+      @window.rootViewController = ExpiredController.alloc.init if expired
     end
 
     @window.rootViewController.wantsFullScreenLayout = true
     @window.makeKeyAndVisible
     true
-  end
-
-  def didFinishLoadingData()
-    return if ExpirationChecker.instance.expired
-    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
-      controller.viewControllers = tabControllers
-    end
   end
 
   def buildDate
