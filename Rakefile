@@ -39,7 +39,8 @@ Motion::Project::App.setup do |app|
   # app.vendor_project 'vendor/FirebaseSimpleLogin.framework', :static, :products => ['FirebaseSimpleLogin'] ,:headers_dir => 'Headers'
   # app.frameworks += ['Accounts', 'Social']
 
-  app.vendor_project 'lib/OSUtils', :static #, :products => ['OSUtils'])
+  app.vendor_project 'lib/OSUtils', :static
+  app.vendor_project 'vendor/BlockBuilder', :static
 
   app.pods do
     pod 'Firebase', '~> 1.0.0'
@@ -47,6 +48,7 @@ Motion::Project::App.setup do |app|
     pod 'FMDB'
     pod 'GRMustache'
     pod 'NSDate-Extensions'
+    pod 'ReactiveCocoa'
   end
   app.weak_frameworks += %w(AdSupport Social)
 
