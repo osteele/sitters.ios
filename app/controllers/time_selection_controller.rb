@@ -110,7 +110,7 @@ class TimeSelectionController < UIViewController
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
         pos = CGPointMake(selectedMarkerLabel.x + daySelectionMarkerOffset, selectedMarkerLabel.y)
         daySelectionMarker.origin = pos if daySelectionMarker.top == 0 # first time
-        UIView.animateWithDuration AnimationDuration, animations: lambda { daySelectionMarker.x = pos.x }
+        UIView.animateWithDuration AnimationDuration, animations: -> { daySelectionMarker.x = pos.x }
       end
     end
   end
@@ -199,7 +199,7 @@ class TimeSelectionController < UIViewController
     return if @timeSelectorHeightKey == key
 
     if animated
-      UIView.animateWithDuration AnimationDuration, animations: lambda { setMode(key, animated:false) }
+      UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
       return
     end
 

@@ -46,7 +46,7 @@ module TouchUtils
         # animator.addBehavior(snapBehavior)
 
         UIView.animateWithDuration 0.1,
-          animations: lambda {
+          animations: -> {
             # target.tx = 0
             target.x = x
             target.width = initialOrigin.x + initialSize.width - x if resize
@@ -75,7 +75,7 @@ module TouchUtils
       when UIGestureRecognizerStateEnded
         width = (target.width / factor).round * factor
         UIView.animateWithDuration 0.1,
-          animations: lambda {
+          animations: -> {
             target.width = [width, minWidth].max
             dragger.x = target.width - dragger.width + fudge
           }
@@ -101,8 +101,8 @@ module TouchUtils
         dur, dx, options = animations.shift
         UIView.animateWithDuration dur, delay:0, options:options,
           # TODO should this modify the transform instead of the origin?
-          animations: lambda { target.x = initialX + dx },
-          completion: lambda { |finished| step.call if animations.any? }
+          animations: -> { target.x = initialX + dx },
+          completion: -> finished { step.call if animations.any? }
       end
       step.call
     end

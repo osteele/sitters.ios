@@ -1,7 +1,6 @@
-FirebaseNS = 'https://sevensitters.firebaseio.com/'
-
 class AppDelegate
   include BW::KVO
+  FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
@@ -34,9 +33,9 @@ class AppDelegate
 
   def buildDate
     @buildDate ||= begin
-        dateString = NSBundle.mainBundle.objectForInfoDictionaryKey('BuildDate')
-        ISODateFormatter.dateFromString(dateString)
-      end
+      dateString = NSBundle.mainBundle.objectForInfoDictionaryKey('BuildDate')
+      ISODateFormatter.dateFromString(dateString)
+    end
   end
 
   def firebase

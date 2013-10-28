@@ -43,7 +43,7 @@ class SittersController < UIViewController
 
       spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
 
-      updateAddSitterText = lambda do
+      updateAddSitterText = -> do
         sitters = Family.instance.sitters
         remainingSitterCount = 7 - sitters.length
         toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
@@ -101,7 +101,7 @@ class SittersController < UIViewController
 
     observe(self, :timeSelection) do
       @timeSelection = timeSelection
-      UIView.animateWithDuration 0.3, animations: lambda { updateSitterAvailability }
+      UIView.animateWithDuration 0.3, animations: -> { updateSitterAvailability }
     end
   end
 end
