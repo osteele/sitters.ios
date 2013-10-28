@@ -16,7 +16,7 @@ Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
   app.short_version = app.version = BUILD_VERSION
-  app.icons = ['icon-120.png']
+  app.icons = ['Icon.png', 'Icon@2x.png', 'Icon-Small.png', 'Icon-Small@2x.png']
   app.interface_orientations = [:portrait]
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
