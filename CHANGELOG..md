@@ -1,10 +1,14 @@
-## 0.2.4 (2013-10-28:)
+## 0.2.5 (2013-10-28)
+• Sign into Facebook to save your sitter list. Sitters will sync across all signed-in devices.
+• Improved (but still not complete) animations.
+
+## 0.2.4 (2013-10-28)
 * New app icons, splash screen.
 * Faster re-launch. (The app caches the server's sitter list.)
 * Moved build version from settings tab to system settings.
 * Simplify time selector animation -- work in progress.
 
-## 0.2.3 (2013-10-24:)
+## 0.2.3 (2013-10-24)
 * Improved sitter name rendering on main screen
 * App retrieves sitter list from server
 * Removed hard-coded expiration date; app now checks with server
