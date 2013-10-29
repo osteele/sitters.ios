@@ -49,11 +49,13 @@ class BookingController < UIViewController
 
   def presentSuggestedSitters
     TestFlight.passCheckpoint 'Suggested sitters'
+    suggestedSittersController.title = 'Sitters'
     navigationController.pushViewController suggestedSittersController, animated:true
   end
 
   def presentDetailsForSitter(sitter)
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
+    sitterDetailsController.title = sitter.firstName
     sitterDetailsController.sitter = sitter
     sitterDetailsController.action = case
       when Family.instance.canAddSitter(sitter) then :add
