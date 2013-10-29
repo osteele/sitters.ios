@@ -224,7 +224,11 @@ class TimeSelectionController < UIViewController
     }
 
     if animated
-      summaryViewHoursLabel.frame = hoursSlider.frame
+      if key == :summary
+        @savedTimeSelectorValues ||= @saveViewProperties.()
+        summaryViewHoursLabel.frame = hoursSlider.frame
+        hoursSlider.top -= 30
+      end
       UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
       return
     end
@@ -241,7 +245,8 @@ class TimeSelectionController < UIViewController
       summaryModeOnlyViews.each do |v| v.alpha = 1 end
       summaryViewHoursLabel.origin = [0, 18]
       summaryViewHoursLabel.width = 320
-      hoursSlider.frame = summaryViewHoursLabel.frame
+      hoursSlider.top = summaryViewHoursLabel.top
+      # hoursSlider.frame = summaryViewHoursLabel.frame
     when :interactive
       @restoreViewProperties.call @savedTimeSelectorValues
       @savedTimeSelectorValues = nil
