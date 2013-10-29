@@ -59,7 +59,7 @@ class Family
   end
 
   def suggested_sitters
-    @suggested_sitters ||= Sitter.all - @sitters
+    @suggested_sitters ||= Sitter.all - sitters
   end
 
   def setSitterCount(count)

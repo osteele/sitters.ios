@@ -10,10 +10,18 @@ class Sitter
   end
 
   def self.initializeFromJSON(json)
-    @sitters = json.map { |data| self.new(data) }
+    @sitters ||= []
+    @sitters = json.map do |data|
+      sitter = @sitters.find { |s| s.id == data['id'] }
+      sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
+    end
   end
 
   def initialize(data)
+    self.updateFrom(data)
+  end
+
+  def updateFrom(data)
     @id = data['id']
     @name = data['name']
     @age = data['age']
