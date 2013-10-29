@@ -16,11 +16,6 @@ Download the TestFlight SDK into `./vendor`. It should be called `./vendor/TestF
     $ grep -q '## 2.0.2' vendor/TestFlight/release_notes.md && echo 'TestFlight found'
     TestFlight found
 
-Download the Pixate SDK into `./vendor`. It should be called `./vendor/Pixate.framework`:
-
-    $ [[ -d vendor/Pixate.framework/Versions/1.1 ]] && echo 'Pixate found'
-    Pixate found
-
 Download the FirebaseSimpleLogin SDK into `./vendor`.
 
 Copy `~/.env.template` to `~/.env` and edit in the token values.
