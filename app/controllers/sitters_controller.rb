@@ -20,6 +20,10 @@ class SittersController < UIViewController
     sitterControllers.each(&:viewDidLoad)
   end
 
+  def family
+    Family.instance
+  end
+
   layout do
     view.stylename = :sitters
 
@@ -27,8 +31,12 @@ class SittersController < UIViewController
       createSitterAvatars
 
       viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button, do
-        label = subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
-        caption = subview UILabel, :big_button_caption, text: "#{Sitter.all.length} connected sitters", userInteractionEnabled: false
+        subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
+        caption = subview UILabel, :big_button_caption, text: '', userInteractionEnabled: false
+
+        observe(family, :suggested_sitters) do |a, b|
+          caption.text = "#{family.suggested_sitters.length} connected sitters"
+        end
       end
       viewRecommended.when_tapped { delegate.presentSuggestedSitters }
 
@@ -49,7 +57,7 @@ class SittersController < UIViewController
         toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
         pl = remainingSitterCount == 1 ? '' : 's'
         addSittersLabel.text = "Add #{toSevenString} more sitter#{pl}"
-        [addSittersLabel, addSittersCaption].each do |v| v.alpha = remainingSitterCount == 0 ? 0 : 1 end
+        [addSittersLabel, addSittersCaption].each do |v| v.hidden = remainingSitterCount <= 0 end
       end
       observe(Family.instance, :sitters) do updateAddSitterText.call end
       updateAddSitterText.call
@@ -68,7 +76,7 @@ class SittersController < UIViewController
   end
 
   def createSitterAvatars
-    self.sitters = Family.instance.sitters
+    self.sitters = family.sitters
     @sitterControllers = []
     sitterViews = []
     subview UIView, :avatars do
@@ -91,8 +99,8 @@ class SittersController < UIViewController
     HexagonLayout.new.applyTo sitterViews
     updateSitterAvailability
 
-    observe(Family.instance, :sitters) do
-      sitters = Family.instance.sitters
+    observe(family, :sitters) do
+      sitters = family.sitters
       sitterControllers.each_with_index do |view, i|
         view.sitter = sitters[i]
       end
