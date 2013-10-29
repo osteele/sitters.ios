@@ -4,7 +4,7 @@ class TimeSelectionController < UIViewController
   # Semantics
   FirstHourNumber = 18
   Hours = FirstHourNumber..23
-  MinHours = 1.5
+  MinHours = 1
 
   # Graphics and Animation
   AnimationDuration = 0.3
@@ -166,18 +166,27 @@ class TimeSelectionController < UIViewController
     periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
     observe(self, :timeSelection) do |_, timeSpan|
       delegate.timeSelectionChanged timeSpan if delegate
+      createHourRangeString = -> label, condensed=false {
+        labelFont = hourRangeLabel.font
+        boldFont = labelFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
+        boldFont = labelFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold | UIFontDescriptorTraitCondensed) if condensed
+        string = NSMutableAttributedString.alloc.initWithString(label)
+        string.addAttribute NSFontAttributeName, value:boldFont, range:NSMakeRange(0, label.length)
+        string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(8), range:NSMakeRange(label.length - 3, 1)
+        string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
+        string
+      }
       startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
       endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
-      label = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
-      labelFont = hourRangeLabel.font
-      boldFont = labelFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
-      string = NSMutableAttributedString.alloc.initWithString(label)
-      string.addAttribute NSFontAttributeName, value:boldFont, range:NSMakeRange(0, label.length)
-      string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(8), range:NSMakeRange(label.length - 3, 1)
-      string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
-      hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
-      summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(string)
+      labelString = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
+      labelAS = createHourRangeString.call labelString
+      tooWide = -> { hoursSlider.size.width > 0 and labelAS.size.width > hoursSlider.size.width - hoursSlider.layer.cornerRadius }
+      labelAS = createHourRangeString.call(labelString.gsub(/:00/, '')) if tooWide.call()
+      labelAS = createHourRangeString.call(labelString.gsub(/:00/, ''), true) if tooWide.call()
+      labelAS = createHourRangeString.call(labelString.gsub(/:00/, '').gsub(/:30/, '½'), true) if tooWide.call()
+      hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
+      summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
     end
 
     timeSpanHoursUpdater = Debounced.new 0.25 do

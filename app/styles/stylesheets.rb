@@ -153,6 +153,8 @@ Teacup::Stylesheet.new :booking do
   style :hour_slider_label,
     width: 195,
     height: 35,
+    # require Neueu, since it has a Bold Condensed variant
+    font: UIFont.fontWithName('Helvetica Neue', size:17),
     textColor: '#5481C9'.to_color;
 
   style :hour_drag_handle,
