@@ -15,6 +15,7 @@ PODS:
   - ReactiveCocoa/Core (2.1.5):
     - ReactiveCocoa/no-arc
   - ReactiveCocoa/no-arc (2.1.5)
+  - TestFlightSDK (2.1.1-beta)
 
 DEPENDENCIES:
   - Facebook-iOS-SDK
@@ -22,6 +23,7 @@ DEPENDENCIES:
   - GRMustache
   - NSDate-Extensions
   - ReactiveCocoa
+  - TestFlightSDK
 
 SPEC CHECKSUMS:
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
@@ -30,5 +32,6 @@ SPEC CHECKSUMS:
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
   ReactiveCocoa: 967339c6f6984beef304cb8bbe05581d6863bb09
+  TestFlightSDK: dea28c16f0bf65c49c4ed8939b2ae0b0ed9bf8b0
 
 COCOAPODS: 0.27.1

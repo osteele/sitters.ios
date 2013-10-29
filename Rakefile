@@ -15,7 +15,8 @@ require_all 'tasks'
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.short_version = app.version = BUILD_VERSION
+  app.version = BUILD_VERSION
+  app.short_version = BUILD_VERSION
   app.icons = ['Icon.png', 'Icon@2x.png', 'Icon-Small.png', 'Icon-Small@2x.png']
   app.interface_orientations = [:portrait]
 
@@ -24,11 +25,6 @@ Motion::Project::App.setup do |app|
   for token_name in ['TF_APP_TOKEN']
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
   end
-
-  # TestFlight:
-  libz = '/usr/lib/libz.dylib'
-  app.libs << libz unless app.libs.include?(libz)
-  app.vendor_project 'vendor/TestFlight', :static
 
   app.vendor_project 'lib/OSUtils', :static
   app.vendor_project 'vendor/BlockBuilder', :static
@@ -39,7 +35,7 @@ Motion::Project::App.setup do |app|
     pod 'GRMustache'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
-    # pod 'TestFlightSDK' -- duplicate symbol errors
+    pod 'TestFlightSDK'
   end
   app.weak_frameworks += %w(AdSupport Social)
 
