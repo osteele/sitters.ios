@@ -35,8 +35,6 @@ class TimeSelectionController < UIViewController
 
   private
 
-  attr_reader :interactiveModeOnlyViews
-  attr_reader :summaryModeOnlyViews
   attr_reader :hoursSlider
   attr_reader :summaryViewHoursLabel
 
@@ -153,7 +151,7 @@ class TimeSelectionController < UIViewController
       end
     end
 
-    @summaryViewHoursLabel = subview UILabel, :summaryHours
+    @summaryViewHoursLabel = subview UILabel, :summary_hours
 
     interactiveModeOnlyViews << hoursSlider
     summaryModeOnlyViews << summaryViewHoursLabel
@@ -193,7 +191,7 @@ class TimeSelectionController < UIViewController
     end
 
     timeSpanHoursUpdater = Debounced.new 0.25 do
-      summaryViewHoursLabel.frame = hoursSlider.frame
+      # summaryViewHoursLabel.frame = hoursSlider.frame
       startHour = FirstHourNumber + ((hoursSlider.left - HourFirstX) * 2 / HourSpacing).round / 2.0
       endHour = FirstHourNumber + ((hoursSlider.right - HourFirstX) * 2 / HourSpacing).round / 2.0 - 0.5
       startHour = [startHour, FirstHourNumber].max
@@ -204,40 +202,32 @@ class TimeSelectionController < UIViewController
     observe(hoursSlider, :frame) do timeSpanHoursUpdater.fire! end
   end
 
+
+  #
+  # Animation between Interactive and Summary mode
+  #
+
   public
 
   def setMode(key, animated:animated)
-    @timeSelectorHeightKey ||= :interactive
-    return if @timeSelectorHeightKey == key
-
-    @saveViewProperties ||= -> {
-      saveFrameViews = [view, hoursSlider, summaryViewHoursLabel]
-      saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
-      {
-        alpha: saveAlphaViews.map { |v| [v, v.alpha] },
-        frame: saveFrameViews.map { |v| [v, v.frame] }
-      }
-    }
-    @restoreViewProperties ||= -> savedProperties {
-      savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
-      savedProperties[:frame].each do |v, frame| v.frame = frame end
-    }
+    @summaryMode ||= :interactive
+    return if @summaryMode == key
 
     if animated
-      if key == :summary
-        @savedTimeSelectorValues ||= @saveViewProperties.()
-        summaryViewHoursLabel.frame = hoursSlider.frame
-        hoursSlider.top -= 30
-      end
+      # set these before saveViewProperties, so we animate *back* to them later
+      setSummaryModeAnimationInitialState if key == :summary
       UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
+      UIView.animateWithDuration AnimationDuration / 3, animations: -> { hoursSlider.top = summaryViewHoursLabel.top }
       return
     end
 
-    @timeSelectorHeightKey = key
+    # Set this *after* the recursive call above, so that the inner call actually does something
+    @summaryMode = key
     view = self.view
     case key
     when :summary
-      @savedTimeSelectorValues ||= @saveViewProperties.()
+      saveViewProperties
+      # saveViewProperties must save all the following:
       view.top = ShortViewTop
       view.height = ShortViewHeight
       view.setNeedsDisplay
@@ -245,14 +235,43 @@ class TimeSelectionController < UIViewController
       summaryModeOnlyViews.each do |v| v.alpha = 1 end
       summaryViewHoursLabel.origin = [0, 18]
       summaryViewHoursLabel.width = 320
-      hoursSlider.top = summaryViewHoursLabel.top
-      # hoursSlider.frame = summaryViewHoursLabel.frame
+      # hoursSlider.top = summaryViewHoursLabel.top
+      # use transform instead of bounds so that listeners don't think it's being dragged to a different time:
+      # hoursSlider.tx = (320 - hoursSlider.width) / 2 - hoursSlider.x
     when :interactive
-      @restoreViewProperties.call @savedTimeSelectorValues
-      @savedTimeSelectorValues = nil
+      restoreViewProperties
+      # hoursSlider.tx = 0
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
     gradient_layer.frame = view.bounds if gradient_layer
+  end
+
+  private
+
+  attr_reader :interactiveModeOnlyViews
+  attr_reader :summaryModeOnlyViews
+
+  def setSummaryModeAnimationInitialState
+    # starting state; outside the animation
+    summaryViewHoursLabel.frame = hoursSlider.frame
+    # TODO compute this from the previous and new top and height
+    # hoursSlider.top -= 30
+  end
+
+  def saveViewProperties
+    saveFrameViews = [view, hoursSlider, summaryViewHoursLabel]
+    saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
+    @savedTimeSelectorValues ||= {
+      alpha: saveAlphaViews.map { |v| [v, v.alpha] },
+      frame: saveFrameViews.map { |v| [v, v.frame] }
+    }
+  end
+
+  def restoreViewProperties
+    savedProperties = @savedTimeSelectorValues
+    savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
+    savedProperties[:frame].each do |v, frame| v.frame = frame end
+    @savedTimeSelectorValues = nil
   end
 end
 

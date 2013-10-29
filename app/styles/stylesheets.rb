@@ -251,10 +251,10 @@ Teacup::Stylesheet.new :booking do
     top: 5,
     font: font.fontWithSize(12);
 
-  style :summaryHours,
+  style :summary_hours,
     textAlignment: NSTextAlignmentCenter,
     textColor: UIColor.whiteColor,
-    origin: [0, 18],
-    size: [320, 30],
+    # TimeAnimationController#setMode sets the rest of the frame
+    height: 30,
     alpha: 0;
 end
