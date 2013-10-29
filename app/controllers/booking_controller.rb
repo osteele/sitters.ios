@@ -23,18 +23,17 @@ class BookingController < UIViewController
     subview @navigationController.view
     subview @timeSelectionController.view
     splash_circle = subview UIView, :splash_circle
-    dur = 0.2
+    dur = 0.25
     App.notification_center.observe AppDelegate::ApplicationDidLoadDataNotification.name do |notification|
-      animation = CABasicAnimation.animationWithKeyPath('cornerRadius').tap { |a| a.duration = dur }
+      animation = CABasicAnimation.animationWithKeyPath('cornerRadius')
+      animation.duration = dur
+      animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseOut)
       splash_circle.layer.addAnimation animation, forKey:nil
       splash_circle.layer.cornerRadius = 35 / 2
-      UIView.animateWithDuration dur, animations: -> {
-          splash_circle.frame = [[7,50],[35,35]]
-        }, completion: -> _ {
-          UIView.animateWithDuration dur,
-            animations: -> { splash_circle.alpha = 0 },
-            completion: -> _ { splash_circle.removeFromSuperview }
-        }
+      UIView.animateWithDuration dur, delay:0, options:0,
+        animations: -> {splash_circle.frame = [[7,50],[35,35]] }, completion: -> _ {}
+      UIView.animateWithDuration dur, delay:dur, options:UIViewAnimationOptionCurveEaseInOut,
+        animations: -> { splash_circle.alpha = 0 }, completion: -> _ {}
     end
   end
 
