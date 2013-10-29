@@ -1,7 +1,6 @@
 .repl_history
 build
 tags
-app/pixate_code.rb
 resources/*.nib
 resources/*.momd
 resources/*.storyboardc
@@ -12,16 +11,21 @@ nbproject
 *~
 *.sw[po]
 .eprj
-.sass-cache
 .idea
 .dat*.*
-vendor
+vendor/pods
 node_modules
 resources/Settings.bundle
-resources/styles/sitter_details.css
 .env
 
+# Build caches
+.sass-cache
+
+# Generated
+resources/styles/sitter_details.css
 resources/sitter_details.html
+
+# Generated
 *.pch
 *.bridgesupport
 *.o

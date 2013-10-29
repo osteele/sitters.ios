@@ -25,20 +25,10 @@ Motion::Project::App.setup do |app|
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
   end
 
-  app.vendor_project 'vendor/TestFlight', :static
-
   # TestFlight:
   libz = '/usr/lib/libz.dylib'
   app.libs << libz unless app.libs.include?(libz)
-
-  # Firebase:
-  # app.vendor_project 'vendor/Firebase.framework', :static, :products => ['Firebase'] ,:headers_dir => 'Headers'
-  # app.libs += ['/usr/lib/libicucore.dylib']
-  # app.frameworks += ['CFNetwork', 'Security', 'SystemConfiguration']
-
-  # Firebase simple login:
-  # app.vendor_project 'vendor/FirebaseSimpleLogin.framework', :static, :products => ['FirebaseSimpleLogin'] ,:headers_dir => 'Headers'
-  # app.frameworks += ['Accounts', 'Social']
+  app.vendor_project 'vendor/TestFlight', :static
 
   app.vendor_project 'lib/OSUtils', :static
   app.vendor_project 'vendor/BlockBuilder', :static
@@ -50,6 +40,7 @@ Motion::Project::App.setup do |app|
     pod 'GRMustache'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
+    # pod 'TestFlightSDK' -- duplicate symbol errors
   end
   app.weak_frameworks += %w(AdSupport Social)
 
