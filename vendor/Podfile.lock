@@ -1,6 +1,5 @@
 PODS:
   - Facebook-iOS-SDK (3.9.0)
-  - Firebase (1.0.7)
   - FMDB (2.1):
     - FMDB/standard
   - FMDB/common (2.1)
@@ -19,7 +18,6 @@ PODS:
 
 DEPENDENCIES:
   - Facebook-iOS-SDK
-  - Firebase (~> 1.0.0)
   - FMDB
   - GRMustache
   - NSDate-Extensions
@@ -27,7 +25,6 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
-  Firebase: d7d246c28699271fc56c075c44ef91b9c5edff3c
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
