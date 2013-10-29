@@ -122,7 +122,7 @@ class DataCache
     @db ||= begin
       cachesDirectoryURL = NSFileManager.defaultManager.URLsForDirectory(NSCachesDirectory, inDomains:NSUserDomainMask).first
       cacheDbURL = cachesDirectoryURL.URLByAppendingPathComponent('cache.db')
-      puts cacheDbURL.path
+      puts "Data cache = #{cacheDbURL.path}"
       db = FMDatabase.databaseWithPath(cacheDbURL.path)
       db.open
       db.executeUpdate <<-SQL
@@ -142,8 +142,12 @@ class DataCache
     results = db.executeQuery('SELECT json FROM json_cache WHERE key=? AND version=?;', withArgumentsInArray:[key, version])
     if results.next
       json = results.dataNoCopyForColumn(:json)
-      data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:nil)
-    else
+      error = Pointer.new(:id)
+      data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:error)
+      error[0].raise if error[0]
+      data = nil if error[0]
+    end
+    unless data
       return unless block
       data = block.call
       json = BW::JSON.generate(data)

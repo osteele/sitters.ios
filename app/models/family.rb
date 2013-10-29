@@ -14,6 +14,8 @@ class Family
   def initialize
     setupUserData
     observe(Account.instance, :user) do setupUserData end
+    resetSitters
+    observe(Sitter, :all) do resetSitters if sitters.empty? end
   end
 
   # TODO move some of this into Account
@@ -41,10 +43,6 @@ class Family
         end
       end
     end
-  end
-
-  def sitters
-    @sitters ||= Sitter.all[0...InitialSitterCount]
   end
 
   def sitters=(sitters)
@@ -78,5 +76,11 @@ class Family
     return unless self.canAddSitter(sitter)
     # instead of <<, for KVO
     self.sitters = self.sitters + [sitter]
+  end
+
+  private
+
+  def resetSitters
+    self.sitters = Sitter.all[0...InitialSitterCount]
   end
 end

@@ -20,7 +20,7 @@ class AppDelegate
     end
 
     withSyncedData('demo/sitters') do |data|
-      Sitter.initializeFromJSON data
+      Sitter.updateFrom data
       NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
     end
 

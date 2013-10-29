@@ -6,15 +6,18 @@ class Sitter
   attr_accessor :active
 
   def self.all
-    @sitters ||= self.initializeFromJSON(self.json)
+    # until sitters come in from network
+    @sitters ||= []
   end
 
-  def self.initializeFromJSON(json)
+  def self.updateFrom(json)
+    self.willChangeValueForKey :all
     @sitters ||= []
     @sitters = json.map do |data|
       sitter = @sitters.find { |s| s.id == data['id'] }
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end
+    self.didChangeValueForKey :all
   end
 
   def initialize(data)
@@ -51,15 +54,5 @@ class Sitter
 
   def maskedImage
     @maskedImage ||= UIImage.imageWithCGImage(SitterCircleController.sitterImage(self))
-  end
-
-  private
-
-  def self.json
-    DataCache.instance.withJSONCache('sitters', version:1) do
-      path = NSBundle.mainBundle.pathForResource('sitters', ofType:'json')
-      json = NSData.dataWithContentsOfFile(path)
-      NSJSONSerialization.JSONObjectWithData(json, options:0, error:nil)
-    end
   end
 end
