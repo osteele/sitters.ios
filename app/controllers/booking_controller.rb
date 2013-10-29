@@ -22,6 +22,20 @@ class BookingController < UIViewController
 
     subview @navigationController.view
     subview @timeSelectionController.view
+    splash_circle = subview UIView, :splash_circle
+    dur = 0.2
+    App.notification_center.observe AppDelegate::ApplicationDidLoadDataNotification.name do |notification|
+      animation = CABasicAnimation.animationWithKeyPath('cornerRadius').tap { |a| a.duration = dur }
+      splash_circle.layer.addAnimation animation, forKey:nil
+      splash_circle.layer.cornerRadius = 35 / 2
+      UIView.animateWithDuration dur, animations: -> {
+          splash_circle.frame = [[7,50],[35,35]]
+        }, completion: -> _ {
+          UIView.animateWithDuration dur,
+            animations: -> { splash_circle.alpha = 0 },
+            completion: -> _ { splash_circle.removeFromSuperview }
+        }
+    end
   end
 
   def timeSelectionChanged(timeSelection)

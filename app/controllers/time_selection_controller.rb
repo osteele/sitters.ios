@@ -35,8 +35,10 @@ class TimeSelectionController < UIViewController
 
   private
 
-  attr_accessor :interactiveModeOnlyViews
-  attr_accessor :summaryModeOnlyViews
+  attr_reader :interactiveModeOnlyViews
+  attr_reader :summaryModeOnlyViews
+  attr_reader :hoursSlider
+  attr_reader :summaryViewHoursLabel
 
   layout do
     self.view.stylename = :time_selector
@@ -129,7 +131,7 @@ class TimeSelectionController < UIViewController
     interactiveModeOnlyViews << hoursView
 
     hourRangeLabel = nil
-    hoursSlider = subview UIView, :hour_slider do
+    @hoursSlider = subview UIView, :hour_slider do
       hourRangeLabel = subview UILabel, :hour_slider_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
@@ -151,14 +153,10 @@ class TimeSelectionController < UIViewController
       end
     end
 
+    @summaryViewHoursLabel = subview UILabel, :summaryHours
+
     interactiveModeOnlyViews << hoursSlider
-
-    summaryViewHoursLabel = subview UILabel, :summaryHours
     summaryModeOnlyViews << summaryViewHoursLabel
-
-    # Resizing manipulates these
-    @hoursSlider = hoursSlider
-    @summaryViewHoursLabel = summaryViewHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
     hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
@@ -166,6 +164,7 @@ class TimeSelectionController < UIViewController
     periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
     observe(self, :timeSelection) do |_, timeSpan|
       delegate.timeSelectionChanged timeSpan if delegate
+
       createHourRangeString = -> label, condensed=false {
         labelFont = hourRangeLabel.font
         boldFont = labelFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
@@ -176,23 +175,25 @@ class TimeSelectionController < UIViewController
         string.addAttribute NSFontAttributeName, value:labelFont.fontWithSize(10), range:NSMakeRange(label.length - 2, 2)
         string
       }
+
       startPeriod = periodFormatter.stringFromDate(timeSpan.startTime)
       endPeriod = periodFormatter.stringFromDate(timeSpan.endTime)
       startFormatter = if startPeriod == endPeriod then hourMinuteFormatter else hourMinutePeriodFormatter end
       labelString = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
-      labelAS = createHourRangeString.call labelString
-      tooWide = -> { hoursSlider.size.width > 0 and labelAS.size.width > hoursSlider.size.width - hoursSlider.layer.cornerRadius }
-      labelAS = createHourRangeString.call(labelString.sub(/:00/, '')) if tooWide.call()
-      labelAS = createHourRangeString.call(labelString.gsub(/:00/, '')) if tooWide.call()
-      labelAS = createHourRangeString.call(labelString.gsub(/:00/, ''), true) if tooWide.call()
-      labelAS = createHourRangeString.call(labelString.gsub(/:00/, '').gsub(/:30/, '½'), true) if tooWide.call()
-      hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
+
+      labelAS = createHourRangeString.(labelString)
       summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
+
+      tooWide = -> { hoursSlider.size.width > 0 and labelAS.size.width > hoursSlider.size.width - hoursSlider.layer.cornerRadius }
+      labelAS = createHourRangeString.(labelString.sub(/:00/, '')) if tooWide.()
+      labelAS = createHourRangeString.(labelString.gsub(/:00/, '')) if tooWide.()
+      labelAS = createHourRangeString.(labelString.gsub(/:00/, ''), true) if tooWide.()
+      labelAS = createHourRangeString.(labelString.gsub(/:00/, '').gsub(/:30/, '½'), true) if tooWide.()
+      hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
     end
 
     timeSpanHoursUpdater = Debounced.new 0.25 do
-      frame = hoursSlider.frame
-      summaryViewHoursLabel.frame = frame
+      summaryViewHoursLabel.frame = hoursSlider.frame
       startHour = FirstHourNumber + ((hoursSlider.left - HourFirstX) * 2 / HourSpacing).round / 2.0
       endHour = FirstHourNumber + ((hoursSlider.right - HourFirstX) * 2 / HourSpacing).round / 2.0 - 0.5
       startHour = [startHour, FirstHourNumber].max
@@ -206,9 +207,24 @@ class TimeSelectionController < UIViewController
   public
 
   def setMode(key, animated:animated)
+    @timeSelectorHeightKey ||= :interactive
     return if @timeSelectorHeightKey == key
 
+    @saveViewProperties ||= -> {
+      saveFrameViews = [view, hoursSlider, summaryViewHoursLabel]
+      saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
+      {
+        alpha: saveAlphaViews.map { |v| [v, v.alpha] },
+        frame: saveFrameViews.map { |v| [v, v.frame] }
+      }
+    }
+    @restoreViewProperties ||= -> savedProperties {
+      savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
+      savedProperties[:frame].each do |v, frame| v.frame = frame end
+    }
+
     if animated
+      summaryViewHoursLabel.frame = hoursSlider.frame
       UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
       return
     end
@@ -217,24 +233,17 @@ class TimeSelectionController < UIViewController
     view = self.view
     case key
     when :summary
-      saveFrameViews = [view, @summaryViewHoursLabel]
-      saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
-      @savedTimeSelectorValues = {
-        alpha: saveAlphaViews.map { |v| [v, v.alpha] },
-        frame: saveFrameViews.map { |v| [v, v.frame] }
-      }
+      @savedTimeSelectorValues ||= @saveViewProperties.()
       view.top = ShortViewTop
       view.height = ShortViewHeight
       view.setNeedsDisplay
       interactiveModeOnlyViews.each do |v| v.alpha = 0 end
       summaryModeOnlyViews.each do |v| v.alpha = 1 end
-      @summaryViewHoursLabel.origin = [0, 18]
-      @summaryViewHoursLabel.width = 320
+      summaryViewHoursLabel.origin = [0, 18]
+      summaryViewHoursLabel.width = 320
+      hoursSlider.frame = summaryViewHoursLabel.frame
     when :interactive
-      savedValues = @savedTimeSelectorValues
-      return unless savedValues
-      savedValues[:alpha].each do |v, alpha| v.alpha = alpha end
-      savedValues[:frame].each do |v, frame| v.frame = frame end
+      @restoreViewProperties.call @savedTimeSelectorValues
       @savedTimeSelectorValues = nil
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)

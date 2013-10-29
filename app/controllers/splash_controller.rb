@@ -14,6 +14,7 @@ class SplashController < UIViewController
   private
 
   def splashImage
-    UIImage.imageNamed(Device.screen.height == 480 ? 'Default' : 'Default-%dh' % 568)
+    height = Device.screen.height
+    UIImage.imageNamed(height == 480 ? 'Default' : 'Default-%dh' % height)
   end
 end

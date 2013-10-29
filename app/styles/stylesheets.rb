@@ -107,6 +107,14 @@ Teacup::Stylesheet.new :booking do
     width: 320,
     height: 120;
 
+  style :splash_circle,
+    left: 73,
+    top: 139,
+    width: 174,
+    height: 181,
+    backgroundColor: UIColor.whiteColor,
+    layer: { cornerRadius: 90 };
+
   style UILabel,
     textColor: UIColor.whiteColor,
     textAlignment: NSTextAlignmentCenter;
@@ -149,6 +157,11 @@ Teacup::Stylesheet.new :booking do
       shadowOffset: [0, 1],
       shadowOpacity: 0.5
     };
+    # constraints: [
+    #   constrain_height(35),
+    #   constrain_width(135),
+    #   constrain(:bottom).equals(:superview, :bottom)
+    # ];
 
   style :hour_slider_label,
     width: 195,
