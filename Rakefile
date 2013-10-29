@@ -44,8 +44,8 @@ Motion::Project::App.setup do |app|
   app.vendor_project 'vendor/BlockBuilder', :static
 
   app.pods do
+    pod 'Facebook-iOS-SDK'
     pod 'Firebase', '~> 1.0.0'
-    # pod "Facebook-iOS-SDK"
     pod 'FMDB'
     pod 'GRMustache'
     pod 'NSDate-Extensions'
@@ -56,8 +56,9 @@ Motion::Project::App.setup do |app|
   set_provisioning_profile app
 
   # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
-  FB_APP_ID = ENV['FB_APP_ID']
+  FB_APP_ID = ENV.require('FB_APP_ID')
   app.info_plist['FacebookAppID'] = FB_APP_ID
+  app.info_plist['FacebookAppId'] = FB_APP_ID # works around bug in FB SDK
   app.info_plist['FacebookDisplayName'] = 'Seven Sitters'
   app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FB_APP_ID}"]}]
 
