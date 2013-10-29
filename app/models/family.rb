@@ -1,6 +1,6 @@
 class Family
   include BW::KVO
-  InitialSitterCount = 6
+  InitialDemoSitterCount = 6
   MaxSitterCount = 7
 
   attr_accessor :sitters
@@ -12,40 +12,20 @@ class Family
   end
 
   def initialize
-    setupUserData
-    observe(Account.instance, :user) do setupUserData end
-    resetSitters
-    observe(Sitter, :all) do resetSitters if sitters.empty? end
+    resetSitterList
+    # recompute once the sitter list has loaded
+    observe(Sitter, :all) do resetSitterList if sitters.empty? end
   end
 
-  # TODO move some of this into Account
-  # TODO refactor
-  # TODO cache
-  # TODO initialize from stored value
-  # TODO update when sitter list changes
-  def setupUserData
-    app = UIApplication.sharedApplication.delegate
-    firebase = app.firebase
-    accountsFB = firebase['account']
-    familiesFB = firebase['family']
-    providerNames = [nil, 'password', 'facebook', 'twitter']
-    @userFB.off if @userFB
-    @userFB = nil
-    user = Account.instance.user
-    if user
-      userProvider = providerNames[user.provider]
-      accountKey = "#{userProvider}/#{user.userId}"
-      @userFB = firebase['account'][accountKey]
-      @userFB.once(:value) do |snapshot|
-        unless snapshot.value
-          familyFB = familiesFB << {parents: {userProvider => user.userId}, sitter_ids: self.sitters.map(&:id)}
-          accountsFB[accountKey] = {displayName: user.displayName, email: user.thirdPartyUserData['email'], family_id: familyFB.name}
-        end
-      end
-    end
+  def updateFrom(data)
+    # save these in case the family sitter list comes in before the global sitter list has loaded
+    @sitter_ids = data['sitter_ids']
+    resetSitterList
   end
 
   def sitters=(sitters)
+    return if @sitters == sitters
+
     self.willChangeValueForKey :sitters
     @sitters = sitters
     self.didChangeValueForKey :sitters
@@ -62,6 +42,8 @@ class Family
 
   def setSitterCount(count)
     delta = count - self.sitters.length
+    # don't update from the cloud once we've touched this locally
+    @sitter_ids = nil unless delta == 0
     case
     when delta < 0 then self.sitters = self.sitters[0...count]
     when 0 < delta then self.sitters = self.sitters + self.suggested_sitters[0...delta]
@@ -76,11 +58,17 @@ class Family
     return unless self.canAddSitter(sitter)
     # instead of <<, for KVO
     self.sitters = self.sitters + [sitter]
+    # don't update from the cloud once we've touched this locally
+    @sitter_ids = nil
   end
 
   private
 
-  def resetSitters
-    self.sitters = Sitter.all[0...InitialSitterCount]
+  def resetSitterList
+    if @sitter_ids
+      self.sitters = @sitter_ids.map { |id| Sitter.all.find { |s| s.id == id } }
+    else
+      self.sitters = Sitter.all[0...InitialDemoSitterCount]
+    end
   end
 end

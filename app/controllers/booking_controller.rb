@@ -24,7 +24,7 @@ class BookingController < UIViewController
     subview @timeSelectionController.view
     splash_circle = subview UIView, :splash_circle
     dur = 0.25
-    App.notification_center.observe AppDelegate::ApplicationDidLoadDataNotification.name do |notification|
+    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
       animation = CABasicAnimation.animationWithKeyPath('cornerRadius')
       animation.duration = dur
       animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseOut)

@@ -1,4 +1,5 @@
 class Account
+  include BW::KVO
   attr_accessor :user
 
   def self.instance
@@ -6,7 +7,16 @@ class Account
     @instance
   end
 
-  def check
+  def initialize
+    firebase['.info/authenticated'].on(:value) do |snapshot|
+      self.user = nil if not snapshot.value
+    end
+    observe(family, :sitters) do
+      familySittersDidChange
+    end
+  end
+
+  def initialize_login_status
     auth.check do |error, user|
       self.user = user
     end
@@ -14,7 +24,38 @@ class Account
 
   def user=(user)
     self.willChangeValueForKey :user
+    add_user_methods user if user
     @user = user
+    self.didChangeValueForKey :user
+    updateUserDataSubscription
+  end
+
+  def login
+    NSNotificationCenter.defaultCenter.postNotification ApplicationWillAttemptLoginNotification
+    auth.check do |error, user|
+      if error or user
+        authDidReturnUser user, error:error
+        NSNotificationCenter.defaultCenter.postNotification ApplicationDidAttemptLoginNotification
+      else
+        permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
+        auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
+          authDidReturnUser user, error:error
+          NSNotificationCenter.defaultCenter.postNotification ApplicationDidAttemptLoginNotification
+        end
+      end
+    end
+  end
+
+  def logout
+    auth.logout
+    # the .info/authenticated observation clears self.user
+  end
+
+  private
+
+  FacebookAppId = '245805915569604'
+
+  def add_user_methods(user)
     class << user
       def displayName
         self.thirdPartyUserData['displayName']
@@ -24,37 +65,23 @@ class Account
         location = self.thirdPartyUserData['location']
         location ? location['name'] : nil
       end
-    end if user
-    self.didChangeValueForKey :user
-  end
-
-  def auth
-    app = UIApplication.sharedApplication.delegate
-    @auth ||= FirebaseSimpleLogin.new(app.firebase)
-  end
-
-  def login
-    auth.check do |error, user|
-      if error or user
-        authDidReturn user, error:error
-      else
-        permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
-        auth.login_to_facebook(app_id: '245805915569604', permissions: ['email']) do |error, user|
-          authDidReturn user, error:error
-        end
-      end
     end
   end
 
-  def logout
-    auth.logout
-    # TODO instead observe .info/authenticated
-    self.user = nil
+  def auth
+    @auth ||= FirebaseSimpleLogin.new(firebase)
   end
 
-  private
+  def firebase
+    app = UIApplication.sharedApplication.delegate
+    return app.firebase
+  end
 
-  def authDidReturn(user, error:error)
+  def family
+    Family.instance
+  end
+
+  def authDidReturnUser(user, error:error)
     self.user = user
     if error
       UIAlertView.alloc.initWithTitle(error.localizedDescription,
@@ -63,5 +90,42 @@ class Account
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
     end
+  end
+
+  # TODO move some of this into storage manager
+  # TODO cache
+  def updateUserDataSubscription
+    @userDataFB.off if @userDataFB
+    @familyDataFB.off if @familyDataFB
+    @userDataFB = nil
+    @familyDataFB = nil
+    @familyData = nil
+    return unless user
+
+    accountsFB = firebase['account']
+    familiesFB = firebase['family']
+    providerNames = [nil, 'password', 'facebook', 'twitter']
+
+    userProvider = providerNames[user.provider]
+    accountKey = "#{userProvider}/#{user.userId}"
+    @userFB = accountsFB[accountKey]
+    @userFB.on(:value) do |snapshot|
+      if snapshot.value
+        @familyDataFB = familiesFB[snapshot.value['family_id']]
+        @familyDataFB.on(:value) do |snapshot|
+          @familyData = data = snapshot.value
+          family.updateFrom(data) if data
+        end
+      else
+        familyFB = familiesFB << {parents: {userProvider => user.userId}, sitter_ids: family.sitters.map(&:id)}
+        accountsFB[accountKey] = {displayName: user.displayName, email: user.thirdPartyUserData['email'], family_id: familyFB.name}
+      end
+    end
+  end
+
+  def familySittersDidChange
+    sitter_ids = family.sitters.map(&:id)
+    return unless @familyData
+    @familyDataFB['sitter_ids'] = sitter_ids unless @familyData['sitter_ids'] == sitter_ids
   end
 end

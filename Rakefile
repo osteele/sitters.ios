@@ -8,9 +8,12 @@ Bundler.require
 
 Dotenv.load
 BUILD_DATE = DateTime.now
+
 require './version'
 require_all 'config'
 require_all 'tasks'
+
+FB_APP_ID = ENV.require('FB_APP_ID')
 
 Motion::Project::App.setup do |app|
   app.identifier = 'com.sevensitters.sevensitters'
@@ -20,6 +23,7 @@ Motion::Project::App.setup do |app|
   app.icons = ['Icon.png', 'Icon@2x.png', 'Icon-Small.png', 'Icon-Small@2x.png']
   app.interface_orientations = [:portrait]
 
+  app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
   for token_name in ['TF_APP_TOKEN']
@@ -42,7 +46,6 @@ Motion::Project::App.setup do |app|
   set_provisioning_profile app
 
   # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
-  FB_APP_ID = ENV.require('FB_APP_ID')
   app.info_plist['FacebookAppID'] = FB_APP_ID
   app.info_plist['FacebookAppId'] = FB_APP_ID # works around bug in FB SDK
   app.info_plist['FacebookDisplayName'] = 'Seven Sitters'

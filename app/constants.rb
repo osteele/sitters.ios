@@ -1,5 +1,9 @@
 ISO8601DateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 
+ApplicationDidLoadDataNotification = NSNotification.notificationWithName('ApplicationDidLoadData', object:nil)
+ApplicationWillAttemptLoginNotification = NSNotification.notificationWithName('ApplicationWillAttemptLogin', object:nil)
+ApplicationDidAttemptLoginNotification = NSNotification.notificationWithName('ApplicationDidAttemptLogin', object:nil)
+
 # Conversion factors from the Keynote design deck to iOS resolution.
 # These allow the numbers in the Keynote inspector to be used as constants below.
 KeynoteShadowOffsetRatio = 0.5

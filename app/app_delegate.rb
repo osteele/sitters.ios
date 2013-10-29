@@ -1,12 +1,11 @@
 class AppDelegate
   include BW::KVO
-  ApplicationDidLoadDataNotification = NSNotification.notificationWithName('ApplicationDidLoadData', object:nil)
   BackgroundColor = '#A6A6A6'.to_color
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
-    Account.instance.check
+    Account.instance.initialize_login_status
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @window.backgroundColor = BackgroundColor
