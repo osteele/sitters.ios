@@ -182,6 +182,7 @@ class TimeSelectionController < UIViewController
       labelString = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
       labelAS = createHourRangeString.call labelString
       tooWide = -> { hoursSlider.size.width > 0 and labelAS.size.width > hoursSlider.size.width - hoursSlider.layer.cornerRadius }
+      labelAS = createHourRangeString.call(labelString.sub(/:00/, '')) if tooWide.call()
       labelAS = createHourRangeString.call(labelString.gsub(/:00/, '')) if tooWide.call()
       labelAS = createHourRangeString.call(labelString.gsub(/:00/, ''), true) if tooWide.call()
       labelAS = createHourRangeString.call(labelString.gsub(/:00/, '').gsub(/:30/, '½'), true) if tooWide.call()
