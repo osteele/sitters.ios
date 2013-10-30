@@ -1,4 +1,4 @@
-DragHandleMargin = 5
+DragHandleMargin = 7
 
 Teacup::Stylesheet.new :sitter_details do
   lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
@@ -181,26 +181,34 @@ Teacup::Stylesheet.new :booking do
     textColor: '#5481C9'.to_color;
 
   style :hours_drag_handle,
+    # backgroundColor: UIColor.yellowColor,
+    # alpha: 0.2,
     constraints: [
-      constrain(:top).equals(:superview, :top),
-      constrain(:left).equals(:superview, :left),
-      constrain(:width).equals(:superview, :width),
-      constrain(:height).equals(:superview, :height)
+      constrain(:top).equals(:hours_indicator, :top).minus(DragHandleMargin),
+      constrain(:bottom).equals(:hours_indicator, :bottom).plus(DragHandleMargin),
+      constrain(:left).equals(:hours_indicator, :left).minus(DragHandleMargin),
+      constrain(:right).equals(:hours_indicator, :right).plus(DragHandleMargin),
     ]
 
   style :hours_left_handle,
-      left: 0,
-      top: 0,
-      width: 40,
-      height: 35;
+    # backgroundColor: UIColor.redColor,
+    # alpha: 0.2,
+    constraints: [
+      constrain(:top).equals(:hours_indicator, :top).minus(DragHandleMargin),
+      constrain(:bottom).equals(:hours_indicator, :bottom).plus(DragHandleMargin),
+      constrain(:left).equals(:hours_indicator, :left).minus(DragHandleMargin),
+      constrain(:right).equals(:hours_indicator, :left).plus(30),
+    ]
 
   style :hours_right_handle,
+    # backgroundColor: UIColor.blueColor,
+    # alpha: 0.2,
     constraints: [
-      constrain(:top).equals(:superview, :top),
-      constrain(:height).equals(:superview, :height),
-      constrain(:right).equals(:superview, :right).plus(20),
-      constrain_width(40)
-    ]
+      constrain(:top).equals(:hours_indicator, :top).minus(DragHandleMargin),
+      constrain(:bottom).equals(:hours_indicator, :bottom).plus(DragHandleMargin),
+      constrain(:left).equals(:hours_indicator, :right).minus(30),
+      constrain(:right).equals(:hours_indicator, :right).plus(DragHandleMargin),
+    ];
 
   style :hours_left_handle_image,
     image: UIImage.imageNamed('images/hours-left-handle'),

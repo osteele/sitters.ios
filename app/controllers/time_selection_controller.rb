@@ -137,22 +137,26 @@ class TimeSelectionController < UIViewController
       hourRangeLabel = subview UILabel, :hours_indicator_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
-      dragHandle = subview UIView, :hours_drag_handle
-      leftDragHandle = subview UIView, :hours_left_handle
-      rightDragHandle = subview UIView, :hours_right_handle
       subview UIImageView, :hours_left_handle_image
       subview UIImageView, :hours_right_handle_image
 
-      target = leftDragHandle.superview
-      dragOptions = {xMinimum: HourFirstX, widthMinimum: (MinHours + 0.5) * HourSpacing, widthFactor: HourSpacing / 2}
-      TouchUtils.dragOnTouch target, handle:dragHandle, options:dragOptions
-      TouchUtils.dragOnTouch target, handle:leftDragHandle, options:dragOptions.merge(resize:true)
-      TouchUtils.resizeOnTouch target, handle:rightDragHandle, options:dragOptions
-      [dragHandle, leftDragHandle, rightDragHandle].each do |handle|
-        TouchUtils.bounceOnTap target, handle:handle
-      end
     end
     declareViewMode :interactive, hoursIndicator
+
+    # Place the touch targets outside the hours view so that hit testing will recognize that
+    # they extend past its margins.
+    # Alternatives would be to customize the hours view to render in a subset of its bounds,
+    # or to override its hittest method.
+    dragHoursHandle = subview UIView, :hours_drag_handle
+    leftDragHandle = subview UIView, :hours_left_handle
+    rightDragHandle = subview UIView, :hours_right_handle
+    dragHoursOptions = {xMinimum: HourFirstX, widthMinimum: (MinHours + 0.5) * HourSpacing, widthFactor: HourSpacing / 2}
+    TouchUtils.dragOnTouch hoursIndicator, handle:dragHoursHandle, options:dragHoursOptions
+    TouchUtils.dragOnTouch hoursIndicator, handle:leftDragHandle, options:dragHoursOptions.merge(resize:true)
+    TouchUtils.resizeOnTouch hoursIndicator, handle:rightDragHandle, options:dragHoursOptions
+    # [dragHoursHandle, leftDragHandle, rightDragHandle].each do |handle|
+    #   TouchUtils.bounceOnTap hoursIndicator, handle:handle
+    # end
 
     @summaryViewHoursLabel = subview UILabel, :summary_hours
     declareViewMode :summary, summaryViewHoursLabel

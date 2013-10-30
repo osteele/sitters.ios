@@ -1,6 +1,9 @@
+## master
+* Larger tap targets for day and hours indicators.
+
 ## 0.2.5 (2013-10-28)
-• Sign into Facebook to save your sitter list. Sitters will sync across all signed-in devices.
-• Improved (but still not complete) animations.
+* Sign into Facebook to save your sitter list. Sitters will sync across all signed-in devices.
+* Improved (but still not complete) animations.
 
 ## 0.2.4 (2013-10-28)
 * New app icons, splash screen.
