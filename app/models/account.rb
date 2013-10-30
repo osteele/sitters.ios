@@ -109,12 +109,15 @@ class Account
     userProvider = providerNames[user.provider]
     accountKey = "#{userProvider}/#{user.userId}"
     @userFB = accountsFB[accountKey]
-    @userFB.on(:value) do |snapshot|
-      if snapshot.value
-        @familyDataFB = familiesFB[snapshot.value['family_id']]
-        @familyDataFB.on(:value) do |snapshot|
-          @familyData = data = snapshot.value
-          family.updateFrom(data) if data
+    # @userFB.on(:value) do |snapshot|
+    DataCache.instance.onCachedFirebaseValue(firebase, "account/#{accountKey}") do |data|
+      if data
+        family_id = data['family_id']
+        @familyDataFB = familiesFB[family_id]
+        # @familyDataFB.on(:value) do |snapshot|
+        DataCache.instance.onCachedFirebaseValue(firebase, "family/#{family_id}") do |data|
+          @familyData = data
+          family.updateFrom data if data
         end
       else
         familyFB = familiesFB << {parents: {userProvider => user.userId}, sitter_ids: family.sitters.map(&:id)}

@@ -2,6 +2,7 @@ class AppDelegate
   include BW::KVO
   BackgroundColor = '#A6A6A6'.to_color
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
+  SplashFadeAnimationDuration = 0.3
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     initializeTestFlight
@@ -14,11 +15,11 @@ class AppDelegate
       splashView = SplashController.alloc.init.view
       controller.view.addSubview splashView
       App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
-        UIView.animateWithDuration 0.3, animations: -> { splashView.alpha = 0 }, completion: -> _ { splashView.removeFromSuperview }
+        UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: -> _ { splashView.removeFromSuperview }
       end
     end
 
-    withSyncedData('demo/sitters') do |data|
+    DataCache.instance.onCachedFirebaseValue(firebase, 'demo/sitters') do |data|
       Sitter.updateFrom data
       NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
     end
@@ -44,19 +45,6 @@ class AppDelegate
   end
 
   private
-
-  def withSyncedData(key, &block)
-    data = DataCache.instance.withJSONCache(key, version:1)
-    if data
-      Dispatch::Queue.main.async do block.call data end
-    else
-      firebase[key].once(:value) do |snapshot|
-        data = snapshot.value
-        DataCache.instance.withJSONCache(key, version:1) do data end
-        block.call data
-      end
-    end
-  end
 
   def tabControllers
     [

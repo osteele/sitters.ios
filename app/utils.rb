@@ -137,9 +137,9 @@ class DataCache
     end
   end
 
-  def withJSONCache(key, version:version, &block)
+  def withJSONCache(cacheKey, version:cacheVersion, &block)
     db = self.database
-    results = db.executeQuery('SELECT json FROM json_cache WHERE key=? AND version=?;', withArgumentsInArray:[key, version])
+    results = db.executeQuery('SELECT json FROM json_cache WHERE key=? AND version=?;', withArgumentsInArray:[cacheKey, cacheVersion])
     if results.next
       json = results.dataNoCopyForColumn(:json)
       error = Pointer.new(:id)
@@ -151,10 +151,29 @@ class DataCache
       return unless block
       data = block.call
       json = BW::JSON.generate(data)
-      values = { key: key, version: version, json: json }
-      db.executeUpdate 'INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
-        withParameterDictionary:values
+      values = { key: cacheKey, version: cacheVersion, json: json }
+      # db.executeUpdate 'INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
+      #   withParameterDictionary:values
+      db.executeUpdate <<-SQL, withParameterDictionary:values
+        INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);
+      SQL
     end
     return data
+  end
+
+  def onCachedFirebaseValue(firebase, path, options={}, &block)
+    cacheKey = options[:cacheKey] || path
+    cacheVersion = options[:cacheVersion] || 1
+    data = withJSONCache(cacheKey, version:cacheVersion)
+    if data
+      Dispatch::Queue.main.async do
+        block.call data
+      end
+    end
+    firebase[path].on(:value) do |snapshot|
+      data = snapshot.value
+      withJSONCache(cacheKey, version:cacheVersion) do data end
+      block.call data
+    end
   end
 end
