@@ -9,6 +9,7 @@ class TimeSelectionController < UIViewController
   # Graphics and Animation
   AnimationDuration = 0.3
   DayFirstX = 3
+  DayIndicatorOffset = 5
   DaySpacing = 44
   HourFirstX = 10
   HourSpacing = 58
@@ -35,15 +36,17 @@ class TimeSelectionController < UIViewController
 
   private
 
-  attr_reader :hoursSlider
+  # animation modifies these
+  attr_reader :dayIndicator
+  attr_reader :hoursIndicator
   attr_reader :summaryViewHoursLabel
+
+  #
+  # Views and observer creation
+  #
 
   layout do
     self.view.stylename = :time_selector
-
-    @interactiveModeOnlyViews = []
-    @summaryModeOnlyViews = []
-
     createDaySelectorViews
     createHourSelectorViews
   end
@@ -53,26 +56,25 @@ class TimeSelectionController < UIViewController
     dayLabelFormatter = dateFormatter('EEEE, MMMM d')
     dayLabel = subview UILabel, :date
 
-    daySelectionMarker = nil
-    daySelectionMarkerOffset = 5
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
-    daySelectionMarker = subview UIView, :day_selection_marker do
+    @dayIndicator = subview UIView, :day_indicator do
       handle = subview UIView, width: 100, height: 100
       options = {
-        xMinimum: DayFirstX + daySelectionMarkerOffset,
-        xMaximum: DayFirstX + daySelectionMarkerOffset + (7 - 1) * DaySpacing,
+        xMinimum: DayFirstX + DayIndicatorOffset,
+        xMaximum: DayFirstX + DayIndicatorOffset + (7 - 1) * DaySpacing,
         widthFactor: DaySpacing
       }
       TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
       TouchUtils.bounceOnTap handle.superview, handle:handle
     end
-    interactiveModeOnlyViews << daySelectionMarker
-    @dayMarker = daySelectionMarker
+    declareViewMode :interactive, dayIndicator
+    @dayMarker = dayIndicator
 
     selectionMarkerLabels = []
+    weekdayFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEEE')
     weekdayDates.each_with_index do |date, i|
       x = DayFirstX + i * DaySpacing
-      name = NSDateFormatter.alloc.init.setDateFormat('EEEEE').stringFromDate(date)
+      name = weekdayFormatter.stringFromDate(date)
       # Create a separate view for the selection marker label so that we can animate
       # the color transition. Animation animates opacity but not color.
       # A custom view could animate its text color, but the current system leaves
@@ -84,19 +86,21 @@ class TimeSelectionController < UIViewController
         TestFlight.passCheckpoint "Tap day ###{i+1} (#{name})"
         self.timeSelection = timeSelection.onDate(date)
       end
-      self.interactiveModeOnlyViews << label
-      self.interactiveModeOnlyViews << selectionMarkerLabel
+      declareViewMode :interactive, label
+      declareViewMode :interactive, selectionMarkerLabel
       selectionMarkerLabels << selectionMarkerLabel
     end
 
-    daySelectionMarker.superview.bringSubviewToFront daySelectionMarker
+    # Move the day indicator in front of the background day labels; then move the foreground day labels in front of it.
+    # This is simpler than creating them in the right order.
+    dayIndicator.superview.bringSubviewToFront dayIndicator
     selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
 
-    observe(daySelectionMarker, :frame) do
+    observe(dayIndicator, :frame) do
       selectionMarkerLabels.each do |label|
-        dx = label.origin.x - daySelectionMarker.origin.x + daySelectionMarkerOffset
+        dx = label.origin.x - dayIndicator.origin.x + DayIndicatorOffset
         label.alpha = 1 - [[dx.abs / 45.0, 1].min, 0].max
-        dayIndex = ((daySelectionMarker.origin.x + daySelectionMarkerOffset - DayFirstX) / DaySpacing).round
+        dayIndex = ((dayIndicator.origin.x + DayIndicatorOffset - DayFirstX) / DaySpacing).round
         dayIndex = [[dayIndex, 0].max, weekdayDates.length - 1].min
         date = weekdayDates[dayIndex]
         self.timeSelection = timeSelection.onDate(date) unless timeSelection.date == date
@@ -108,29 +112,29 @@ class TimeSelectionController < UIViewController
         dayLabel.text = dayLabelFormatter.stringFromDate(timeSpan.date)
         currentWeekDayIndex = weekdayDates.index(timeSpan.date)
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
-        pos = CGPointMake(selectedMarkerLabel.x + daySelectionMarkerOffset, selectedMarkerLabel.y)
-        daySelectionMarker.origin = pos if daySelectionMarker.top == 0 # first time
-        UIView.animateWithDuration AnimationDuration, animations: -> { daySelectionMarker.x = pos.x }
+        pos = CGPointMake(selectedMarkerLabel.x + DayIndicatorOffset, selectedMarkerLabel.y)
+        dayIndicator.origin = pos if dayIndicator.top == 0 # first time
+        UIView.animateWithDuration AnimationDuration, animations: -> { dayIndicator.x = pos.x }
       end
     end
   end
 
   def createHourSelectorViews
+    hour12Formatter = NSDateFormatter.alloc.init.setDateFormat('h')
     hoursView = subview UIView do
       Hours.each_with_index do |hour, i|
         subview UIView, :hour_blob, left: HourFirstX + i * HourSpacing do
-          # TODO use dateFormatter
-          subview UILabel, :hour_blob_hour, text: (hour % 12).to_s
+          subview UILabel, :hour_blob_hour, text: hour12Formatter.stringFromDate(hour) #(hour % 12).to_s
           subview UILabel, :hour_blob_am_pm
           subview UILabel, :hour_blob_half_past
         end
       end
     end
-    interactiveModeOnlyViews << hoursView
+    declareViewMode :interactive, hoursView
 
     hourRangeLabel = nil
-    @hoursSlider = subview UIView, :hour_slider do
-      hourRangeLabel = subview UILabel, :hour_slider_label
+    @hoursIndicator = subview UIView, :hours_indicator do
+      hourRangeLabel = subview UILabel, :hours_indicator_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
       dragHandle = subview UIView, :hour_drag_handle
@@ -150,11 +154,10 @@ class TimeSelectionController < UIViewController
         TouchUtils.bounceOnTap target, handle:handle
       end
     end
+    declareViewMode :interactive, hoursIndicator
 
     @summaryViewHoursLabel = subview UILabel, :summary_hours
-
-    interactiveModeOnlyViews << hoursSlider
-    summaryModeOnlyViews << summaryViewHoursLabel
+    declareViewMode :summary, summaryViewHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
     hourMinuteFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mm')
@@ -182,7 +185,7 @@ class TimeSelectionController < UIViewController
       labelAS = createHourRangeString.(labelString)
       summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
 
-      tooWide = -> { hoursSlider.size.width > 0 and labelAS.size.width > hoursSlider.size.width - hoursSlider.layer.cornerRadius }
+      tooWide = -> { hoursIndicator.size.width > 0 and labelAS.size.width > hoursIndicator.size.width - hoursIndicator.layer.cornerRadius }
       labelAS = createHourRangeString.(labelString.sub(/:00/, '')) if tooWide.()
       labelAS = createHourRangeString.(labelString.gsub(/:00/, '')) if tooWide.()
       labelAS = createHourRangeString.(labelString.gsub(/:00/, ''), true) if tooWide.()
@@ -191,15 +194,15 @@ class TimeSelectionController < UIViewController
     end
 
     timeSpanHoursUpdater = Debounced.new 0.25 do
-      # summaryViewHoursLabel.frame = hoursSlider.frame
-      startHour = FirstHourNumber + ((hoursSlider.left - HourFirstX) * 2 / HourSpacing).round / 2.0
-      endHour = FirstHourNumber + ((hoursSlider.right - HourFirstX) * 2 / HourSpacing).round / 2.0 - 0.5
+      # summaryViewHoursLabel.frame = hoursIndicator.frame
+      startHour = FirstHourNumber + ((hoursIndicator.left - HourFirstX) * 2 / HourSpacing).round / 2.0
+      endHour = FirstHourNumber + ((hoursIndicator.right - HourFirstX) * 2 / HourSpacing).round / 2.0 - 0.5
       startHour = [startHour, FirstHourNumber].max
       endHour = [endHour, startHour + MinHours].max
       self.timeSelection = timeSelection.betweenTimes(startHour, endHour)
     end
 
-    observe(hoursSlider, :frame) do timeSpanHoursUpdater.fire! end
+    observe(hoursIndicator, :frame) do timeSpanHoursUpdater.fire! end
   end
 
 
@@ -210,19 +213,21 @@ class TimeSelectionController < UIViewController
   public
 
   def setMode(key, animated:animated)
-    @summaryMode ||= :interactive
-    return if @summaryMode == key
+    @heightMode ||= :interactive
+    return if @heightMode == key
 
     if animated
       # set these before saveViewProperties, so we animate *back* to them later
       setSummaryModeAnimationInitialState if key == :summary
       UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
-      UIView.animateWithDuration AnimationDuration / 3, animations: -> { hoursSlider.top = summaryViewHoursLabel.top }
+      # These need to go faster to get out of the way of the contracting height in time:
+      # UIView.animateWithDuration AnimationDuration / 3, animations: -> { hoursIndicator.top = summaryViewHoursLabel.top }
+      UIView.animateWithDuration AnimationDuration / 3, animations: -> { dayIndicator.top = summaryViewHoursLabel.top }
       return
     end
 
     # Set this *after* the recursive call above, so that the inner call actually does something
-    @summaryMode = key
+    @heightMode = key
     view = self.view
     case key
     when :summary
@@ -231,16 +236,16 @@ class TimeSelectionController < UIViewController
       view.top = ShortViewTop
       view.height = ShortViewHeight
       view.setNeedsDisplay
-      interactiveModeOnlyViews.each do |v| v.alpha = 0 end
-      summaryModeOnlyViews.each do |v| v.alpha = 1 end
+      getViewsForMode(:interactive).each do |v| v.alpha = 0 end
+      getViewsForMode(:summary).each do |v| v.alpha = 1 end
       summaryViewHoursLabel.origin = [0, 18]
       summaryViewHoursLabel.width = 320
-      # hoursSlider.top = summaryViewHoursLabel.top
+      # hoursIndicator.top = summaryViewHoursLabel.top
       # use transform instead of bounds so that listeners don't think it's being dragged to a different time:
-      # hoursSlider.tx = (320 - hoursSlider.width) / 2 - hoursSlider.x
+      # hoursIndicator.tx = (320 - hoursIndicator.width) / 2 - hoursIndicator.x
     when :interactive
       restoreViewProperties
-      # hoursSlider.tx = 0
+      # hoursIndicator.tx = 0
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
     gradient_layer.frame = view.bounds if gradient_layer
@@ -248,19 +253,23 @@ class TimeSelectionController < UIViewController
 
   private
 
-  attr_reader :interactiveModeOnlyViews
-  attr_reader :summaryModeOnlyViews
+  def declareViewMode(mode, view)
+    getViewsForMode(mode) << view
+  end
+
+  def getViewsForMode(mode)
+    @viewsForMode ||= {}
+    @viewsForMode[mode] ||= []
+  end
 
   def setSummaryModeAnimationInitialState
     # starting state; outside the animation
-    summaryViewHoursLabel.frame = hoursSlider.frame
-    # TODO compute this from the previous and new top and height
-    # hoursSlider.top -= 30
+    summaryViewHoursLabel.frame = hoursIndicator.frame
   end
 
   def saveViewProperties
-    saveFrameViews = [view, hoursSlider, summaryViewHoursLabel]
-    saveAlphaViews = (interactiveModeOnlyViews + summaryModeOnlyViews)
+    saveFrameViews = [view, hoursIndicator, summaryViewHoursLabel]
+    saveAlphaViews = (getViewsForMode(:interactive) + getViewsForMode(:summary))
     @savedTimeSelectorValues ||= {
       alpha: saveAlphaViews.map { |v| [v, v.alpha] },
       frame: saveFrameViews.map { |v| [v, v.frame] }

@@ -132,7 +132,7 @@ Teacup::Stylesheet.new :booking do
     font: font.fontWithSize(18),
     textColor: '#5481C9'.to_color;
 
-  style :day_selection_marker,
+  style :day_indicator,
     left: 8,
     top: 30,
     width: 34,
@@ -145,7 +145,7 @@ Teacup::Stylesheet.new :booking do
       shadowOpacity: 0.5
     };
 
-  style :hour_slider,
+  style :hours_indicator,
     left: 10,
     top: 75,
     width: 195,
@@ -163,7 +163,7 @@ Teacup::Stylesheet.new :booking do
     #   constrain(:bottom).equals(:superview, :bottom)
     # ];
 
-  style :hour_slider_label,
+  style :hours_indicator_label,
     width: 195,
     height: 35,
     # require Neueu, since it has a Bold Condensed variant
