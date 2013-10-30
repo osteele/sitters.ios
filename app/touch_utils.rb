@@ -1,4 +1,8 @@
 module TouchUtils
+  def self.animateTimeIndicators
+    NSUserDefaults.standardUserDefaults['animateTimeIndicators']
+  end
+
   # Attach a pan recognizer to `handle` that drags `target` horizontally.
   # If òptions[:resize]`, the target is simultaneously resized, such that its right edge stays at position.
   # `target` is assumed to be a subview of `target` (so that `target.origin` is modified, but `handle.origin` is not).
@@ -20,10 +24,12 @@ module TouchUtils
       when UIGestureRecognizerStateBegan
         initialOrigin = target.origin
         initialSize = target.size
-        UIView.animateWithDuration 0.1, animations: -> {
-          target.alpha = 0.8
-          target.transform = CGAffineTransformMakeScale(1.05, 1.05)
-        }
+        if animateTimeIndicators
+          UIView.animateWithDuration 0.1, animations: -> {
+            target.alpha = 0.8
+            target.transform = CGAffineTransformMakeScale(1.05, 1.05)
+          }
+        end
         # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
         # animator.removeAllBehaviors
 
