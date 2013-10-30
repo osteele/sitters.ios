@@ -57,18 +57,17 @@ class TimeSelectionController < UIViewController
     dayLabel = subview UILabel, :date
 
     weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
-    @dayIndicator = subview UIView, :day_indicator do
-      handle = subview UIView, width: 100, height: 100
+    @dayIndicator = subview UIView, :day_indicator
+    declareViewMode :interactive, dayIndicator
+    dayIndicatorHandle = subview(UIView, :day_indicator_handle).tap do |handle|
       options = {
         xMinimum: DayFirstX + DayIndicatorOffset,
         xMaximum: DayFirstX + DayIndicatorOffset + (7 - 1) * DaySpacing,
         widthFactor: DaySpacing
       }
-      TouchUtils.dragOnTouch handle.superview, handle:handle, options:options
-      TouchUtils.bounceOnTap handle.superview, handle:handle
+      TouchUtils.dragOnTouch dayIndicator, handle:handle, options:options
+      TouchUtils.bounceOnTap dayIndicator, handle:handle
     end
-    declareViewMode :interactive, dayIndicator
-    @dayMarker = dayIndicator
 
     selectionMarkerLabels = []
     weekdayFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEEE')
@@ -95,6 +94,7 @@ class TimeSelectionController < UIViewController
     # This is simpler than creating them in the right order.
     dayIndicator.superview.bringSubviewToFront dayIndicator
     selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
+    dayIndicatorHandle.superview.bringSubviewToFront dayIndicatorHandle
 
     observe(dayIndicator, :frame) do
       selectionMarkerLabels.each do |label|

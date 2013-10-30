@@ -1,3 +1,5 @@
+DragHandleMargin = 5
+
 Teacup::Stylesheet.new :sitter_details do
   lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
 
@@ -144,6 +146,14 @@ Teacup::Stylesheet.new :booking do
       shadowOffset: [0, 2],
       shadowOpacity: 0.5
     };
+
+  style :day_indicator_handle,
+    constraints: [
+      constrain(:top).equals(:day_indicator, :top).minus(DragHandleMargin),
+      constrain(:left).equals(:day_indicator, :left).minus(DragHandleMargin),
+      constrain(:right).equals(:day_indicator, :right).plus(DragHandleMargin),
+      constrain(:bottom).equals(:day_indicator, :bottom).plus(DragHandleMargin),
+    ];
 
   style :hours_indicator,
     left: 10,
