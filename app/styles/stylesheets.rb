@@ -180,7 +180,7 @@ Teacup::Stylesheet.new :booking do
     font: UIFont.fontWithName('Helvetica Neue', size:17),
     textColor: '#5481C9'.to_color;
 
-  style :hour_drag_handle,
+  style :hours_drag_handle,
     constraints: [
       constrain(:top).equals(:superview, :top),
       constrain(:left).equals(:superview, :left),
@@ -188,13 +188,13 @@ Teacup::Stylesheet.new :booking do
       constrain(:height).equals(:superview, :height)
     ]
 
-  style :hour_left_handle,
+  style :hours_left_handle,
       left: 0,
       top: 0,
       width: 40,
       height: 35;
 
-  style :hour_right_handle,
+  style :hours_right_handle,
     constraints: [
       constrain(:top).equals(:superview, :top),
       constrain(:height).equals(:superview, :height),
@@ -202,19 +202,19 @@ Teacup::Stylesheet.new :booking do
       constrain_width(40)
     ]
 
-  style :hour_left_handle_image,
-    image: UIImage.imageNamed('images/left-drag-handle'),
+  style :hours_left_handle_image,
+    image: UIImage.imageNamed('images/hours-left-handle'),
     left: 4,
     top: 10,
     width: 6,
     height: 15;
 
-  style :hour_right_handle_image,
-    width: 6,
-    height: 15,
-    top: 10,
-    left: 9,
-    image: UIImage.imageNamed('images/right-drag-handle');
+  style :hours_right_handle_image,
+    image: UIImage.imageNamed('images/hours-right-handle'),
+    top: 17,
+    constraints: [
+      constrain(:right).equals(:superview, :right).minus(4)
+    ];
 
   style :hour_blob,
     top: 70,

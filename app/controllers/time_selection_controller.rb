@@ -137,13 +137,11 @@ class TimeSelectionController < UIViewController
       hourRangeLabel = subview UILabel, :hours_indicator_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
-      dragHandle = subview UIView, :hour_drag_handle
-      leftDragHandle = subview UIView, :hour_left_handle do
-        subview UIImageView, :hour_left_handle_image
-      end
-      rightDragHandle = subview UIView, :hour_right_handle do
-        subview UIImageView, :hour_right_handle_image
-      end
+      dragHandle = subview UIView, :hours_drag_handle
+      leftDragHandle = subview UIView, :hours_left_handle
+      rightDragHandle = subview UIView, :hours_right_handle
+      subview UIImageView, :hours_left_handle_image
+      subview UIImageView, :hours_right_handle_image
 
       target = leftDragHandle.superview
       dragOptions = {xMinimum: HourFirstX, widthMinimum: (MinHours + 0.5) * HourSpacing, widthFactor: HourSpacing / 2}
