@@ -9,6 +9,7 @@ class Account
 
   def initialize
     firebase['.info/authenticated'].on(:value) do |snapshot|
+      NSLog "Auth status: update to #{snapshot.value}"
       self.user = nil if not snapshot.value
     end
     observe(family, :sitters) do
@@ -17,7 +18,9 @@ class Account
   end
 
   def initialize_login_status
+    NSLog "Auth status: checking"
     auth.check do |error, user|
+      NSLog "Auth status: #{!!user}"
       self.user = user
     end
   end

@@ -138,42 +138,60 @@ class DataCache
   end
 
   def withJSONCache(cacheKey, version:cacheVersion, &block)
+    data = fetchDataForKey(key, version:cacheVersion)
+    if not data and block
+      data = block.call
+      storeData data, key:cacheKey, version:cacheVersion
+    end
+    return data
+  end
+
+  def fetchDataForKey(cacheKey, version:cacheVersion)
     db = self.database
-    results = db.executeQuery('SELECT json FROM json_cache WHERE key=? AND version=?;', withArgumentsInArray:[cacheKey, cacheVersion])
+    results = db.executeQuery(<<-SQL, withArgumentsInArray:[cacheKey, cacheVersion])
+      SELECT json FROM json_cache WHERE key=? AND version=?;
+    SQL
     if results.next
       json = results.dataNoCopyForColumn(:json)
       error = Pointer.new(:id)
       data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:error)
-      error[0].raise if error[0]
+      NSLog error[0].description if error[0]
       data = nil if error[0]
     end
-    unless data
-      return unless block
-      data = block.call
-      json = BW::JSON.generate(data)
-      values = { key: cacheKey, version: cacheVersion, json: json }
-      # db.executeUpdate 'INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);',
-      #   withParameterDictionary:values
-      db.executeUpdate <<-SQL, withParameterDictionary:values
-        INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);
-      SQL
-    end
     return data
+  end
+
+  def storeData(data, key:cacheKey, version:cacheVersion)
+    db = self.database
+    json = BW::JSON.generate(data)
+    values = { key: cacheKey, version: cacheVersion, json: json }
+    db.executeUpdate <<-SQL, withParameterDictionary:values
+      INSERT OR REPLACE INTO json_cache (key, version, json, updated_at) VALUES (:key, :version, :json, CURRENT_TIMESTAMP);
+    SQL
   end
 
   def onCachedFirebaseValue(firebase, path, options={}, &block)
     cacheKey = options[:cacheKey] || path
     cacheVersion = options[:cacheVersion] || 1
-    data = withJSONCache(cacheKey, version:cacheVersion)
+    data = fetchDataForKey(cacheKey, version:cacheVersion)
+    previous_json = nil
     if data
+      previous_json = BW::JSON.generate(data)
+      NSLog "Cache hit: #{path}"
       Dispatch::Queue.main.async do
         block.call data
       end
+    else
+      NSLog "Cache miss: #{path}"
     end
     firebase[path].on(:value) do |snapshot|
       data = snapshot.value
-      withJSONCache(cacheKey, version:cacheVersion) do data end
-      block.call data
+      if not previous_json or previous_json != BW::JSON.generate(data)
+        NSLog "Cache update: #{path}"
+        storeData data, key:cacheKey, version:cacheVersion
+        block.call data
+      end
+      previous_json = nil
     end
   end
 end
