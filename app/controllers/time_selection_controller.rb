@@ -47,11 +47,11 @@ class TimeSelectionController < UIViewController
 
   layout do
     self.view.stylename = :time_selector
-    createDaySelectorViews
-    createHourSelectorViews
+    createDaySelectionViews
+    createHourSelectionViews
   end
 
-  def createDaySelectorViews
+  def createDaySelectionViews
     firstDayOfDisplayedWeek = NSDate.date.dateAtStartOfDay
     dayLabelFormatter = dateFormatter('EEEE, MMMM d')
     dayLabel = subview UILabel, :date
@@ -119,12 +119,12 @@ class TimeSelectionController < UIViewController
     end
   end
 
-  def createHourSelectorViews
+  def createHourSelectionViews
     hour12Formatter = NSDateFormatter.alloc.init.setDateFormat('h')
     hoursView = subview UIView do
       Hours.each_with_index do |hour, i|
         subview UIView, :hour_blob, left: HourFirstX + i * HourSpacing do
-          subview UILabel, :hour_blob_hour, text: hour12Formatter.stringFromDate(hour) #(hour % 12).to_s
+          subview UILabel, :hour_blob_hour, text: '10' #hour12Formatter.stringFromDate(hour) #(hour % 12).to_s
           subview UILabel, :hour_blob_am_pm
           subview UILabel, :hour_blob_half_past
         end
@@ -219,12 +219,20 @@ class TimeSelectionController < UIViewController
     return if @heightMode == key
 
     if animated
-      # set these before saveViewProperties, so we animate *back* to them later
+      # set these before saveInteractiveModeViewProperties, so we animate *back* to them later
       setSummaryModeAnimationInitialState if key == :summary
       UIView.animateWithDuration AnimationDuration, animations: -> { setMode key, animated:false }
-      # These need to go faster to get out of the way of the contracting height in time:
-      # UIView.animateWithDuration AnimationDuration / 3, animations: -> { hoursIndicator.top = summaryViewHoursLabel.top }
-      UIView.animateWithDuration AnimationDuration / 3, animations: -> { dayIndicator.top = summaryViewHoursLabel.top }
+      # These need to go faster to get out of the way of the contracting height in time.
+      # The following overrides the previous animation of the same properties.
+      # The recusrive call has already saved the folowing view properties so they can be restored.
+      if key == :summary
+        UIView.animateWithDuration AnimationDuration / 3, animations: -> {
+          hoursIndicator.top = summaryViewHoursLabel.top
+          dayIndicator.top = summaryViewHoursLabel.top
+          hoursIndicator.alpha = 0
+          dayIndicator.alpha = 0
+        }
+      end
       return
     end
 
@@ -233,21 +241,10 @@ class TimeSelectionController < UIViewController
     view = self.view
     case key
     when :summary
-      saveViewProperties
-      # saveViewProperties must save all the following:
-      view.top = ShortViewTop
-      view.height = ShortViewHeight
-      view.setNeedsDisplay
-      getViewsForMode(:interactive).each do |v| v.alpha = 0 end
-      getViewsForMode(:summary).each do |v| v.alpha = 1 end
-      summaryViewHoursLabel.origin = [0, 18]
-      summaryViewHoursLabel.width = 320
-      # hoursIndicator.top = summaryViewHoursLabel.top
-      # use transform instead of bounds so that listeners don't think it's being dragged to a different time:
-      # hoursIndicator.tx = (320 - hoursIndicator.width) / 2 - hoursIndicator.x
+      saveInteractiveModeViewProperties
+      setSummaryModeViewProperties
     when :interactive
-      restoreViewProperties
-      # hoursIndicator.tx = 0
+      restoreInteractiveModeViewProperties
     end
     gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
     gradient_layer.frame = view.bounds if gradient_layer
@@ -260,6 +257,7 @@ class TimeSelectionController < UIViewController
   end
 
   def getViewsForMode(mode)
+    raise "Unknown mode #{mode}" unless [:interactive, :summary].include?(mode)
     @viewsForMode ||= {}
     @viewsForMode[mode] ||= []
   end
@@ -269,16 +267,30 @@ class TimeSelectionController < UIViewController
     summaryViewHoursLabel.frame = hoursIndicator.frame
   end
 
-  def saveViewProperties
-    saveFrameViews = [view, hoursIndicator, summaryViewHoursLabel]
-    saveAlphaViews = (getViewsForMode(:interactive) + getViewsForMode(:summary))
+    def setSummaryModeViewProperties
+    # saveInteractiveModeViewProperties must save all the following:
+    view.top = ShortViewTop
+    view.height = ShortViewHeight
+    view.setNeedsDisplay
+    getViewsForMode(:interactive).each do |v| v.alpha = 0 end
+    getViewsForMode(:summary).each do |v| v.alpha = 1 end
+    summaryViewHoursLabel.origin = [0, 18]
+    summaryViewHoursLabel.width = 320
+    # hoursIndicator.top = summaryViewHoursLabel.top
+    # use transform instead of bounds so that listeners don't think it's being dragged to a different time:
+    # hoursIndicator.tx = (320 - hoursIndicator.width) / 2 - hoursIndicator.x
+  end
+
+  def saveInteractiveModeViewProperties
+    saveFrameViews = [view, dayIndicator, hoursIndicator, summaryViewHoursLabel]
+    saveAlphaViews = getViewsForMode(:interactive) + getViewsForMode(:summary)
     @savedTimeSelectorValues ||= {
       alpha: saveAlphaViews.map { |v| [v, v.alpha] },
       frame: saveFrameViews.map { |v| [v, v.frame] }
     }
   end
 
-  def restoreViewProperties
+  def restoreInteractiveModeViewProperties
     savedProperties = @savedTimeSelectorValues
     savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
     savedProperties[:frame].each do |v, frame| v.frame = frame end

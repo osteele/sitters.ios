@@ -99,6 +99,11 @@ end
 
 Teacup::Stylesheet.new :booking do
   font = UIFont.fontWithName('Helvetica', size:18)
+  time_selector_gradient_colors = ['#6FA1EB'.to_color, '#4E7EC2'.to_color]
+
+  style :status_bar_background,
+    frame: [[0, 0], [320, 20]],
+    backgroundColor: time_selector_gradient_colors.first
 
   style :sitter,
     width: 90,
@@ -107,7 +112,8 @@ Teacup::Stylesheet.new :booking do
   style :time_selector,
     top: 20,
     width: 320,
-    height: 120;
+    height: 120,
+    gradient:  { colors: time_selector_gradient_colors };
 
   style :splash_circle,
     left: 73,
@@ -256,12 +262,6 @@ Teacup::Stylesheet.new :booking do
     text: ':30',
     textAlignment: NSTextAlignmentRight,
     textColor: '#A8C1E5'.to_color;
-
-  style :time_selector,
-    # top: 20,
-    # width: 320
-    # height: 120
-    gradient:  { colors: ['#6FA1EB'.to_color, '#4E7EC2'.to_color] }
 
   style :date,
     width: 320,
