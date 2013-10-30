@@ -24,8 +24,8 @@ Motion::Project::App.setup do |app|
   app.interface_orientations = [:portrait]
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
-  app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
+  # app.info_plist['UIStatusBarStyle'] = 'UIStatusBarStyleBlackTranslucent'
   for token_name in ['TF_APP_TOKEN']
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
   end

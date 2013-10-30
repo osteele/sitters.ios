@@ -15,24 +15,28 @@ class BookingController < UIViewController
     mySittersController.timeSelection = timeSelectionController.timeSelection
   end
 
+  # def preferredStatusBarStyle; UIStatusBarStyleBlackTranslucent; end
+
   layout do
     @mySittersController = SittersController.alloc.init.tap do |c| c.delegate = self end
     @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController).tap do |c| c.delegate = self end
     @timeSelectionController = TimeSelectionController.alloc.init.tap do |c| c.delegate = self end
 
     subview @navigationController.view
+    # subview UIView, :status_bar_background
     subview @timeSelectionController.view
+
     splash_circle = subview UIView, :splash_circle
-    dur = 0.25
+    splashAnimationDuration = 0.25
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
       animation = CABasicAnimation.animationWithKeyPath('cornerRadius')
-      animation.duration = dur
+      animation.duration = splashAnimationDuration
       animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseOut)
       splash_circle.layer.addAnimation animation, forKey:nil
       splash_circle.layer.cornerRadius = 35 / 2
-      UIView.animateWithDuration dur, delay:0, options:0,
+      UIView.animateWithDuration splashAnimationDuration, delay:0, options:0,
         animations: -> {splash_circle.frame = [[7,50],[35,35]] }, completion: -> _ {}
-      UIView.animateWithDuration dur, delay:dur, options:UIViewAnimationOptionCurveEaseInOut,
+      UIView.animateWithDuration splashAnimationDuration, delay:splashAnimationDuration, options:UIViewAnimationOptionCurveEaseInOut,
         animations: -> { splash_circle.alpha = 0 }, completion: -> _ {}
     end
   end
