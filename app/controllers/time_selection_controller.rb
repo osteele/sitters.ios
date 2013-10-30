@@ -154,9 +154,9 @@ class TimeSelectionController < UIViewController
     TouchUtils.dragOnTouch hoursIndicator, handle:dragHoursHandle, options:dragHoursOptions
     TouchUtils.dragOnTouch hoursIndicator, handle:leftDragHandle, options:dragHoursOptions.merge(resize:true)
     TouchUtils.resizeOnTouch hoursIndicator, handle:rightDragHandle, options:dragHoursOptions
-    # [dragHoursHandle, leftDragHandle, rightDragHandle].each do |handle|
-    #   TouchUtils.bounceOnTap hoursIndicator, handle:handle
-    # end
+    [dragHoursHandle, leftDragHandle, rightDragHandle].each do |handle|
+      TouchUtils.bounceOnTap hoursIndicator, handle:handle
+    end
 
     @summaryViewHoursLabel = subview UILabel, :summary_hours
     declareViewMode :summary, summaryViewHoursLabel

@@ -20,6 +20,10 @@ module TouchUtils
       when UIGestureRecognizerStateBegan
         initialOrigin = target.origin
         initialSize = target.size
+        UIView.animateWithDuration 0.1, animations: -> {
+          target.alpha = 0.8
+          target.transform = CGAffineTransformMakeScale(1.05, 1.05)
+        }
         # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
         # animator.removeAllBehaviors
 
@@ -47,9 +51,10 @@ module TouchUtils
 
         UIView.animateWithDuration 0.1,
           animations: -> {
-            # target.tx = 0
+            target.alpha = 1
             target.x = x
             target.width = initialOrigin.x + initialSize.width - x if resize
+            target.transform = CGAffineTransformMakeScale(1, 1)
           }
       end
     end
