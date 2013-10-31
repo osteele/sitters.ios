@@ -125,7 +125,7 @@ class TimeSelectionController < UIViewController
     hoursView = subview UIView do
       Hours.each_with_index do |hour, i|
         subview UIView, :hour_blob, left: HourFirstX + i * HourSpacing do
-          subview UILabel, :hour_blob_hour, text: '10' #hour12Formatter.stringFromDate(hour) #(hour % 12).to_s
+          subview UILabel, :hour_blob_hour, text: (hour % 12).to_s #hour12Formatter.stringFromDate(hour)
           subview UILabel, :hour_blob_am_pm
           subview UILabel, :hour_blob_half_past
         end
