@@ -1,6 +1,8 @@
 class SuggestedSittersController < UITableViewController
   include BW::KVO
 
+  TableTextHeaderHeight = 38
+  ViewHeaderHeight = 52
   TextColor = '#5988C4'.to_color
 
   ImageTag = 1
@@ -36,17 +38,14 @@ class SuggestedSittersController < UITableViewController
 
   def numberOfSectionsInTableView(tableView); 1; end
 
-  ViewHeaderHeight = 52
-  TableTextHeaderHeight = 38
-
   def tableView(tableView, heightForHeaderInSection:section); ViewHeaderHeight + TableTextHeaderHeight; end
 
   def tableView(tableView, viewForHeaderInSection:section)
     UIView.alloc.initWithFrame([[0, 0], [320, ViewHeaderHeight + TableTextHeaderHeight]]).tap do |view|
-      # view.backgroundColor = '#4E7EC2'.to_color # bottom of time selector
+      view.backgroundColor = '#FEFDFF'.to_color
       UILabel.alloc.initWithFrame([[0, ViewHeaderHeight], [320, TableTextHeaderHeight]]).tap do |label|
         view.addSubview label
-        label.backgroundColor = '#FEFDFF'.to_color
+        # label.backgroundColor = '#FEFDFF'.to_color
         label.textColor = TextColor
         label.textAlignment = NSTextAlignmentCenter
         @headerLabelView = label

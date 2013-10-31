@@ -1,6 +1,6 @@
 class AppDelegate
   include BW::KVO
-  BackgroundColor = '#A6A6A6'.to_color
+  BackgroundColor = UIColor.whiteColor #'#A6A6A6'.to_color
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
   SplashFadeAnimationDuration = 0.3
 
@@ -9,7 +9,7 @@ class AppDelegate
     Account.instance.initialize_login_status
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @window.backgroundColor = BackgroundColor
+    # @window.backgroundColor = BackgroundColor
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
       splashView = SplashController.alloc.init.view

@@ -11,15 +11,16 @@ class BookingController < UIViewController
 
   def viewDidLoad
     super
-    self.view.stylename = :sitters
-    mySittersController.timeSelection = timeSelectionController.timeSelection
+    view.stylename = :sitters
+    view.backgroundColor = UIColor.whiteColor
+    familySittersController.timeSelection = timeSelectionController.timeSelection
   end
 
   # def preferredStatusBarStyle; UIStatusBarStyleBlackTranslucent; end
 
   layout do
-    @mySittersController = SittersController.alloc.init.tap do |c| c.delegate = self end
-    @navigationController = UINavigationController.alloc.initWithRootViewController(mySittersController).tap do |c| c.delegate = self end
+    @familySittersController = SittersController.alloc.init.tap do |c| c.delegate = self end
+    @navigationController = UINavigationController.alloc.initWithRootViewController(familySittersController).tap do |c| c.delegate = self end
     @timeSelectionController = TimeSelectionController.alloc.init.tap do |c| c.delegate = self end
 
     subview @navigationController.view
@@ -42,11 +43,11 @@ class BookingController < UIViewController
   end
 
   def timeSelectionChanged(timeSelection)
-    mySittersController.timeSelection = timeSelection
+    familySittersController.timeSelection = timeSelection
   end
 
   def navigationController(navigationController, willShowViewController:targetController, animated:flag)
-    mode = targetController == mySittersController ? :interactive : :summary
+    mode = targetController == familySittersController ? :interactive : :summary
     timeSelectionController.setMode mode, animated:true
   end
 
@@ -94,7 +95,7 @@ class BookingController < UIViewController
 
   def navigationController; @navigationController; end
   attr_reader :timeSelectionController
-  attr_reader :mySittersController
+  attr_reader :familySittersController
 
   def sitterDetailsController
     @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
