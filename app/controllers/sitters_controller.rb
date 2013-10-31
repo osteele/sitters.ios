@@ -34,8 +34,8 @@ class SittersController < UIViewController
         subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
         caption = subview UILabel, :big_button_caption, text: '', userInteractionEnabled: false
 
-        observe(family, :suggested_sitters) do |a, b|
-          caption.text = "#{family.suggested_sitters.length} connected sitters"
+        observe(family, :recommended_sitters) do |a, b|
+          caption.text = "#{family.recommended_sitters.length} connected sitters"
         end
       end
       viewRecommended.when_tapped { delegate.presentSuggestedSitters }

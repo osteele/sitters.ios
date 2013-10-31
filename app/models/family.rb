@@ -4,7 +4,7 @@ class Family
   MaxSitterCount = 7
 
   attr_accessor :sitters
-  attr_accessor :suggested_sitters
+  attr_accessor :recommended_sitters
 
   def self.instance
     Dispatch.once { @instance ||= new }
@@ -30,14 +30,14 @@ class Family
     @sitters = sitters
     self.didChangeValueForKey :sitters
 
-    self.willChangeValueForKey :suggested_sitters
-    @suggested_sitters = nil
-    self.suggested_sitters # for effect
-    self.didChangeValueForKey :suggested_sitters
+    self.willChangeValueForKey :recommended_sitters
+    @recommended_sitters = nil
+    self.recommended_sitters # for effect
+    self.didChangeValueForKey :recommended_sitters
   end
 
-  def suggested_sitters
-    @suggested_sitters ||= Sitter.all - sitters
+  def recommended_sitters
+    @recommended_sitters ||= Sitter.all - sitters
   end
 
   def setSitterCount(count)
@@ -46,7 +46,7 @@ class Family
     @sitter_ids = nil unless delta == 0
     case
     when delta < 0 then self.sitters = self.sitters[0...count]
-    when 0 < delta then self.sitters = self.sitters + self.suggested_sitters[0...delta]
+    when 0 < delta then self.sitters = self.sitters + self.recommended_sitters[0...delta]
     end
   end
 

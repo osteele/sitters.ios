@@ -1,4 +1,4 @@
-class SuggestedSittersController < UITableViewController
+class RecommendedSittersController < UITableViewController
   include BW::KVO
 
   TableTextHeaderHeight = 38
@@ -16,7 +16,7 @@ class SuggestedSittersController < UITableViewController
     view.backgroundColor = '#F4F3F5'.to_color
     view.separatorStyle = UITableViewCellSeparatorStyleNone
     updateSitterCountText
-    observe(Family.instance, :suggested_sitters) do
+    observe(Family.instance, :recommended_sitters) do
       @sitters = nil
       view.reloadData
       updateSitterCountText
@@ -24,7 +24,7 @@ class SuggestedSittersController < UITableViewController
   end
 
   def sitters
-    @sitters ||= Family.instance.suggested_sitters
+    @sitters ||= Family.instance.recommended_sitters
   end
 
   def updateSitterCountText

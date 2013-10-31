@@ -53,8 +53,8 @@ class BookingController < UIViewController
 
   def presentSuggestedSitters
     TestFlight.passCheckpoint 'Suggested sitters'
-    suggestedSittersController.title = 'Sitters'
-    navigationController.pushViewController suggestedSittersController, animated:true
+    recommendedSittersController.title = 'Sitters'
+    navigationController.pushViewController recommendedSittersController, animated:true
   end
 
   def presentDetailsForSitter(sitter)
@@ -101,8 +101,8 @@ class BookingController < UIViewController
     @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end
   end
 
-  def suggestedSittersController
-    @suggestedSittersController ||= SuggestedSittersController.alloc.init.tap do |controller| controller.delegate = self end
+  def recommendedSittersController
+    @recommendedSittersController ||= RecommendedSittersController.alloc.init.tap do |controller| controller.delegate = self end
   end
 end
 
