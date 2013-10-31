@@ -67,6 +67,7 @@ class TimeSelectionController < UIViewController
       }
       TouchUtils.dragOnTouch dayIndicator, handle:handle, options:options
       TouchUtils.bounceOnTap dayIndicator, handle:handle
+      registerTouchHandle handle, target:dayIndicator
     end
 
     selectionMarkerLabels = []
@@ -155,6 +156,7 @@ class TimeSelectionController < UIViewController
     TouchUtils.dragOnTouch hoursIndicator, handle:leftDragHandle, options:dragHoursOptions.merge(resize:true)
     TouchUtils.resizeOnTouch hoursIndicator, handle:rightDragHandle, options:dragHoursOptions
     [dragHoursHandle, leftDragHandle, rightDragHandle].each do |handle|
+      registerTouchHandle handle, target:hoursIndicator
       TouchUtils.bounceOnTap hoursIndicator, handle:handle
     end
 
@@ -295,6 +297,43 @@ class TimeSelectionController < UIViewController
     savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
     savedProperties[:frame].each do |v, frame| v.frame = frame end
     @savedTimeSelectorValues = nil
+  end
+
+
+  #
+  # Handles
+  #
+
+  public
+
+  # Do this on touch for immediae feedback. The gesture recognizers don't fire until the gesture has started.
+  def touchesBegan(touches, withEvent:event)
+    super
+    for touch in touches
+      target = findTouchHandleTarget(touch)
+      TouchUtils.showDraggableState(target, began:true, animated:true) if target and shouldAnimateDragTargets
+    end
+  end
+
+  # This is not called (why?), so the target is instead restored in the gesture handlers
+  # def touchesEnded(touches, withEvent:event)
+
+  private
+
+  def shouldAnimateDragTargets
+    NSUserDefaults.standardUserDefaults['animateTimeIndicators']
+  end
+
+  def registerTouchHandle(handle, target:target)
+    @touchHandlesTargets ||= []
+    @touchHandlesTargets << [handle, target]
+  end
+
+  def findTouchHandleTarget(touch)
+    for handle, target in @touchHandlesTargets
+      return target if touch.view == handle
+    end
+    return nil
   end
 end
 

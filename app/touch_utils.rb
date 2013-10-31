@@ -1,8 +1,4 @@
 module TouchUtils
-  def self.animateTimeIndicators
-    NSUserDefaults.standardUserDefaults['animateTimeIndicators']
-  end
-
   # Attach a pan recognizer to `handle` that drags `target` horizontally.
   # If òptions[:resize]`, the target is simultaneously resized, such that its right edge stays at position.
   # `target` is assumed to be a subview of `target` (so that `target.origin` is modified, but `handle.origin` is not).
@@ -17,6 +13,7 @@ module TouchUtils
     animator = nil
     attachmentBehavior = nil
     dragger.userInteractionEnabled = true
+
     dragger.when_panned do |recognizer|
       pt = recognizer.translationInView(target.superview)
 
@@ -24,12 +21,6 @@ module TouchUtils
       when UIGestureRecognizerStateBegan
         initialOrigin = target.origin
         initialSize = target.size
-        if animateTimeIndicators
-          UIView.animateWithDuration 0.1, animations: -> {
-            target.alpha = 0.8
-            target.transform = CGAffineTransformMakeScale(1.05, 1.05)
-          }
-        end
         # animator ||= UIDynamicAnimator.alloc.initWithReferenceView(target.superview)
         # animator.removeAllBehaviors
 
@@ -55,12 +46,11 @@ module TouchUtils
         # snapBehavior = UISnapBehavior.alloc.initWithItem(target, snapToPoint:[x + target.center.x - target.origin.x, target.center.y])
         # animator.addBehavior(snapBehavior)
 
+        showDraggableState target, began:false, animated:true
         UIView.animateWithDuration 0.1,
           animations: -> {
-            target.alpha = 1
             target.x = x
             target.width = initialOrigin.x + initialSize.width - x if resize
-            target.transform = CGAffineTransformMakeScale(1, 1)
           }
       end
     end
@@ -85,6 +75,7 @@ module TouchUtils
         # dragger.x = target.width - dragger.width + fudge
       when UIGestureRecognizerStateEnded
         width = (target.width / factor).round * factor
+        showDraggableState target, began:false, animated:true
         UIView.animateWithDuration 0.1,
           animations: -> {
             target.width = [width, minWidth].max
@@ -108,14 +99,35 @@ module TouchUtils
         animations << [bounceTime / 2, 5 * ratio, UIViewAnimationOptionCurveEaseOut]
         animations << [bounceTime / 2, 0, UIViewAnimationOptionCurveEaseIn]
       end
+
+      showDraggableState target, began:false, animated:false
+
+      # delay = 0
+      # for duration, dx, options in animations
+      #   UIView.animateWithDuration duration, delay:delay, options:options,
+      #     animations: -> { target.tx = dx },
+      #     completion: -> _ {}
+      #   delay += duration
+      # end
+
       step = Proc.new do
         dur, dx, options = animations.shift
         UIView.animateWithDuration dur, delay:0, options:options,
           # TODO should this modify the transform instead of the origin?
-          animations: -> { target.x = initialX + dx },
+          animations: -> { target.tx = dx },
           completion: -> finished { step.call if animations.any? }
       end
       step.call
     end
+  end
+
+  def self.showDraggableState(target, began:began, animated:animated)
+    if animated
+      UIView.animateWithDuration 0.1, animations: -> { showDraggableState(target, began:began, animated:false) }
+      return
+    end
+    scale = began ? 1.05 : 1
+    target.alpha = began ? 0.8 : 1
+    target.transform = CGAffineTransformMakeScale(scale, scale)
   end
 end
