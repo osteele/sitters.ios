@@ -14,10 +14,14 @@ class Sitter
     self.willChangeValueForKey :all
     @sitters ||= []
     @sitters = json.map do |data|
-      sitter = @sitters.find { |s| s.id == data['id'] }
+      sitter = findSitterById(data['id'])
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end
     self.didChangeValueForKey :all
+  end
+
+  def self.findSitterById(sitter_id)
+    return @sitters.find { |sitter| sitter.id == sitter_id }
   end
 
   def initialize(data)

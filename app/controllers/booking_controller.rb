@@ -80,6 +80,13 @@ class BookingController < UIViewController
     @actionDelegates ||= []
     @actionDelegates << sitterActionDelegate
 
+    notification = UILocalNotification.alloc.init
+    notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(2)
+    notification.alertBody = "%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName
+    notification.applicationIconBadgeNumber = 1
+    notification.userInfo = {notificationName:'addSitter', sitter_id:sitter.id, message:notification.alertBody}
+    UIApplication.sharedApplication.scheduleLocalNotification notification
+
     UIAlertView.alloc.initWithTitle('Request Sent',
       message:msg % sitter.firstName,
       delegate:sitterActionDelegate,
@@ -116,15 +123,6 @@ class SitterActionDelegate
   end
 
   def alertView(alertView, clickedButtonAtIndex:index)
-    return unless action == :add
-    Scheduler.after 10 do
-      Family.instance.addSitter sitter
-      delegate.actionDelegateDidComplete self
-      UIAlertView.alloc.initWithTitle('Sitter Confirmed',
-        message:"%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName,
-        delegate:nil,
-        cancelButtonTitle:'OK',
-        otherButtonTitles:nil).show
-    end
+    delegate.actionDelegateDidComplete self
   end
 end

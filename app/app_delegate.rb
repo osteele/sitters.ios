@@ -5,8 +5,11 @@ class AppDelegate
   SplashFadeAnimationDuration = 0.3
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
     initializeTestFlight
     Account.instance.initialize_login_status
+    # registerForRemoteNotifications
+    registerLocalNotificationHandlers
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     # @window.backgroundColor = BackgroundColor
@@ -42,6 +45,47 @@ class AppDelegate
 
   def firebase
     @fb ||= Firebase.new(FirebaseNS)
+  end
+
+
+  #
+  # Notifications
+  #
+
+  def registerForRemoteNotifications
+    application = UIApplication.sharedApplication
+    application.registerForRemoteNotificationTypes UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert
+  end
+
+  def registerLocalNotificationHandlers
+    App.notification_center.observe 'addSitter' do |notification|
+      userInfo = notification.userInfo
+      sitter = Sitter.findSitterById(userInfo['sitter_id'])
+      if sitter
+        Family.instance.addSitter sitter
+        App.alert 'Sitter Confirmed', message:userInfo['message']
+      end
+    end
+  end
+
+  def application(application, didRegisterForRemoteNotificationsWithDeviceToken:token)
+    NSLog "didRegisterForRemoteNotificationsWithDeviceToken #{token.inspect}"
+  end
+
+  def application(application, didFailToRegisterForRemoteNotificationsWithError:error)
+    NSLog "didFailToRegisterForRemoteNotificationsWithError #{error.localizedDescription}"
+  end
+
+  def application(application, didReceiveRemoteNotification:notification)
+    puts 'didReceiveRemoteNotification'
+  end
+
+  def application(application, didReceiveLocalNotification:notification)
+    application = UIApplication.sharedApplication
+    userInfo = notification.userInfo
+    notificationName = notification.userInfo['notificationName']
+    NSNotificationCenter.defaultCenter.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
+    application.applicationIconBadgeNumber = [application.applicationIconBadgeNumber - notification.applicationIconBadgeNumber, 0].max
   end
 
   private
