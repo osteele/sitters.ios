@@ -321,7 +321,7 @@ class TimeSelectionController < UIViewController
   private
 
   def shouldAnimateDragTargets
-    NSUserDefaults.standardUserDefaults['animateTimeIndicators']
+    NSUserDefaults.standardUserDefaults['animateTimeIndicatorsDefaultTrue']
   end
 
   def registerTouchHandle(handle, target:target)
