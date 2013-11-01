@@ -122,7 +122,7 @@ class DataCache
     @db ||= begin
       cachesDirectoryURL = NSFileManager.defaultManager.URLsForDirectory(NSCachesDirectory, inDomains:NSUserDomainMask).first
       cacheDbURL = cachesDirectoryURL.URLByAppendingPathComponent('cache.db')
-      puts "Data cache = #{cacheDbURL.path}"
+      puts "cache = #{cacheDbURL.path}"
       db = FMDatabase.databaseWithPath(cacheDbURL.path)
       db.open
       db.executeUpdate <<-SQL

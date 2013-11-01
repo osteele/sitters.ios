@@ -70,32 +70,37 @@ class BookingController < UIViewController
   end
 
   def action(action, sitter:sitter)
-    msg = case action
+    shouldEmulateServer = NSUserDefaults.standardUserDefaults['emulateServer'] || Account.instance.user.nil?
+
+    if shouldEmulateServer
+      case action
+      when :add
+        notification = UILocalNotification.alloc.init
+        notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(10)
+        notification.alertBody = "%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName
+        notification.applicationIconBadgeNumber = 1
+        notification.userInfo = {notificationName:'addSitter', sitter_id:sitter.id, message:notification.alertBody}
+        UIApplication.sharedApplication.scheduleLocalNotification notification
+      end
+    else
+      case action
+      when :add
+        sendMessageToServer 'addSitter', sitterId: sitter.id, familyId: Family.instance.id
+      end
+    end
+
+    messageText = case action
       when :add then "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
       when :reserve then "%s will babysit for you at the specified time."
       when :request then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
     end
-
-    sitterActionDelegate = SitterActionDelegate.new(sitter:sitter, action:action, delegate:self)
-    @actionDelegates ||= []
-    @actionDelegates << sitterActionDelegate
-
-    notification = UILocalNotification.alloc.init
-    notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(2)
-    notification.alertBody = "%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName
-    notification.applicationIconBadgeNumber = 1
-    notification.userInfo = {notificationName:'addSitter', sitter_id:sitter.id, message:notification.alertBody}
-    UIApplication.sharedApplication.scheduleLocalNotification notification
-
-    UIAlertView.alloc.initWithTitle('Request Sent',
-      message:msg % sitter.firstName,
-      delegate:sitterActionDelegate,
-      cancelButtonTitle:'OK',
-      otherButtonTitles:nil).show
+    App.alert 'Request Sent', message:messageText % sitter.firstName
   end
 
-  def actionDelegateDidComplete(sitterActionDelegate)
-    @actionDelegates -= [sitterActionDelegate]
+  def sendMessageToServer(requestType, parameters)
+    firebase = UIApplication.sharedApplication.delegate.firebase
+    message = ({requestType:requestType, userId:Account.instance.accountKey, parameters:parameters})
+    firebase['request'] << message
   end
 
   private
@@ -110,19 +115,5 @@ class BookingController < UIViewController
 
   def recommendedSittersController
     @recommendedSittersController ||= RecommendedSittersController.alloc.init.tap do |controller| controller.delegate = self end
-  end
-end
-
-class SitterActionDelegate
-  attr_reader :sitter, :action, :delegate
-
-  def initialize(options)
-    @sitter = options[:sitter]
-    @action = options[:action]
-    @delegate = options[:delegate]
-  end
-
-  def alertView(alertView, clickedButtonAtIndex:index)
-    delegate.actionDelegateDidComplete self
   end
 end
