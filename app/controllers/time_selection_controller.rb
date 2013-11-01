@@ -56,7 +56,7 @@ class TimeSelectionController < UIViewController
     dayLabelFormatter = dateFormatter('EEEE, MMMM d')
     dayLabel = subview UILabel, :date
 
-    weekdayDates = (0...7).map do |day| firstDayOfDisplayedWeek.dateByAddingDays(day) end
+    weekdayDates = (0...7).map { |day| firstDayOfDisplayedWeek.dateByAddingDays(day) }
     @dayIndicator = subview UIView, :day_indicator
     declareViewMode :interactive, dayIndicator
     dayIndicatorHandle = subview(UIView, :day_indicator_handle).tap do |handle|
@@ -74,7 +74,8 @@ class TimeSelectionController < UIViewController
     weekdayFormatter = NSDateFormatter.alloc.init.setDateFormat('EEEEE')
     weekdayDates.each_with_index do |date, i|
       x = DayFirstX + i * DaySpacing
-      name = weekdayFormatter.stringFromDate(date)
+      # Jump to the *middle* of the day to work around `dateByAddingDays` bug around DST
+      name = weekdayFormatter.stringFromDate(date.dateByAddingHours(12))
       # Create a separate view for the selection marker label so that we can animate
       # the color transition. Animation animates opacity but not color.
       # A custom view could animate its text color, but the current system leaves
@@ -365,6 +366,7 @@ class TimeSelection
   private
 
   def hourToTime(hour)
+    # FIXME daylight savings
     date.dateByAddingHours(hour.floor).dateByAddingMinutes((hour * 60).floor % 60)
   end
 end
