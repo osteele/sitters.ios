@@ -47,20 +47,20 @@ class BookingController < UIViewController
     TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
     sitterDetailsController.title = sitter.firstName
     sitterDetailsController.sitter = sitter
-    sitterDetailsController.action = case
-      when Family.instance.canAddSitter(sitter) then :add
-      when sitter.availableAt(timeSelectionController.timeSelection) then :reserve
-      else :request
+    sitterDetailsController.sitter_action = case
+      when Family.instance.canAddSitter(sitter) then :add_sitter
+      when sitter.availableAt(timeSelectionController.timeSelection) then :reserve_sitter
+      else :request_sitter
       end
     navigationController.pushViewController sitterDetailsController, animated:true
   end
 
-  def action(action, sitter:sitter)
+  def performSitterAction(action, sitter:sitter)
     shouldEmulateServer = NSUserDefaults.standardUserDefaults['emulateServer'] || Account.instance.user.nil?
 
     if shouldEmulateServer
       case action
-      when :add
+      when :add_sitter
         notification = UILocalNotification.alloc.init
         notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(10)
         notification.alertBody = "%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName
@@ -70,15 +70,15 @@ class BookingController < UIViewController
       end
     else
       case action
-      when :add
+      when :add_sitter
         sendMessageToServer 'addSitter', sitterId: sitter.id, familyId: Family.instance.id
       end
     end
 
     messageText = case action
-      when :add then "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
-      when :reserve then "%s will babysit for you at the specified time."
-      when :request then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
+      when :add_sitter then "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
+      when :reserve_sitter then "%s will babysit for you at the specified time."
+      when :request_sitter then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
     end
     App.alert 'Request Sent', message:messageText % sitter.firstName
   end
