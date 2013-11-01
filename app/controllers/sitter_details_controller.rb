@@ -12,7 +12,7 @@ class SitterDetailsController < UIViewController
     view.stylename = :sitter_details
 
     url = NSBundle.mainBundle.URLForResource('sitter_details', withExtension:'html')
-    @webview = subview UIWebView, :webview, delegate: self
+    @webview = subview UIWebView, :web_view, delegate: self
 
     @action_button = subview UILabel, :action_button
     @action_button.when_tapped do

@@ -3,10 +3,7 @@ DragHandleMargin = 7
 Teacup::Stylesheet.new :sitter_details do
   lightFont = UIFont.fontWithName('Helvetica-Light', size:18)
 
-  # style :sitter_details,
-  #   backgroundColor: '#F9F9F9'.to_color;
-
-  style :webview,
+  style :web_view,
     backgroundColor: '#F9F9F9'.to_color,
     constraints: [
       constrain(:left).equals(:superview, :left),
@@ -114,14 +111,6 @@ Teacup::Stylesheet.new :booking do
     width: 320,
     height: 120,
     gradient:  { colors: time_selector_gradient_colors };
-
-  style :splash_circle,
-    left: 73,
-    top: 139,
-    width: 174,
-    height: 181,
-    backgroundColor: UIColor.whiteColor,
-    layer: { cornerRadius: 90 };
 
   style UILabel,
     textColor: UIColor.whiteColor,

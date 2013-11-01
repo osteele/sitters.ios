@@ -26,20 +26,6 @@ class BookingController < UIViewController
     subview @navigationController.view
     # subview UIView, :status_bar_background
     subview @timeSelectionController.view
-
-    splash_circle = subview UIView, :splash_circle
-    splashAnimationDuration = 0.25
-    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
-      animation = CABasicAnimation.animationWithKeyPath('cornerRadius')
-      animation.duration = splashAnimationDuration
-      animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseOut)
-      splash_circle.layer.addAnimation animation, forKey:nil
-      splash_circle.layer.cornerRadius = 35 / 2
-      UIView.animateWithDuration splashAnimationDuration, delay:0, options:0,
-        animations: -> {splash_circle.frame = [[7,50],[35,35]] }, completion: -> _ {}
-      UIView.animateWithDuration splashAnimationDuration, delay:splashAnimationDuration, options:UIViewAnimationOptionCurveEaseInOut,
-        animations: -> { splash_circle.alpha = 0 }, completion: -> _ {}
-    end
   end
 
   def timeSelectionChanged(timeSelection)
