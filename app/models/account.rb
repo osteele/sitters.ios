@@ -123,9 +123,8 @@ class Account
     @userDataFB = nil
     @familyDataFB.off if @familyDataFB
     @familyDataFB = nil
-    @messageFB.off if @messageFB
-    @messageFB = nil
     @familyData = nil
+    Server.instance.unsubscribeFromMessages
     return unless user
 
     accountsFB = firebase['account']
@@ -134,12 +133,12 @@ class Account
     userProvider = providerNames[user.provider]
     @userFB = accountsFB[accountKey]
     # @userFB.on(:value) do |snapshot|
-    DataCache.instance.onCachedFirebaseValue(firebase, "account/#{accountKey}") do |data|
+    Storage.instance.onCachedFirebaseValue("account/#{accountKey}") do |data|
       if data
         family_id = data['family_id']
         @familyDataFB = familiesFB[family_id]
         # @familyDataFB.on(:value) do |snapshot|
-        DataCache.instance.onCachedFirebaseValue(firebase, "family/#{family_id}") do |data|
+        Storage.instance.onCachedFirebaseValue("family/#{family_id}") do |data|
           @familyData = data
           family.id = family_id
           family.updateFrom data if data
@@ -150,13 +149,7 @@ class Account
       end
     end
 
-    @messageFB = firebase['message'][accountKey]
-    @messageFB.on(:child_added) do |snapshot|
-      message = snapshot.value
-      messageText = message['messageText'].gsub('{{sitter.firstName}}') { Sitter.findSitterById(message['parameters']['sitterId']).firstName }
-      App.alert message['messageTitle'], message:messageText
-      @messageFB[snapshot.name].clear!
-    end
+    Server.instance.subscribeToMessagesFor accountKey
   end
 
   def familySittersDidChange

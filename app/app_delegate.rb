@@ -10,6 +10,7 @@ class AppDelegate
     Account.instance.initialize_login_status
     # registerForRemoteNotifications
     registerLocalNotificationHandlers
+    application.applicationIconBadgeNumber = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     # @window.backgroundColor = BackgroundColor
@@ -22,7 +23,7 @@ class AppDelegate
       end
     end
 
-    DataCache.instance.onCachedFirebaseValue(firebase, 'demo/sitters') do |data|
+    Storage.instance.onCachedFirebaseValue('demo/sitters') do |data|
       Sitter.updateFrom data
       NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
     end
@@ -60,7 +61,8 @@ class AppDelegate
   def registerLocalNotificationHandlers
     App.notification_center.observe 'addSitter' do |notification|
       userInfo = notification.userInfo
-      sitter = Sitter.findSitterById(userInfo['sitter_id'])
+      p userInfo
+      sitter = Sitter.findSitterById(userInfo['sitterId'])
       if sitter
         Family.instance.addSitter sitter
         App.alert 'Sitter Confirmed', message:userInfo['message']
@@ -84,6 +86,7 @@ class AppDelegate
     application = UIApplication.sharedApplication
     userInfo = notification.userInfo
     notificationName = notification.userInfo['notificationName']
+    NSLog "didReceiveLocalNotification #{notificationName}"
     NSNotificationCenter.defaultCenter.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
     application.applicationIconBadgeNumber = [application.applicationIconBadgeNumber - notification.applicationIconBadgeNumber, 0].max
   end

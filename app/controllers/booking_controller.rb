@@ -56,37 +56,15 @@ class BookingController < UIViewController
   end
 
   def performSitterAction(action, sitter:sitter)
-    shouldEmulateServer = NSUserDefaults.standardUserDefaults['emulateServer'] || Account.instance.user.nil?
+    parameters = {sitterId: sitter.id, familyId: Family.instance.id}
+    Server.instance.sendRequest action, withParameters:parameters
 
-    if shouldEmulateServer
-      case action
-      when :add_sitter
-        notification = UILocalNotification.alloc.init
-        notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(10)
-        notification.alertBody = "%s has accepted your request. We’ve added her to your Seven Sitters." % sitter.firstName
-        notification.applicationIconBadgeNumber = 1
-        notification.userInfo = {notificationName:'addSitter', sitter_id:sitter.id, message:notification.alertBody}
-        UIApplication.sharedApplication.scheduleLocalNotification notification
-      end
-    else
-      case action
-      when :add_sitter
-        sendMessageToServer 'addSitter', sitterId: sitter.id, familyId: Family.instance.id
-      end
-    end
-
-    messageText = case action
-      when :add_sitter then "We’ve just sent a request to add %s to your Seven Sitters. We’ll let you know when she confirms."
-      when :reserve_sitter then "%s will babysit for you at the specified time."
-      when :request_sitter then "We’ve just sent a request to %s. We’ll let you know whether she’s available."
-    end
-    App.alert 'Request Sent', message:messageText % sitter.firstName
-  end
-
-  def sendMessageToServer(requestType, parameters)
-    firebase = UIApplication.sharedApplication.delegate.firebase
-    message = ({requestType:requestType, userId:Account.instance.accountKey, parameters:parameters})
-    firebase['request'] << message
+    messageTemplate = {
+      add_sitter: "We’ve just sent a request to add {{sitter.firstName}} to your Seven Sitters. We’ll let you know when she confirms.",
+      reserve_sitter: "We’ve reserved {{sitter.firstName}} to babysit for you at the specified time. We’ll let you know when she confirms.",
+      request_sitter: "We’ve just sent a request to {{sitter.firstName}}. We’ll let you know whether she’s available.",
+    }[action]
+    App.alert 'Request Sent', message:MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters) if messageTemplate
   end
 
   private
