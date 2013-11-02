@@ -10,12 +10,14 @@ Dotenv.load
 BUILD_DATE = DateTime.now
 
 require './version'
-require_all 'config'
 require_all 'tasks'
+require_all 'config'
 
 FB_APP_ID = ENV.require('FB_APP_ID')
 
 Motion::Project::App.setup do |app|
+  set_provisioning_profile app
+
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
   app.version = BUILD_VERSION
@@ -26,7 +28,7 @@ Motion::Project::App.setup do |app|
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
   # app.info_plist['UIStatusBarStyle'] = 'UIStatusBarStyleBlackTranslucent'
-  for token_name in ['TF_APP_TOKEN']
+  for token_name in ['TESTFLIGHT_APP_TOKEN']
     app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
   end
 
@@ -43,7 +45,7 @@ Motion::Project::App.setup do |app|
   end
   app.weak_frameworks += %w(AdSupport Social)
 
-  set_provisioning_profile app
+  # set_provisioning_profile app
 
   # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
   app.info_plist['FacebookAppID'] = FB_APP_ID

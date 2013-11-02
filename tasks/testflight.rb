@@ -3,8 +3,9 @@ require 'json'
 require 'launchy'
 require 'rest_client'
 
-TF_ENDPOINT = 'http://testflightapp.com/api/builds.json'
+TESTFLIGHT_API_ENDPOINT = 'http://testflightapp.com/api/builds.json'
 
+desc "Upload the application to TestFlight"
 task :testflight => 'testflight:upload'
 
 namespace :testflight do
@@ -13,8 +14,8 @@ namespace :testflight do
     die "#{release_note_path} must exist" unless File.exists?(release_note_path)
     release_notes = File.read(release_note_path)
     payload = {
-      :api_token  => ENV.require('TF_API_TOKEN'),
-      :team_token => ENV.require('TF_TEAM_TOKEN'),
+      :api_token  => ENV.require('TESTFLIGHT_API_TOKEN'),
+      :team_token => ENV.require('TESTFLIGHT_TEAM_TOKEN'),
       :file       => open(App.config.archive, 'rb'),
       :notes      => release_notes,
       # dsym:
@@ -22,7 +23,7 @@ namespace :testflight do
       :notify             => false,
     }
 
-    response = RestClient.post(TF_ENDPOINT, payload, :accept => :json) rescue $!.response
+    response = RestClient.post(TESTFLIGHT_API_ENDPOINT, payload, :accept => :json) rescue $!.response
     die "Upload failed: #{response}" unless [200, 201].include?(response.code)
     Launchy.open JSON.parse(response.body)['config_url']
   end
