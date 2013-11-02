@@ -11,13 +11,6 @@ Install these:
 - `bundle install`
 - `rake pod:install`
 
-Download the TestFlight SDK into `./vendor`. It should be called `./vendor/TestFlight`:
-
-    $ grep -q '## 2.0.2' vendor/TestFlight/release_notes.md && echo 'TestFlight found'
-    TestFlight found
-
-Download the FirebaseSimpleLogin SDK into `./vendor`.
-
 Copy `~/.env.template` to `~/.env` and edit in the token values.
 
 
