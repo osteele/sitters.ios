@@ -1,5 +1,8 @@
-## master
+## 0.2.8 (2013-11-02)
 * Larger tap targets for day and hours indicators.
+* Fix daylight savings bug.
+* Drag translucency applies only to hours. Removed Settings switch.
+* Under the hood improvements to support server communications.
 
 ## 0.2.5 (2013-10-28)
 * Sign into Facebook to save your sitter list. Sitters will sync across all signed-in devices.
