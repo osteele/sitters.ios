@@ -67,7 +67,7 @@ class TimeSelectionController < UIViewController
       }
       TouchUtils.dragOnTouch dayIndicator, handle:handle, options:options
       TouchUtils.bounceOnTap dayIndicator, handle:handle
-      registerTouchHandle handle, target:dayIndicator
+      # registerTouchEffectHandle handle, target:dayIndicator
     end
 
     selectionMarkerLabels = []
@@ -94,9 +94,8 @@ class TimeSelectionController < UIViewController
 
     # Move the day indicator in front of the background day labels; then move the foreground day labels in front of it.
     # This is simpler than creating them in the right order.
-    dayIndicator.superview.bringSubviewToFront dayIndicator
-    selectionMarkerLabels.each do |label| label.superview.bringSubviewToFront label end
-    dayIndicatorHandle.superview.bringSubviewToFront dayIndicatorHandle
+    zOrder = [dayIndicator] + selectionMarkerLabels + [dayIndicatorHandle]
+    zOrder.each do |label| label.superview.bringSubviewToFront label end
 
     observe(dayIndicator, :frame) do
       selectionMarkerLabels.each do |label|
@@ -157,7 +156,7 @@ class TimeSelectionController < UIViewController
     TouchUtils.dragOnTouch hoursIndicator, handle:leftDragHandle, options:dragHoursOptions.merge(resize:true)
     TouchUtils.resizeOnTouch hoursIndicator, handle:rightDragHandle, options:dragHoursOptions
     [dragHoursHandle, leftDragHandle, rightDragHandle].each do |handle|
-      registerTouchHandle handle, target:hoursIndicator
+      registerTouchEffectHandle handle, target:hoursIndicator
       TouchUtils.bounceOnTap hoursIndicator, handle:handle
     end
 
@@ -311,8 +310,8 @@ class TimeSelectionController < UIViewController
   def touchesBegan(touches, withEvent:event)
     super
     for touch in touches
-      target = findTouchHandleTarget(touch)
-      TouchUtils.showDraggableState(target, began:true, animated:true) if target and shouldAnimateDragTargets
+      target = findTouchEffectHandleTarget(touch)
+      TouchUtils.showDraggableState(target, began:true, animated:true) if target
     end
   end
 
@@ -321,16 +320,12 @@ class TimeSelectionController < UIViewController
 
   private
 
-  def shouldAnimateDragTargets
-    NSUserDefaults.standardUserDefaults['animateTimeIndicatorsDefaultTrue']
-  end
-
-  def registerTouchHandle(handle, target:target)
+  def registerTouchEffectHandle(handle, target:target)
     @touchHandlesTargets ||= []
     @touchHandlesTargets << [handle, target]
   end
 
-  def findTouchHandleTarget(touch)
+  def findTouchEffectHandleTarget(touch)
     for handle, target in @touchHandlesTargets
       return target if touch.view == handle
     end
