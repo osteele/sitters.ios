@@ -14,9 +14,17 @@ class Server
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
       requestString = requestKey.gsub(/_(.)/) {$1.upcase }
-      request = ({requestType:requestString, userId:Account.instance.accountKey, parameters:parameters})
+      request = {requestType:requestString, accountKey:Account.instance.accountKey, parameters:parameters}
       requestsFB << request
     end
+  end
+
+  def setSitterCount(count)
+    sendRequest :set_sitter_count, withParameters: {count:count}
+  end
+
+  def registerUser(user)
+    sendRequest :register_user, withParameters: {displayName:user.displayName, email:user.email}
   end
 
   def subscribeToMessagesFor(accountKey)
@@ -60,6 +68,8 @@ class EmulatedServer
       sendMessageToClient("{{sitter.firstName}} has accepted your request. We’ve added her to your Seven Sitters.",
         withDelay:10,
         withParameters:{notificationName:'addSitter', sitterId:parameters['sitterId']})
+    when :set_sitter_count
+      Family.instance.setSitterCount parameters['count']
     end
   end
 
@@ -81,7 +91,7 @@ end
 module MessageTemplate
   def self.messageTemplateToString(template, withParameters:parameters)
     # keyword keys into strings
-    parameters = BW::JSON.parse(BW::JSON.generate(parameters))
+    parameters = BW::JSON.parse(BW::JSON.generate(parameters)) if parameters
     return template.gsub('{{sitter.firstName}}') { Sitter.findSitterById(parameters['sitterId']).firstName }
   end
 end

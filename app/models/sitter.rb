@@ -16,12 +16,12 @@ class Sitter
     @sitters = json.map do |data|
       sitter = findSitterById(data['id'])
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
-    end
+    end.reject(&:nil?)
     self.didChangeValueForKey :all
   end
 
   def self.findSitterById(sitter_id)
-    return @sitters.find { |sitter| sitter.id == sitter_id }
+    return @sitters.find { |sitter| sitter.id.to_s == sitter_id.to_s }
   end
 
   def initialize(data)

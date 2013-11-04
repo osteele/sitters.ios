@@ -119,42 +119,37 @@ class Account
   # TODO move some of this into storage manager
   # TODO cache
   def updateUserDataSubscription
-    @userDataFB.off if @userDataFB
-    @userDataFB = nil
-    @familyDataFB.off if @familyDataFB
-    @familyDataFB = nil
+    @currentAccountFB.off if @currentAccountFB
+    @currentAccountFB = nil
+    @currentFamilyFB.off if @currentFamilyFB
+    @currentFamilyFB = nil
     @familyData = nil
     Server.instance.unsubscribeFromMessages
     return unless user
 
-    accountsFB = firebase['account']
-    familiesFB = firebase['family']
-    providerNames = [nil, 'password', 'facebook', 'twitter']
-    userProvider = providerNames[user.provider]
-    @userFB = accountsFB[accountKey]
-    # @userFB.on(:value) do |snapshot|
-    Storage.instance.onCachedFirebaseValue("account/#{accountKey}") do |data|
-      if data
-        family_id = data['family_id']
-        @familyDataFB = familiesFB[family_id]
-        # @familyDataFB.on(:value) do |snapshot|
-        Storage.instance.onCachedFirebaseValue("family/#{family_id}") do |data|
-          @familyData = data
+    Server.instance.registerUser user
+    Server.instance.subscribeToMessagesFor accountKey
+
+    accountPath = "account/#{accountKey}"
+    @currentAccountFB = firebase[accountPath]
+    Storage.instance.onCachedFirebaseValue(accountPath) do |accountData|
+      if accountData
+        family_id = accountData['family_id']
+        familyPath = "family/#{family_id}"
+        @currentFamilyFB = firebase[familyPath]
+        Storage.instance.onCachedFirebaseValue(familyPath) do |familyData|
+          @familyData = familyData
           family.id = family_id
-          family.updateFrom data if data
+          family.updateFrom familyData if familyData
         end
-      else
-        familyFB = familiesFB << {parents: {userProvider => user.userId}, sitter_ids: family.sitters.map(&:id)}
-        accountsFB[accountKey] = {displayName: user.displayName, email: user.thirdPartyUserData['email'], family_id: familyFB.name}
       end
     end
-
-    Server.instance.subscribeToMessagesFor accountKey
   end
 
   def familySittersDidChange
     sitter_ids = family.sitters.map(&:id)
-    return unless @familyData
-    @familyDataFB['sitter_ids'] = sitter_ids unless @familyData['sitter_ids'] == sitter_ids
+    if @currentFamilyDataFB and @currentFamilyDataFB['sitter_ids'] != sitter_ids
+      @currentFamilyDataFB['sitter_ids'] = sitter_ids
+    end
   end
 end

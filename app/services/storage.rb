@@ -53,6 +53,7 @@ class Storage
 
   def storeData(data, key:cacheKey, version:cacheVersion)
     db = self.database
+    throw "storeData: data is nil" if data.nil?
     json = BW::JSON.generate(data)
     values = { key: cacheKey, version: cacheVersion, json: json }
     db.executeUpdate <<-SQL, withParameterDictionary:values
@@ -76,7 +77,7 @@ class Storage
     end
     firebase[path].on(:value) do |snapshot|
       data = snapshot.value
-      if not previous_json or previous_json != BW::JSON.generate(data)
+      if data and (not previous_json or previous_json != BW::JSON.generate(data))
         NSLog "Cache update: #{path}"
         storeData data, key:cacheKey, version:cacheVersion
         block.call data

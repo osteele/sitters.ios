@@ -12,7 +12,7 @@ class SettingsController < Formotion::FormController
 
   def viewDidDisappear(view)
     data = self.form.render
-    Family.instance.setSitterCount(data[:sitter_count].to_i)
+    Server.instance.setSitterCount(data[:sitter_count].to_i)
   end
 
   def update_form

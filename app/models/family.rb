@@ -66,10 +66,10 @@ class Family
   private
 
   def resetSitterList
-    if @sitter_ids
-      self.sitters = @sitter_ids.map { |id| Sitter.all.find { |s| s.id == id } }
-    else
-      self.sitters = Sitter.all[0...InitialDemoSitterCount]
-    end
+    self.sitters = if @sitter_ids
+        @sitter_ids.map { |id| Sitter.findSitterById id }.reject(&:nil?)
+      else
+        self.sitters = Sitter.all[0...InitialDemoSitterCount]
+      end
   end
 end
