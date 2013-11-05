@@ -75,7 +75,9 @@ class RecommendedSittersController < UITableViewController
       cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
       cell.backgroundColor = UIColor.clearColor
       layout cell.contentView do
-        subview UIImageView, tag: ImageTag, width: 47, height: 47, left: 10, top: 5
+        image = subview UIImageView, tag: ImageTag, width: 47, height: 47, left: 10, top: 5
+        image.layer.cornerRadius = image.width / 2
+        image.layer.masksToBounds = true
         subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: -3
         subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 14, font: font
       end

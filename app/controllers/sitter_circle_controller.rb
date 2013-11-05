@@ -61,6 +61,7 @@ class SitterCircleController
     return if @sitter == sitter
     @sitter = sitter
     imageLayer.contents = sitterImage
+    layoutSublayersOfLayer view.layer
     view.setNeedsDisplay
     view.layer.setNeedsDisplay
   end
@@ -69,16 +70,20 @@ class SitterCircleController
     return if @available == available
     @available = available
     updateLayerContents
+    layoutSublayersOfLayer view.layer
     view.setNeedsDisplay
   end
 
   def layoutSublayersOfLayer(layer)
+    return unless imageLayer
     center = CGPointMake(view.width / 2, view.height / 2)
 
-    imageLayer.bounds = view.bounds
+    imageMargin = 5
+    imageMargin = 10 if sitter.nil?
+    imageLayer.bounds = [[view.left + imageMargin, view.top + imageMargin], [view.width - 2 * imageMargin, view.height - 2 * imageMargin]]
     imageLayer.position = center
-    imageLayer.cornerRadius = view.width / 2
-    # imageLayer.masksToBounds = true
+    imageLayer.cornerRadius = imageLayer.bounds.size.width / 2
+    imageLayer.masksToBounds = true
 
     ringLayer.bounds = view.bounds
     ringLayer.position = center
@@ -90,12 +95,14 @@ class SitterCircleController
     return unless @loaded
     imageIngress = 0.09
     imageIngress = 0.15 if not sitter
-    imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
-    imageLayer.backgroundColor = sitter ? UIColor.clearColor : '#A5A5A5'.to_color.CGColor
+    # imageLayer.contentsRect = [[-imageIngress, -imageIngress], [1 + 2 * imageIngress, 1 + 2 * imageIngress]]
+    imageLayer.backgroundColor = (sitter ? UIColor.clearColor : '#A5A5A5'.to_color).CGColor
 
     ringLayer.contents = createRingLayerImage
-    ringLayer.shadowOpacity = sitter ? 0.5 : 0
-    ringLayer.shadowRadius = sitter ? 3 * KeynoteShadowRadiusRatio : 0
+    # ringLayer.shadowOpacity = sitter ? 0.5 : 0
+    # ringLayer.shadowRadius = sitter ? 3 * KeynoteShadowRadiusRatio : 0
+    ringLayer.shadowOpacity = 0.5
+    ringLayer.shadowRadius = 3 * KeynoteShadowRadiusRatio
 
     numberLabelLayer.contents = createNumberLayerImage
   end
@@ -174,35 +181,13 @@ class SitterCircleController
   end
 
   def self.placeholderImage
-    @placeholderImage ||= begin
-      placeholder = UIImage.imageNamed('images/sitter-placeholder')
-      CGImageCreateWithMask(placeholder.CGImage, self.sitterCircleMaskImage)
-    end
+    @placeholderImage ||= UIImage.imageNamed('images/sitter-placeholder').CGImage
   end
 
   public
 
   def self.sitterImage(sitter)
     return self.placeholderImage unless sitter and sitter.image
-    CGImageCreateWithMask(sitter.image.CGImage, self.sitterCircleMaskImage)
-  end
-
-  private
-
-  def self.sitterCircleMaskImage
-    width = 160
-
-    @sitterCircleMaskImages ||= begin
-      graySpace = CGColorSpaceCreateDeviceGray()
-      context = CGBitmapContextCreate(nil, width, width, 8, 0, graySpace, KCGImageAlphaNone)
-
-      radius = cx = cy = width / 2
-      radius -= 4
-      CGContextAddArc context, cx, cy, radius, 0, 2 * Math::PI, 0
-      CGContextSetFillColorWithColor context, UIColor.whiteColor.CGColor
-      CGContextFillPath context
-
-      cgMask = CGBitmapContextCreateImage(context)
-    end
+    return sitter.image.CGImage
   end
 end
