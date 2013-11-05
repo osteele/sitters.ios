@@ -15,6 +15,7 @@ class UpdatesController < UITableViewController
 
   def viewDidLoad
     super
+    view.backgroundColor = '#f9f9f9'.to_color
     view.separatorStyle = UITableViewCellSeparatorStyleNone
     @items ||= Update.all
   end
@@ -25,30 +26,49 @@ class UpdatesController < UITableViewController
     self.tabBarItem.badgeValue = nil
   end
 
-  def tableView(tableView, heightForHeaderInSection:section); 52; end
   def numberOfSectionsInTableView(tableView); 1; end
+
+  def tableView(tableView, heightForHeaderInSection:section); 62; end
+
+  def tableView(tableView, viewForHeaderInSection:section)
+    UIView.alloc.initWithFrame([[-1, -1], [320 + 2, 62]]).tap do |view|
+      view.layer.borderWidth = 1
+      view.layer.borderColor = '#bbbabc'.to_color.CGColor
+      UILabel.alloc.initWithFrame([[0, 30], [320, 20]]).tap do |label|
+        view.addSubview label
+        label.text = 'Updates'
+        label.textAlignment = NSTextAlignmentCenter
+      end
+    end
+  end
 
   def tableView(tableView, numberOfRowsInSection:section)
     @items.length
   end
 
+  def tableView(tableView, heightForRowAtIndexPath:indexPath); 51; end
+
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
 
-    fontName = 'Helvetica'
-    fontSize = 14
-    plainFont = UIFont.fontWithName(fontName, size:fontSize)
-    boldFont = UIFont.fontWithName("#{fontName}-Bold", size:fontSize)
+    plainFont = UIFont.fontWithName('Helvetica Neue', size:14)
+    boldFont = plainFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
 
     unless cell
-      cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
+    cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
+    cell.backgroundColor = '#f4f2f4'.to_color
       layout cell.contentView do
-        subview UIImageView, tag: ImageTag, width: 44, height: 44, left: 10, top: 0
-        subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: -3, textColor: '#5988C4'.to_color
-        subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 14, font: plainFont
-        subview UILabel, tag: TimestampTag, width: 200, height: 40, left: 110, top: -3,
-          font: plainFont, textAlignment: NSTextAlignmentRight
+        imageWidth = 44
+        image = subview UIImageView, tag: ImageTag, width: imageWidth, height: imageWidth, left: 10, top: 7
+        image.layer.cornerRadius = imageWidth / 2
+        image.layer.masksToBounds = true
+        subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: 2, textColor: '#5988C4'.to_color
+        subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 20,
+          font: plainFont.fontWithSize(12)
+        subview UILabel, tag: TimestampTag, width: 200, height: 40, left: 110, top: 3,
+          font: plainFont.fontWithSize(11),
+          textAlignment: NSTextAlignmentRight
       end
     end
 
@@ -56,8 +76,7 @@ class UpdatesController < UITableViewController
 
     cell.viewWithTag(ImageTag).image = update.image
     cell.viewWithTag(TitleTag).text = update.contact
-    cell.viewWithTag(TitleTag).font = plainFont
-    cell.viewWithTag(TitleTag).font = boldFont if update.today?
+    cell.viewWithTag(TitleTag).font = update.today? ? boldFont : plainFont
     cell.viewWithTag(DescriptionTag).text = update.description
     cell.viewWithTag(TimestampTag).textColor = update.today? ? UIColor.blackColor : UIColor.grayColor
     cell.viewWithTag(TimestampTag).text = update.timestamp
