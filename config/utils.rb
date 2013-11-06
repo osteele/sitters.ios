@@ -5,8 +5,6 @@ end
 
 class << ENV
   def require(name)
-    return ENV[name]
-  catch IndexError
-    die "The #{name} environment variable is required"
+    self[name] or die("The #{name} environment variable is required")
   end
 end

@@ -8,7 +8,7 @@ class AppDelegate
     # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
     initializeTestFlight
     Account.instance.initialize_login_status
-    # registerForRemoteNotifications
+    registerForRemoteNotifications
     registerLocalNotificationHandlers
     application.applicationIconBadgeNumber = 0
 
@@ -61,7 +61,6 @@ class AppDelegate
   def registerLocalNotificationHandlers
     App.notification_center.observe 'addSitter' do |notification|
       userInfo = notification.userInfo
-      p userInfo
       sitter = Sitter.findSitterById(userInfo['sitterId'])
       if sitter
         Family.instance.addSitter sitter

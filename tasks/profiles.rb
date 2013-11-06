@@ -1,5 +1,6 @@
 gem 'launchy'
 
+desc 'Show the provisioning profile directory'
 task :profiles => 'profiles:open'
 
 namespace :profiles do

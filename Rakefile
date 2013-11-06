@@ -20,10 +20,12 @@ Motion::Project::App.setup do |app|
 
   app.identifier = 'com.sevensitters.sevensitters'
   app.name = 'Seven Sitters'
-  app.version = BUILD_VERSION
+  # app.seed_id = ENV.require('IOS_APP_ID')
   app.short_version = BUILD_VERSION
+  app.version = BUILD_VERSION
   app.icons = ['Icon.png', 'Icon@2x.png', 'Icon-Small.png', 'Icon-Small@2x.png']
   app.interface_orientations = [:portrait]
+  # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
@@ -45,9 +47,6 @@ Motion::Project::App.setup do |app|
   end
   app.weak_frameworks += %w(AdSupport Social)
 
-  # set_provisioning_profile app
-
-  # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
   app.info_plist['FacebookAppID'] = FB_APP_ID
   app.info_plist['FacebookAppId'] = FB_APP_ID # works around bug in FB SDK
   app.info_plist['FacebookDisplayName'] = 'Seven Sitters'

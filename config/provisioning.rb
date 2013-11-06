@@ -18,13 +18,19 @@ end; end
 # Can't use Motion::Project::App.setup because it runs before archive:distribution sets the build mode
 def set_provisioning_profile(app)
   app.development do
+    puts 'Provisioning for development'
     app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
     app.entitlements['get-task-allow'] = true
+    # app.codesign_certificate = ENV['IOS_CODESIGN_CERTIFICATE'] if ENV['IOS_CODESIGN_CERTIFICATE']
+    # Without: No valid 'aps-environment' entitlement string found for application 'Seven Sitters': (null). Notifications will not be delivered.
+    # With: error: ApplicationVerificationFailed
+    app.entitlements['aps-environment'] = 'development'
   end
 
   app.release do
+    puts 'Provisioning for release'
     app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_PRODUCTION_PROFILE_ID'))
-    app.codesign_certificate = ENV[IOS_CODESIGN_CERTIFICATE] if ENV[IOS_CODESIGN_CERTIFICATE]
+    app.codesign_certificate = ENV['IOS_CODESIGN_CERTIFICATE'] if ENV['IOS_CODESIGN_CERTIFICATE']
     app.entitlements['get-task-allow'] = false
   end
 end
