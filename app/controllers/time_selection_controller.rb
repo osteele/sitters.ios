@@ -44,6 +44,8 @@ class TimeSelectionController < UIViewController
   attr_reader :dayIndicator
   attr_reader :hoursIndicator
   attr_reader :summaryViewHoursLabel
+  attr_reader :summaryViewHoursLabelFg
+
 
   #
   # Views and observer creation
@@ -165,6 +167,8 @@ class TimeSelectionController < UIViewController
     end
 
     @summaryViewHoursLabel = subview UILabel, :summary_hours
+    @summaryViewHoursLabelFg = subview UILabel, :summary_hours
+    declareViewMode :summary, summaryViewHoursLabelFg
     declareViewMode :summary, summaryViewHoursLabel
 
     # TODO use dateFormatter, to honor 24hr time. How to keep it from stripping the period?
@@ -191,14 +195,15 @@ class TimeSelectionController < UIViewController
       labelString = startFormatter.stringFromDate(timeSpan.startTime) + '-' + hourMinuteFormatter.stringFromDate(timeSpan.endTime) + ' ' + endPeriod
 
       labelAS = createHourRangeString.(labelString)
-      summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
-
       tooWide = -> { hoursIndicator.size.width > 0 and labelAS.size.width > hoursIndicator.size.width - hoursIndicator.layer.cornerRadius }
       labelAS = createHourRangeString.(labelString.sub(/:00/, '')) if tooWide.()
       labelAS = createHourRangeString.(labelString.gsub(/:00/, '')) if tooWide.()
       labelAS = createHourRangeString.(labelString.gsub(/:00/, ''), true) if tooWide.()
       labelAS = createHourRangeString.(labelString.gsub(/:00/, '').gsub(/:30/, '½'), true) if tooWide.()
+
       hourRangeLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
+      summaryViewHoursLabelFg.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
+      summaryViewHoursLabel.attributedText = NSAttributedString.alloc.initWithAttributedString(labelAS)
     end
 
     timeSpanHoursUpdater = Debounced.new 0.25 do
@@ -245,6 +250,10 @@ class TimeSelectionController < UIViewController
       UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, animations: -> {
         restoreInteractiveModeViewProperties
         updateGradientFrame
+        summaryViewHoursLabelFg.alpha = 1
+      }, completion: ->_ {
+        summaryViewHoursLabel.alpha = 0
+        summaryViewHoursLabelFg.alpha = 0
       }
     end
 
@@ -270,23 +279,29 @@ class TimeSelectionController < UIViewController
   def setSummaryModeViewPropertiesForStage(stage)
     case stage
     when 0
-      # starting state; outside the animation
-      summaryViewHoursLabel.frame = [[0, 18], [320, 35]]
+      # initial state -- outside the animation
+      summaryViewHoursLabel.frame = summaryViewHoursLabelFg.frame = [[0, 18], [320, 35]]
       summaryViewHoursLabel.textAlignment = NSTextAlignmentCenter
-      summaryViewHoursLabel.tx = hoursIndicator.center.x - summaryViewHoursLabel.center.x
-      summaryViewHoursLabel.ty = hoursIndicator.center.y - summaryViewHoursLabel.center.y
+      summaryViewHoursLabel.tx = summaryViewHoursLabelFg.tx = hoursIndicator.center.x - summaryViewHoursLabel.center.x
+      summaryViewHoursLabel.ty = summaryViewHoursLabelFg.ty = hoursIndicator.center.y - summaryViewHoursLabel.center.y
+      summaryViewHoursLabel.alpha = 1
+      summaryViewHoursLabelFg.alpha = 1
+      summaryViewHoursLabelFg.textColor = '#5481C9'.to_color
     when 1
+      # quickly
       getViewsForMode(:interactive).each do |v| v.alpha = 0 end
       hoursIndicator.top = summaryViewHoursLabel.top
     when 2
+      # slowly
       getViewsForMode(:summary).each do |v| v.alpha = 1 end
       view.frame = [[view.x, ShortViewTop], [view.width, ShortViewHeight]]
-      summaryViewHoursLabel.transform = summaryViewHoursLabel.transform.tap { |t| t.tx = t.ty = 0 }
+      summaryViewHoursLabel.transform = summaryViewHoursLabelFg.transform = summaryViewHoursLabel.transform.tap { |t| t.tx = t.ty = 0 }
+      summaryViewHoursLabelFg.alpha = 0
     end
   end
 
   def saveInteractiveModeViewProperties
-    saveFrameViews = [view, dayIndicator, hoursIndicator, summaryViewHoursLabel]
+    saveFrameViews = [view, dayIndicator, hoursIndicator, summaryViewHoursLabel, summaryViewHoursLabelFg]
     saveAlphaViews = getViewsForMode(:interactive) + getViewsForMode(:summary)
     @savedTimeSelectorValues ||= {
       alpha: saveAlphaViews.map { |v| [v, v.alpha] },
