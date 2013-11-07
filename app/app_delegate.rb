@@ -54,6 +54,7 @@ class AppDelegate
   #
 
   def registerForRemoteNotifications
+    return if Device.simulator?
     application = UIApplication.sharedApplication
     application.registerForRemoteNotificationTypes UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert
   end
