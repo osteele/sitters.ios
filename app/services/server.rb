@@ -35,7 +35,12 @@ class Server
       App.alert message['messageTitle'], message:messageText
       userMessagesFB[snapshot.name].clear!
     end
-end
+  end
+
+  def registerDeviceToken(token, forUser:user)
+    token = token.description.gsub(/[< >]/, '')
+    sendRequest :register_device_token, withParameters:{token:token}
+  end
 
   def unsubscribeFromMessages
     userMessagesFB.off if userMessagesFB

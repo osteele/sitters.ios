@@ -1,6 +1,7 @@
 class Account
   include BW::KVO
   attr_accessor :user
+  attr_reader :deviceToken
 
   def self.instance
     Dispatch.once { @instance ||= new }
@@ -73,6 +74,11 @@ class Account
     "#{userProvider}/#{user.userId}"
   end
 
+  def deviceToken=(token)
+    @deviceToken = token
+    Server.instance.registerDeviceToken token, forUser:user if user and token
+  end
+
   private
 
   FacebookAppId = '245805915569604'
@@ -129,6 +135,7 @@ class Account
 
     Server.instance.registerUser user
     Server.instance.subscribeToMessagesFor accountKey
+    Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "account/#{accountKey}"
     @currentAccountFB = firebase[accountPath]

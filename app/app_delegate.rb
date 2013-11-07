@@ -70,7 +70,8 @@ class AppDelegate
   end
 
   def application(application, didRegisterForRemoteNotificationsWithDeviceToken:token)
-    NSLog "didRegisterForRemoteNotificationsWithDeviceToken #{token.inspect}"
+    NSLog "didRegisterForRemoteNotificationsWithDeviceToken %@", token
+    Account.instance.deviceToken = token
   end
 
   def application(application, didFailToRegisterForRemoteNotificationsWithError:error)
@@ -78,7 +79,8 @@ class AppDelegate
   end
 
   def application(application, didReceiveRemoteNotification:notification)
-    puts 'didReceiveRemoteNotification'
+    NSLog 'didReceiveRemoteNotification'
+    application.applicationIconBadgeNumber = 0
   end
 
   def application(application, didReceiveLocalNotification:notification)
