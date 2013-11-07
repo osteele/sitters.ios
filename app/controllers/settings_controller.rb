@@ -80,7 +80,7 @@ class SettingsController < Formotion::FormController
     end
 
     form.build_section do |section|
-      section.title = 'Debug'
+      section.title = 'Demo'
       section.build_row do |row|
         row.title = 'Sitters'
         row.type = :options
