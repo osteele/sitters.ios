@@ -4,9 +4,8 @@ class ChatController < UIViewController
 
   def initWithNibName(name, bundle:bundle)
     super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Chat', image:UIImage.imageNamed('tabs/chat'), tag:4)
-    end
+    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Chat', image:UIImage.imageNamed('tabs/chat'), tag:4)
+    self
   end
 
   def viewWillAppear(animated)
@@ -22,6 +21,8 @@ class ChatController < UIViewController
   end
 
   layout do
+    view.backgroundColor = '#f9f9f9'.to_color
+
     @mapView = subview MKMapView.alloc.initWithFrame([[0, 20],[320, 122]]),
       delegate: self,
       userTrackingMode: MKUserTrackingModeFollow
