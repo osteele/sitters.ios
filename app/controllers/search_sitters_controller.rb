@@ -11,6 +11,12 @@ class SearchSittersController < UITableViewController
     @searchResults ||= @sitters = Sitter.all.select(&:lastName).sort_by(&:lastName)
   end
 
+  def viewDidLoad
+    super
+    view.backgroundColor = '#f9f9f9'.to_color
+    view.separatorStyle = UITableViewCellSeparatorStyleNone
+  end
+
   def viewDidAppear(animated)
     super
     UIApplication.sharedApplication.setStatusBarHidden true
@@ -49,15 +55,20 @@ class SearchSittersController < UITableViewController
   DESCRIPTION_TAG = 3
 
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
+    plainFont = UIFont.fontWithName("HelveticaNeue", size:14)
+    boldFont = plainFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
+
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
-    fontName = "HelveticaNeue"
-    unless cell
-      cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
+
+    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier).tap do |cell|
+      cell.backgroundColor = UIColor.clearColor
       layout cell.contentView do
-        subview UIImageView, tag: IMAGE_TAG, width: 47, height: 47, left: 10, top: 5
-        subview UILabel, tag: TITLE_TAG, width: 255, height: 40, left: 65, top: 17 - 20
-        subview UILabel, tag: DESCRIPTION_TAG, width: 255, height: 40, left: 65, top: 34 - 20, font: UIFont.fontWithName(fontName, size:14)
+        image = subview UIImageView, tag: IMAGE_TAG, width: 47, height: 47, left: 10, top: 5
+        image.layer.cornerRadius = image.width / 2
+        image.layer.masksToBounds = true
+        subview UILabel, tag: TITLE_TAG, width: 255, height: 40, left: 65, top: -3
+        subview UILabel, tag: DESCRIPTION_TAG, width: 255, height: 40, left: 65, top: 14, font: plainFont
       end
     end
     sitter = data[indexPath.row]
@@ -67,8 +78,8 @@ class SearchSittersController < UITableViewController
 
     description = NSMutableAttributedString.alloc.initWithString("#{sitter.name} (#{sitter.age} years old)")
     description.addAttribute NSForegroundColorAttributeName, value:'#5988C4'.to_color, range:NSMakeRange(0, description.length)
-    description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName + '-Bold', size:14), range:NSMakeRange(0, sitter.name.length)
-    description.addAttribute NSFontAttributeName, value:UIFont.fontWithName(fontName, size:12), range:NSMakeRange(sitter.name.length, description.length - sitter.name.length)
+    description.addAttribute NSFontAttributeName, value:boldFont, range:NSMakeRange(0, sitter.name.length)
+    description.addAttribute NSFontAttributeName, value:plainFont.fontWithSize(12), range:NSMakeRange(sitter.name.length, description.length - sitter.name.length)
 
     cell.viewWithTag(IMAGE_TAG).image = sitter.maskedImage
     cell.viewWithTag(TITLE_TAG).attributedText = description

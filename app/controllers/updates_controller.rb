@@ -49,19 +49,17 @@ class UpdatesController < UITableViewController
   def tableView(tableView, heightForRowAtIndexPath:indexPath); 51; end
 
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
-    cellIdentifier = self.class.name
-    cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
-
     plainFont = UIFont.fontWithName('Helvetica Neue', size:14)
     boldFont = plainFont.fontWithSymbolicTraits(UIFontDescriptorTraitBold)
 
-    unless cell
-    cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
-    cell.backgroundColor = '#f4f2f4'.to_color
+    cellIdentifier = self.class.name
+    cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
+
+    cell ||= UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier).tap do |cell|
+      cell.backgroundColor = '#f4f2f4'.to_color
       layout cell.contentView do
-        imageWidth = 44
-        image = subview UIImageView, tag: ImageTag, width: imageWidth, height: imageWidth, left: 10, top: 7
-        image.layer.cornerRadius = imageWidth / 2
+        image = subview UIImageView, tag: ImageTag, width: 44, height: 44, left: 10, top: 7
+        image.layer.cornerRadius = image.width / 2
         image.layer.masksToBounds = true
         subview UILabel, tag: TitleTag, width: 255, height: 40, left: 65, top: 2, textColor: '#5988C4'.to_color
         subview UILabel, tag: DescriptionTag, width: 255, height: 40, left: 65, top: 20,
