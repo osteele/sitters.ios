@@ -14,8 +14,9 @@ class TimeSelectionController < UIViewController
   HourFirstX = 10
   HourSpacing = 58
 
-  HeightModeAnimationDuration = 0.3
-  HeightModeStageOneAnimationDuration = 0.05
+  SlowAnimationFactor = 1
+  HeightModeAnimationDuration = 0.5 * SlowAnimationFactor
+  HeightModeStageOneAnimationDuration = 0.2 * SlowAnimationFactor
   ShortViewHeight = 55
   ShortViewTop = 64
 
@@ -224,23 +225,37 @@ class TimeSelectionController < UIViewController
     return if @heightMode == key
     @heightMode = key
 
+    slowAnimationScale = NSUserDefaults.standardUserDefaults['slowAnimation'] ? 10 : 1
+
     view = self.view
     case key
     when :summary
       # set these before saveInteractiveModeViewProperties, so we animate *back* to them later
-      setSummaryModeAnimationInitialState
+      setSummaryModeViewPropertiesForStage 0
       saveInteractiveModeViewProperties
-      UIView.animateWithDuration HeightModeStageOneAnimationDuration, animations: -> { setSummaryModeViewPropertiesForStage 0 }
-      # These need to go faster to get out of the way of the contracting height in time.
-      UIView.animateWithDuration HeightModeAnimationDuration, animations: -> { setSummaryModeViewPropertiesForStage 1 }
+      UIView.animateWithDuration HeightModeStageOneAnimationDuration * slowAnimationScale, animations: -> {
+        setSummaryModeViewPropertiesForStage 1
+      }
+      # UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, animations: -> {
+      UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, delay:0, options:0, animations: -> {
+        setSummaryModeViewPropertiesForStage 2
+        updateGradientFrame
+      }, completion: ->_ {}
     when :interactive
-      UIView.animateWithDuration HeightModeAnimationDuration, animations: -> { restoreInteractiveModeViewProperties }
+      UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, animations: -> {
+        restoreInteractiveModeViewProperties
+        updateGradientFrame
+      }
     end
-    gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
-    gradient_layer.frame = view.bounds if gradient_layer
+
   end
 
   private
+
+  def updateGradientFrame
+    gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
+    gradient_layer.frame = view.bounds if gradient_layer
+  end
 
   def declareViewMode(mode, view)
     getViewsForMode(mode) << view
@@ -252,30 +267,21 @@ class TimeSelectionController < UIViewController
     @viewsForMode[mode] ||= []
   end
 
-  def setSummaryModeAnimationInitialState
-    # starting state; outside the animation
-    summaryViewHoursLabel.frame = hoursIndicator.frame
-  end
-
   def setSummaryModeViewPropertiesForStage(stage)
     case stage
     when 0
-      hoursIndicator.top = summaryViewHoursLabel.top
-      dayIndicator.top = summaryViewHoursLabel.top
-      hoursIndicator.alpha = 0
-      dayIndicator.alpha = 0
+      # starting state; outside the animation
+      summaryViewHoursLabel.frame = [[0, 18], [320, 35]]
+      summaryViewHoursLabel.textAlignment = NSTextAlignmentCenter
+      summaryViewHoursLabel.tx = hoursIndicator.center.x - summaryViewHoursLabel.center.x
+      summaryViewHoursLabel.ty = hoursIndicator.center.y - summaryViewHoursLabel.center.y
     when 1
-      # saveInteractiveModeViewProperties must save all the following:
-      view.top = ShortViewTop
-      view.height = ShortViewHeight
-      view.setNeedsDisplay
       getViewsForMode(:interactive).each do |v| v.alpha = 0 end
+      hoursIndicator.top = summaryViewHoursLabel.top
+    when 2
       getViewsForMode(:summary).each do |v| v.alpha = 1 end
-      summaryViewHoursLabel.origin = [0, 18]
-      summaryViewHoursLabel.width = 320
-      # hoursIndicator.top = summaryViewHoursLabel.top
-      # use transform instead of bounds so that listeners don't think it's being dragged to a different time:
-      # hoursIndicator.tx = (320 - hoursIndicator.width) / 2 - hoursIndicator.x
+      view.frame = [[view.x, ShortViewTop], [view.width, ShortViewHeight]]
+      summaryViewHoursLabel.transform = summaryViewHoursLabel.transform.tap { |t| t.tx = t.ty = 0 }
     end
   end
 
