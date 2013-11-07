@@ -1,3 +1,6 @@
+## 0.2.9 (2013-11-07)
+* UI refinements.
+
 ## 0.2.8 (2013-11-02)
 * Larger tap targets for day and hours indicators.
 * Fix daylight savings bug.
