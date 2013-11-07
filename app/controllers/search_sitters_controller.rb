@@ -7,6 +7,10 @@ class SearchSittersController < UITableViewController
     end
   end
 
+  def prefersStatusBarHidden
+    return true
+  end
+
   def data
     @searchResults ||= @sitters = Sitter.all.select(&:lastName).sort_by(&:lastName)
   end
