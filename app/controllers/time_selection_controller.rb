@@ -7,7 +7,7 @@ class TimeSelectionController < UIViewController
   MinHours = 1
 
   # Graphics and Animation
-  DayIndicatorAnimationDuration = 0.3
+  DayIndicatorAnimationSeconds = 0.3
   DayFirstX = 3
   DayIndicatorOffset = 5
   DaySpacing = 44
@@ -15,8 +15,8 @@ class TimeSelectionController < UIViewController
   HourSpacing = 58
 
   SlowAnimationFactor = 1
-  HeightModeAnimationDuration = 0.5 * SlowAnimationFactor
-  HeightModeStageOneAnimationDuration = 0.2 * SlowAnimationFactor
+  HeightModeAnimationSeconds = 0.5 * SlowAnimationFactor
+  HeightModeFastAnimationSeconds = 0.2 * SlowAnimationFactor
   ShortViewHeight = 55
   ShortViewTop = 64
 
@@ -43,6 +43,7 @@ class TimeSelectionController < UIViewController
   # animation modifies these
   attr_reader :dayIndicator
   attr_reader :hoursIndicator
+  attr_reader :hourRangeLabel
   attr_reader :summaryViewHoursLabel
   attr_reader :summaryViewHoursLabelFg
 
@@ -121,7 +122,7 @@ class TimeSelectionController < UIViewController
         selectedMarkerLabel = selectionMarkerLabels[currentWeekDayIndex]
         pos = CGPointMake(selectedMarkerLabel.x + DayIndicatorOffset, selectedMarkerLabel.y)
         dayIndicator.origin = pos if dayIndicator.top == 0 # first time
-        UIView.animateWithDuration DayIndicatorAnimationDuration, animations: -> { dayIndicator.x = pos.x }
+        UIView.animateWithDuration DayIndicatorAnimationSeconds, animations: -> { dayIndicator.x = pos.x }
       end
     end
   end
@@ -139,9 +140,8 @@ class TimeSelectionController < UIViewController
     end
     declareViewMode :interactive, hoursView
 
-    hourRangeLabel = nil
     @hoursIndicator = subview UIView, :hours_indicator do
-      hourRangeLabel = subview UILabel, :hours_indicator_label
+      @hourRangeLabel = subview UILabel, :hours_indicator_label
       hourRangeLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth
 
       subview UIImageView, :hours_left_handle_image
@@ -235,26 +235,72 @@ class TimeSelectionController < UIViewController
     view = self.view
     case key
     when :summary
+      # initial state -- outside the animation
+      summaryViewHoursLabel.frame = summaryViewHoursLabelFg.frame = [[0, 18], [320, 35]]
+      # summaryViewHoursLabel.textAlignment = NSTextAlignmentCenter
+      summaryViewHoursLabel.tx = summaryViewHoursLabelFg.tx = hoursIndicator.center.x - summaryViewHoursLabel.center.x
+      summaryViewHoursLabel.ty = summaryViewHoursLabelFg.ty = hoursIndicator.center.y - summaryViewHoursLabel.center.y
+      summaryViewHoursLabel.alpha = summaryViewHoursLabelFg.alpha = 1
+      summaryViewHoursLabelFg.textColor = '#5481C9'.to_color
+      hourRangeLabel.hidden = true
+
       # set these before saveInteractiveModeViewProperties, so we animate *back* to them later
-      setSummaryModeViewPropertiesForStage 0
       saveInteractiveModeViewProperties
-      UIView.animateWithDuration HeightModeStageOneAnimationDuration * slowAnimationScale, animations: -> {
-        setSummaryModeViewPropertiesForStage 1
-      }
-      # UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, animations: -> {
-      UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, delay:0, options:0, animations: -> {
-        setSummaryModeViewPropertiesForStage 2
-        updateGradientFrame
-      }, completion: ->_ {}
-    when :interactive
-      UIView.animateWithDuration HeightModeAnimationDuration * slowAnimationScale, animations: -> {
-        restoreInteractiveModeViewProperties
-        updateGradientFrame
-        summaryViewHoursLabelFg.alpha = 1
-      }, completion: ->_ {
-        summaryViewHoursLabel.alpha = 0
+
+      # quickly
+      UIView.animateWithDuration HeightModeFastAnimationSeconds * slowAnimationScale, animations: -> {
+        getViewsForMode(:interactive).each { |v| v.alpha = 0 }
         summaryViewHoursLabelFg.alpha = 0
+        # hoursIndicator.top = summaryViewHoursLabel.top
       }
+
+      # slowly
+      UIView.animateWithDuration HeightModeAnimationSeconds * slowAnimationScale, animations: -> {
+        getViewsForMode(:summary).each { |v| v.alpha = 1 }
+        summaryViewHoursLabelFg.alpha = 0
+        view.frame = [[view.x, ShortViewTop], [view.width, ShortViewHeight]]
+        summaryViewHoursLabel.transform = summaryViewHoursLabelFg.transform = summaryViewHoursLabel.transform.tap { |t| t.tx = t.ty = 0 }
+      }, completion: ->_ { updateGradientFrame }
+
+      view.layer.masksToBounds = true
+
+      # animation = CABasicAnimation.animationWithKeyPath('bounds.size.height')
+      # animation.duration = HeightModeAnimationSeconds * slowAnimationScale
+      # animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseInEaseOut)
+      # animation.toValue = ShortViewHeight
+      # gradientLayer = view.instance_variable_get(:@teacup_gradient_layer)
+      # gradientLayer.removeAllAnimations
+      # gradientLayer.addAnimation animation, forKey:nil
+      # view.layer.contentsGravity = KCAGravityTop
+
+    when :interactive
+      UIView.animateWithDuration HeightModeAnimationSeconds * slowAnimationScale, animations: -> {
+        restoreInteractiveModeViewProperties view
+        restoreInteractiveModeViewProperties summaryViewHoursLabel, :frame
+        restoreInteractiveModeViewProperties summaryViewHoursLabelFg, :frame
+        updateGradientFrame
+      }
+
+      dur = HeightModeFastAnimationSeconds * slowAnimationScale
+      UIView.animateWithDuration dur,
+        delay: HeightModeAnimationSeconds * slowAnimationScale - dur,
+        options: 0,
+        animations: -> {
+          restoreInteractiveModeViewProperties
+        }, completion: ->_ {
+          summaryViewHoursLabel.alpha = 0
+          summaryViewHoursLabelFg.alpha = 0
+          hourRangeLabel.hidden = false
+        }
+
+      # animation = CABasicAnimation.animationWithKeyPath('bounds.size.height')
+      # animation.duration = HeightModeAnimationSeconds * slowAnimationScale
+      # animation.timingFunction = CAMediaTimingFunction.functionWithName(KCAMediaTimingFunctionEaseInEaseOut)
+      # animation.toValue = 20
+      # animation.removedOnCompletion = true
+      # gradientLayer = view.instance_variable_get(:@teacup_gradient_layer)
+      # gradientLayer.removeAllAnimations
+      # gradientLayer.addAnimation animation, forKey:nil
     end
 
   end
@@ -262,8 +308,8 @@ class TimeSelectionController < UIViewController
   private
 
   def updateGradientFrame
-    gradient_layer = view.instance_variable_get(:@teacup_gradient_layer)
-    gradient_layer.frame = view.bounds if gradient_layer
+    gradientLayer = view.instance_variable_get(:@teacup_gradient_layer)
+    gradientLayer.frame = view.bounds if gradientLayer
   end
 
   def declareViewMode(mode, view)
@@ -276,44 +322,28 @@ class TimeSelectionController < UIViewController
     @viewsForMode[mode] ||= []
   end
 
-  def setSummaryModeViewPropertiesForStage(stage)
-    case stage
-    when 0
-      # initial state -- outside the animation
-      summaryViewHoursLabel.frame = summaryViewHoursLabelFg.frame = [[0, 18], [320, 35]]
-      summaryViewHoursLabel.textAlignment = NSTextAlignmentCenter
-      summaryViewHoursLabel.tx = summaryViewHoursLabelFg.tx = hoursIndicator.center.x - summaryViewHoursLabel.center.x
-      summaryViewHoursLabel.ty = summaryViewHoursLabelFg.ty = hoursIndicator.center.y - summaryViewHoursLabel.center.y
-      summaryViewHoursLabel.alpha = 1
-      summaryViewHoursLabelFg.alpha = 1
-      summaryViewHoursLabelFg.textColor = '#5481C9'.to_color
-    when 1
-      # quickly
-      getViewsForMode(:interactive).each do |v| v.alpha = 0 end
-      hoursIndicator.top = summaryViewHoursLabel.top
-    when 2
-      # slowly
-      getViewsForMode(:summary).each do |v| v.alpha = 1 end
-      view.frame = [[view.x, ShortViewTop], [view.width, ShortViewHeight]]
-      summaryViewHoursLabel.transform = summaryViewHoursLabelFg.transform = summaryViewHoursLabel.transform.tap { |t| t.tx = t.ty = 0 }
-      summaryViewHoursLabelFg.alpha = 0
-    end
-  end
-
   def saveInteractiveModeViewProperties
     saveFrameViews = [view, dayIndicator, hoursIndicator, summaryViewHoursLabel, summaryViewHoursLabelFg]
     saveAlphaViews = getViewsForMode(:interactive) + getViewsForMode(:summary)
     @savedTimeSelectorValues ||= {
-      alpha: saveAlphaViews.map { |v| [v, v.alpha] },
-      frame: saveFrameViews.map { |v| [v, v.frame] }
+      alpha: saveAlphaViews.map { |v| [v, v.alpha, false] },
+      frame: saveFrameViews.map { |v| [v, v.frame, false] }
     }
   end
 
-  def restoreInteractiveModeViewProperties
+  def restoreInteractiveModeViewProperties(onlyView=nil, onlyProperty=nil)
     savedProperties = @savedTimeSelectorValues
-    savedProperties[:alpha].each do |v, alpha| v.alpha = alpha end
-    savedProperties[:frame].each do |v, frame| v.frame = frame end
-    @savedTimeSelectorValues = nil
+    for propertyName, mappings in savedProperties
+      for item in mappings
+        view, propertyValue, fired = item
+        next if fired
+        next unless view == onlyView or onlyView.nil?
+        next unless propertyName == onlyProperty or onlyProperty.nil?
+        view.send :"#{propertyName}=", propertyValue
+        item[2] = true
+      end
+    end
+    @savedTimeSelectorValues = nil if onlyView.nil? and onlyProperty.nil?
   end
 
 
