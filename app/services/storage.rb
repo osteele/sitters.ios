@@ -75,6 +75,7 @@ class Storage
     else
       NSLog "Cache miss: #{path}"
     end
+    NSLog "Subscribing to #{path}"
     firebase[path].on(:value) do |snapshot|
       data = snapshot.value
       if data and (not previous_json or previous_json != BW::JSON.generate(data))

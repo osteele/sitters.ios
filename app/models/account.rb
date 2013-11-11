@@ -22,7 +22,8 @@ class Account
   def initialize_login_status
     NSLog "auth.check"
     auth.check do |error, user|
-      NSLog "auth.check user=#{user} error=#{error}"
+      NSLog "auth.check error=%@", error if error
+      NSLog "auth.check user=%@", user if user
       self.user = user
     end
   end
@@ -125,16 +126,22 @@ class Account
   # TODO move some of this into storage manager
   # TODO cache
   def updateUserDataSubscription
-    @currentAccountFB.off if @currentAccountFB
-    @currentAccountFB = nil
-    @currentFamilyFB.off if @currentFamilyFB
-    @currentFamilyFB = nil
+    if @currentAccountFB
+      NSLog "Unsubscribing from %@", @currentAccountFB
+      @currentAccountFB.off
+      @currentAccountFB = nil
+    end
+    if @currentFamilyFB
+      NSLog "Unsubscribing from %@", @currentFamilyFB
+      @currentFamilyFB.off
+      @currentFamilyFB = nil
+    end
     @familyData = nil
     Server.instance.unsubscribeFromMessages
     return unless user
 
     Server.instance.registerUser user
-    Server.instance.subscribeToMessagesFor accountKey
+    Server.instance.subscribeToMessagesForAccount self
     Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "account/#{accountKey}"

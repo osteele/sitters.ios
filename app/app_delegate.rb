@@ -9,7 +9,6 @@ class AppDelegate
     initializeTestFlight
     Account.instance.initialize_login_status
     registerForRemoteNotifications
-    registerLocalNotificationHandlers
     application.applicationIconBadgeNumber = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
@@ -59,17 +58,6 @@ class AppDelegate
     application.registerForRemoteNotificationTypes UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert
   end
 
-  def registerLocalNotificationHandlers
-    App.notification_center.observe 'addSitter' do |notification|
-      userInfo = notification.userInfo
-      sitter = Sitter.findSitterById(userInfo['sitterId'])
-      if sitter
-        Family.instance.addSitter sitter
-        App.alert 'Sitter Confirmed', message:userInfo['message']
-      end
-    end
-  end
-
   def application(application, didRegisterForRemoteNotificationsWithDeviceToken:token)
     NSLog "didRegisterForRemoteNotificationsWithDeviceToken %@", token
     Account.instance.deviceToken = token
@@ -84,13 +72,13 @@ class AppDelegate
     application.applicationIconBadgeNumber = 0
   end
 
+  # Server emulation mode uses this to emulate a message received via the Firebase queue
   def application(application, didReceiveLocalNotification:notification)
-    application = UIApplication.sharedApplication
-    userInfo = notification.userInfo
     notificationName = notification.userInfo['notificationName']
     NSLog "didReceiveLocalNotification #{notificationName}"
+    userInfo = notification.userInfo
     NSNotificationCenter.defaultCenter.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
-    application.applicationIconBadgeNumber = [application.applicationIconBadgeNumber - notification.applicationIconBadgeNumber, 0].max
+    application.applicationIconBadgeNumber = 0
   end
 
   private

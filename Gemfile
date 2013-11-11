@@ -10,6 +10,7 @@ gem 'rest-client'
 
 # foundation
 gem 'bubble-wrap'
+gem 'motion-map'
 
 # layout
 gem 'teacup'

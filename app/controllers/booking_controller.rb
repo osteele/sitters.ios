@@ -4,9 +4,8 @@ class BookingController < UIViewController
 
   def initWithNibName(name, bundle:bundle)
     super
-    self.tap do
-      self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters'), tag:1)
-    end
+    self.tabBarItem = UITabBarItem.alloc.initWithTitle('Sitters', image:UIImage.imageNamed('tabs/sitters'), tag:1)
+    self
   end
 
   def viewDidLoad
@@ -14,6 +13,21 @@ class BookingController < UIViewController
     view.stylename = :sitters
     view.backgroundColor = UIColor.whiteColor
     familySittersController.timeSelection = timeSelectionController.timeSelection
+
+    App.notification_center.observe('sitterAcceptedConnection') do |notification|
+      sitter = Sitter.findSitterById(notification.userInfo['sitterId'])
+      return unless sitter
+      App.alert 'Sitter Confirmed', message:"#{sitter.firstName} has accepted your request. We’ve added her to your Seven Sitters."
+    end
+
+    # App.notification_center.observe('sitterConfirmedReservation') do |notification|
+    #   sitter = Sitter.findSitterById(notification.userInfo['sitterId'])
+    #   return unless sitter
+    #   startTime = NSDate.dateFromISO8601String notification.userInfo['startTime']
+    #   endTime = NSDate.dateFromISO8601String notification.userInfo['endTime']
+    #   date = startTime
+    #   App.alert 'Sitter Confirmed', message:"#{sitter.firstName} has confirmed your reservation from #{startTime} to #{endTime} #{date}"
+    # end
   end
 
   # def preferredStatusBarStyle; UIStatusBarStyleBlackTranslucent; end
@@ -57,11 +71,15 @@ class BookingController < UIViewController
 
   def performSitterAction(action, sitter:sitter)
     parameters = {sitterId: sitter.id, familyId: Family.instance.id}
+    if [:request_sitter, :reserve_sitter].include?(action)
+      parameters = parameters.merge(startTime:timeSelection.startTime, endTime:timeSelection.endTime)
+    end
     Server.instance.sendRequest action, withParameters:parameters
 
     messageTemplate = {
       add_sitter: "We’ve just sent a request to add {{sitter.firstName}} to your Seven Sitters. We’ll let you know when she confirms.",
-      reserve_sitter: "We’ve reserved {{sitter.firstName}} to babysit for you at the specified time. We’ll let you know when she confirms.",
+      # reserve_sitter: "We’ve reserved {{sitter.firstName}} to babysit for you at the specified time. We’ll let you know when she confirms.",
+      reserve_sitter: "We’ve just sent a request to {{sitter.firstName}}. We’ll let you know whether she’s available.",
       request_sitter: "We’ve just sent a request to {{sitter.firstName}}. We’ll let you know whether she’s available.",
     }[action]
     App.alert 'Request Sent', message:MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters) if messageTemplate
@@ -72,6 +90,10 @@ class BookingController < UIViewController
   def navigationController; @navigationController; end
   attr_reader :timeSelectionController
   attr_reader :familySittersController
+
+  def timeSelection
+    timeSelectionController.timeSelection
+  end
 
   def sitterDetailsController
     @sitterDetailsController ||= SitterDetailsController.alloc.init.tap do |controller| controller.delegate = self end

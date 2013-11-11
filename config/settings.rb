@@ -5,5 +5,6 @@ Motion::SettingsBundle.setup do |app|
   app.child 'Debug' do |section|
     section.toggle 'Slow animation', key: 'slowAnimation', default: false
     section.toggle 'Emulate server', key: 'emulateServer', default: true
+    section.toggle 'Simulate confirmation delay', key: 'simulateSitterConfirmationDelay', default: true
   end
 end

@@ -1,3 +1,13 @@
+class NSDate
+  def ISO8601StringFromDate
+    ISO8601DateFormatter.stringFromDate(self)
+  end
+
+  def self.dateFromISO8601String(string)
+    ISO8601DateFormatter.dateFromString(string)
+  end
+end
+
 class UIFont
   def fontWithSymbolicTraits(traits)
     fontName = fontDescriptor.fontDescriptorWithSymbolicTraits(traits).postscriptName

@@ -5,15 +5,22 @@ class Server
   end
 
   def initialize
-    @firebase = UIApplication.sharedApplication.delegate.firebase
-    @requestsFB = firebase['request']
+    @firebaseRoot = UIApplication.sharedApplication.delegate.firebase
+    @requestsFB = firebaseRoot['request']
   end
 
   def sendRequest(requestKey, withParameters:parameters)
+    unless NSJSONSerialization.isValidJSONObject(parameters)
+      parameters = parameters.clone
+      for key, value in parameters
+        parameters[key] = value.ISO8601StringFromDate if value.instance_of?(NSDate)
+        parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
+      end
+    end
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
-      requestString = requestKey.gsub(/_(.)/) {$1.upcase }
+      requestString = requestKey.gsub(/_(.)/) { $1.upcase } # snake_case -> camelCase
       request = {requestType:requestString, accountKey:Account.instance.accountKey, parameters:parameters}
       requestsFB << request
     end
@@ -27,8 +34,10 @@ class Server
     sendRequest :register_user, withParameters: {displayName:user.displayName, email:user.email}
   end
 
-  def subscribeToMessagesFor(accountKey)
-    @userMessagesFB = firebase['message'][accountKey]
+  def subscribeToMessagesForAccount(account)
+    unsubscribeFromMessages
+    @userMessagesFB = firebaseRoot['message'][account.accountKey]
+    NSLog "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
       messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:message['parameters'])
@@ -43,13 +52,14 @@ class Server
   end
 
   def unsubscribeFromMessages
+    NSLog "Unsubscribing from %@", userMessagesFB if userMessagesFB
     userMessagesFB.off if userMessagesFB
     @userMessagesFB = nil
   end
 
   private
 
-  attr_reader :firebase
+  attr_reader :firebaseRoot
   attr_reader :requestsFB
   attr_reader :messagesFB
   attr_reader :userMessagesFB
@@ -59,44 +69,107 @@ class Server
   end
 end
 
+# An embedded emulation of the server, for demo mode and serverless development and testing.
+# Sends messages back to the application using local modifications instead of Firebase.
 class EmulatedServer
+  EmulatedServerMessageName = 'emulatedServerMessage'
+
   def self.instance
     Dispatch.once { @instance ||= new }
     @instance
   end
 
+  def initialize
+    App.notification_center.observe(EmulatedServerMessageName) do |notification|
+      messageType = notification.userInfo['messageType']
+      NSLog "relaying #{messageType} with #{notification.userInfo['parameters']}"
+      NSNotificationCenter.defaultCenter.postNotificationName messageType, object:self, userInfo:notification.userInfo['parameters']
+    end
+  end
+
   def handleRequest(requestKey, withParameters:parameters)
-    # keyword keys into strings
-    parameters = BW::JSON.parse(BW::JSON.generate(parameters))
+    parameters = MotionMap::Map.new(parameters)
     case requestKey
+
     when :add_sitter
-      sendMessageToClient("{{sitter.firstName}} has accepted your request. We’ve added her to your Seven Sitters.",
-        withDelay:10,
-        withParameters:{notificationName:'addSitter', sitterId:parameters['sitterId']})
+      sendMessageToClient :sitterAcceptedConnection,
+        messageTemplate:"{{sitter.firstName}} has accepted your request. We’ve added her to your Seven Sitters.",
+        withDelay:simulateSitterConfirmationDelay,
+        withParameters:{sitterId:parameters[:sitterId]}
+
+      App.run_after(simulateSitterConfirmationDelay) do
+        family = Family.instance
+        sitter = Sitter.findSitterById(parameters[:sitterId])
+        family.addSitter sitter if sitter
+      end
+
+    when :request_sitter, :reserve_sitter
+      sendMessageToClient :sitterConfirmedReservation,
+        messageTemplate:"{{sitter.firstName}} has confirmed your request.",
+        withDelay:simulateSitterConfirmationDelay,
+        withParameters:{sitterId:parameters[:sitterId], startTime:parameters[:startTime], endTime:parameters[:endTime]}
+
     when :set_sitter_count
-      Family.instance.setSitterCount parameters['count']
+      Family.instance.setSitterCount parameters[:count]
+
     end
   end
 
   private
 
-  def sendMessageToClient(messageTemplate, withDelay:delay, withParameters:parameters)
-    NSLog "Schedule message for t+#{delay}s"
+  def messagesFB
+    firebaseRoot = UIApplication.sharedApplication.delegate.firebase
+    # don't cache, since changes when account changes
+    return firebaseRoot['message'][Account.instance.accountKey]
+  end
+
+  def simulateSitterConfirmationDelay
+    NSUserDefaults.standardUserDefaults['simulateSitterConfirmationDelay'] ? 10 : 0.1
+  end
+
+  # Don't use this, since it introduces a network dependency on demo mode
+  # TODO use this when the user is signed in, for greater fidelity and since this requires the network anyway
+  def sendMessageToClientUsingFirebase(messageType, messageTemplate:messageTemplate, withDelay:delay, withParameters:parameters)
+    NSLog "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
+    messages = {
+      messageType: messageType,
+      messageTitle: messageTemplate[:messageTitle],
+      messageText: MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters),
+      parameters: parameters
+    }
+    App.run_after(delay) { messagesFB << message }
+  end
+
+  def sendMessageToClientUsingLocalNotifications(messageType, messageTemplate:messageTemplate, withDelay:delay, withParameters:parameters)
+    NSLog "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
+
     messageText = MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters)
-    parameters = parameters.merge message: messageText
+    # round-trip through JSON, to increase emulation fidelity to server
+    parameters = BW::JSON.parse(BW::JSON.generate(parameters))
+
     notification = UILocalNotification.alloc.init
     notification.fireDate = NSDate.dateWithTimeIntervalSinceNow(delay)
     notification.alertBody = messageText
     notification.applicationIconBadgeNumber = 1
-    notification.userInfo = parameters
+    notification.userInfo = {
+      notificationName: EmulatedServerMessageName,
+      messageType: messageType,
+      messageText: messageText,
+      parameters: parameters
+    }
     UIApplication.sharedApplication.scheduleLocalNotification notification
   end
+
+  # alias_method 'sendMessageToClient:messageTemplate:withDelay:withParameters:', 'sendMessageToClientUsingFirebase:messageTemplate:withDelay:withParameters:'
+  alias_method 'sendMessageToClient:messageTemplate:withDelay:withParameters:', 'sendMessageToClientUsingLocalNotifications:messageTemplate:withDelay:withParameters:'
 end
 
 module MessageTemplate
   def self.messageTemplateToString(template, withParameters:parameters)
     # keyword keys into strings
-    parameters = BW::JSON.parse(BW::JSON.generate(parameters)) if parameters
-    return template.gsub('{{sitter.firstName}}') { Sitter.findSitterById(parameters['sitterId']).firstName }
+    # parameters = BW::JSON.parse(BW::JSON.generate(parameters)) if parameters
+    parameters = MotionMap::Map.new(parameters)
+    # parameters = Map.new(parameters)
+    return template.gsub('{{sitter.firstName}}') { Sitter.findSitterById(parameters[:sitterId]).firstName }
   end
 end

@@ -37,6 +37,7 @@ GEM
       cocoapods (>= 0.26.2)
     motion-firebase (2.0.0)
     motion-layout (0.0.1)
+    motion-map (0.0.4)
     motion-require (0.0.7)
     motion-settings-bundle (0.2.0)
       plist (~> 3.1.0)
@@ -65,6 +66,7 @@ DEPENDENCIES
   motion-cocoapods
   motion-firebase
   motion-layout
+  motion-map
   motion-settings-bundle
   require_all
   rest-client

@@ -13,3 +13,9 @@ KeynoteShadowRadiusRatio = 0.25
 NSCachesDirectory = 13 unless Object.const_defined?(:NSCachesDirectory)
 NSNumberFormatterSpellOutStyle = 5 unless Object.const_defined?(:NSNumberFormatterSpellOutStyle)
 UIFontDescriptorTraitBold = 1 << 1 unless Object.const_defined?(:UIFontDescriptorTraitBold)
+
+EKEntityTypeEvent = 0 unless Object.const_defined?(:EKEntityTypeEvent)
+EKAuthorizationStatusNotDetermined = 0
+EKAuthorizationStatusRestricted = 1
+EKAuthorizationStatusDenied = 2
+EKAuthorizationStatusAuthorized = 3
