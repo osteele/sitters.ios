@@ -44,6 +44,7 @@ Motion::Project::App.setup do |app|
     pod 'Facebook-iOS-SDK'
     pod 'FMDB'
     pod 'GRMustache'
+    pod 'ISO8601DateFormatter'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
     pod 'TestFlightSDK'

@@ -1,10 +1,11 @@
 class NSDate
   def ISO8601StringFromDate
-    ISO8601DateFormatter.stringFromDate(self)
+    ISO8601DateFormatterInstance.stringFromDate(self)
   end
 
   def self.dateFromISO8601String(string)
-    ISO8601DateFormatter.dateFromString(string)
+    @formatter ||= ISO8601DateFormatter.alloc.init
+    @formatter.dateFromString(string)
   end
 
   def relativeDayFromDate

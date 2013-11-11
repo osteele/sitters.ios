@@ -7,6 +7,7 @@ PODS:
     - FMDB/common
   - GRMustache (6.8.3):
     - JRSwizzle (~> 1.0)
+  - ISO8601DateFormatter (0.7)
   - JRSwizzle (1.0)
   - NSDate-Extensions (0.0.1)
   - ReactiveCocoa (2.1.6):
@@ -21,6 +22,7 @@ DEPENDENCIES:
   - Facebook-iOS-SDK
   - FMDB
   - GRMustache
+  - ISO8601DateFormatter
   - NSDate-Extensions
   - ReactiveCocoa
   - TestFlightSDK
@@ -29,6 +31,7 @@ SPEC CHECKSUMS:
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
+  ISO8601DateFormatter: 00944e437ea647f4244454ce8809d313861d08de
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
   ReactiveCocoa: 63b3bae2d4008b897eb982042dfbc379f6d04a2e

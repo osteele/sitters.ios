@@ -1,4 +1,4 @@
-ISO8601DateFormatter = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+ISO8601DateFormatterInstance = NSDateFormatter.alloc.init.setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
 
 ApplicationDidLoadDataNotification = NSNotification.notificationWithName('ApplicationDidLoadData', object:nil)
 ApplicationWillAttemptLoginNotification = NSNotification.notificationWithName('ApplicationWillAttemptLogin', object:nil)
