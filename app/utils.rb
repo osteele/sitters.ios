@@ -1,13 +1,3 @@
-class NSDate
-  def ISO8601StringFromDate
-    ISO8601DateFormatter.stringFromDate(self)
-  end
-
-  def self.dateFromISO8601String(string)
-    ISO8601DateFormatter.dateFromString(string)
-  end
-end
-
 class UIFont
   def fontWithSymbolicTraits(traits)
     fontName = fontDescriptor.fontDescriptorWithSymbolicTraits(traits).postscriptName
@@ -35,13 +25,6 @@ class UIView < UIResponder
   def ty; self.transform.ty; end
   def tx=(tx); transform = self.transform; transform.tx = tx; self.transform = transform; end
   def ty=(ty); transform = self.transform; transform.ty = ty; self.transform = transform; end
-end
-
-# Returns an NSDateFormatter for `template` for the current locale.
-# This is not cached. It's the caller's responsibility to update this if the locale changes.
-def dateFormatter(template)
-  template = NSDateFormatter.dateFormatFromTemplate(template, options:0, locale:NSLocale.currentLocale)
-  dayLabelFormatter = NSDateFormatter.alloc.init.setDateFormat(template)
 end
 
 # `Scheduler.after seconds, &block` calls `block` after `seconds` seconds.

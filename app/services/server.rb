@@ -40,9 +40,13 @@ class Server
     NSLog "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
-      messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:message['parameters'])
-      App.alert message['messageTitle'], message:messageText
+      # messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:parameters)
+      # App.alert message['messageTitle'], message:messageText
       userMessagesFB[snapshot.name].clear!
+      messageType = message['messageType']
+      parameters = message['parameters']
+      NSLog "Relaying firebase #{messageType} with #{parameters}"
+      NSNotificationCenter.defaultCenter.postNotificationName messageType, object:self, userInfo:parameters
     end
   end
 
@@ -82,7 +86,7 @@ class EmulatedServer
   def initialize
     App.notification_center.observe(EmulatedServerMessageName) do |notification|
       messageType = notification.userInfo['messageType']
-      NSLog "relaying #{messageType} with #{notification.userInfo['parameters']}"
+      NSLog "Relaying notification #{messageType} with #{notification.userInfo['parameters']}"
       NSNotificationCenter.defaultCenter.postNotificationName messageType, object:self, userInfo:notification.userInfo['parameters']
     end
   end
@@ -103,7 +107,7 @@ class EmulatedServer
         family.addSitter sitter if sitter
       end
 
-    when :request_sitter, :reserve_sitter
+    when :reserve_sitter
       sendMessageToClient :sitterConfirmedReservation,
         messageTemplate:"{{sitter.firstName}} has confirmed your request.",
         withDelay:simulateSitterConfirmationDelay,
@@ -111,6 +115,9 @@ class EmulatedServer
 
     when :set_sitter_count
       Family.instance.setSitterCount parameters[:count]
+
+    else
+      NSLog "Server emulator: unknown request type %@", requestKey
 
     end
   end
