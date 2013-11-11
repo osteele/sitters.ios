@@ -1,4 +1,4 @@
-describe "Application 'mosit'" do
+describe "Application 'sitters'" do
   before do
     @app = UIApplication.sharedApplication
   end

@@ -1,0 +1,3 @@
+language: objective-c
+install: bundle install && bundle exec rake pods:install
+script: bundle exec rake spec
