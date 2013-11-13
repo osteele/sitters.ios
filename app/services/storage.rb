@@ -23,8 +23,8 @@ class Storage
     end
   end
 
-  def firebase
-    UIApplication.sharedApplication.delegate.firebase
+  def firebaseEnvironment
+    UIApplication.sharedApplication.delegate.firebaseEnvironment
   end
 
   def withJSONCache(cacheKey, version:cacheVersion, &block)
@@ -68,15 +68,15 @@ class Storage
     previous_json = nil
     if data
       previous_json = BW::JSON.generate(data)
-      NSLog "Cache hit: #{path}"
+      NSLog "Cache hit: %@", path
       Dispatch::Queue.main.async do
         block.call data
       end
     else
-      NSLog "Cache miss: #{path}"
+      NSLog "Cache miss: %@", path
     end
-    NSLog "Subscribing to #{path}"
-    firebase[path].on(:value) do |snapshot|
+    NSLog "Subscribing to %@", firebaseEnvironment[path]
+    firebaseEnvironment[path].on(:value) do |snapshot|
       data = snapshot.value
       if data and (not previous_json or previous_json != BW::JSON.generate(data))
         NSLog "Cache update: #{path}"

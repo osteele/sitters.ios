@@ -5,8 +5,8 @@ class Server
   end
 
   def initialize
-    @firebaseRoot = UIApplication.sharedApplication.delegate.firebase
-    @requestsFB = firebaseRoot['request']
+    @firebaseEnvironment = UIApplication.sharedApplication.delegate.firebaseEnvironment
+    @requestsFB = firebaseEnvironment['request']
   end
 
   def sendRequest(requestKey, withParameters:parameters)
@@ -36,7 +36,7 @@ class Server
 
   def subscribeToMessagesForAccount(account)
     unsubscribeFromMessages
-    @userMessagesFB = firebaseRoot['message'][account.accountKey]
+    @userMessagesFB = firebaseEnvironment['message'][account.accountKey]
     NSLog "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
@@ -63,7 +63,7 @@ class Server
 
   private
 
-  attr_reader :firebaseRoot
+  attr_reader :firebaseEnvironment
   attr_reader :requestsFB
   attr_reader :messagesFB
   attr_reader :userMessagesFB
@@ -125,9 +125,9 @@ class EmulatedServer
   private
 
   def messagesFB
-    firebaseRoot = UIApplication.sharedApplication.delegate.firebase
+    firebaseEnvironment = UIApplication.sharedApplication.delegate.firebaseEnvironment
     # don't cache, since changes when account changes
-    return firebaseRoot['message'][Account.instance.accountKey]
+    return firebaseEnvironment['message'][Account.instance.accountKey]
   end
 
   def simulateSitterConfirmationDelay

@@ -1,6 +1,6 @@
 class AppDelegate
   include BW::KVO
-  BackgroundColor = UIColor.whiteColor #'#A6A6A6'.to_color
+  BackgroundColor = UIColor.whiteColor
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
   SplashFadeAnimationDuration = 0.3
 
@@ -12,7 +12,6 @@ class AppDelegate
     application.applicationIconBadgeNumber = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    # @window.backgroundColor = BackgroundColor
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
       splashView = SplashController.alloc.init.view
@@ -43,8 +42,16 @@ class AppDelegate
     end
   end
 
-  def firebase
-    @fb ||= Firebase.new(FirebaseNS)
+  def firebaseRoot
+    @firebaseRoot ||= Firebase.new(FirebaseNS)
+  end
+
+  def firebaseEnvironment
+    @firebaseEnvironment ||= begin
+      fb = firebaseRoot
+      fb = fb['development'] if Device.simulator?
+      fb
+    end
   end
 
 

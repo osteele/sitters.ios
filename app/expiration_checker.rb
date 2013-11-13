@@ -16,7 +16,7 @@ class ExpirationChecker
     end
 
     app = UIApplication.sharedApplication.delegate
-    app.firebase['expirationDate'].on(:value) do |snapshot|
+    app.firebaseEnvironment['expirationDate'].on(:value) do |snapshot|
       date = NSDate.dateFromISO8601String(snapshot.value)
       self.expired = true if date and buildDate < date
     end

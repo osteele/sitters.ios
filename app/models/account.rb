@@ -9,7 +9,7 @@ class Account
   end
 
   def initialize
-    firebase['.info/authenticated'].on(:value) do |snapshot|
+    firebaseRoot['.info/authenticated'].on(:value) do |snapshot|
       # value is 0 on initialization, and then true or false
       NSLog "Auth status = #{snapshot.value}"
       self.user = nil if snapshot.value == false
@@ -90,6 +90,10 @@ class Account
         self.thirdPartyUserData['displayName']
       end
 
+      def email
+        super || self.thirdPartyUserData['email']
+      end
+
       def locationName
         location = self.thirdPartyUserData['location']
         location ? location['name'] : nil
@@ -98,12 +102,15 @@ class Account
   end
 
   def auth
-    @auth ||= FirebaseSimpleLogin.new(firebase)
+    @auth ||= FirebaseSimpleLogin.new(firebaseRoot)
   end
 
-  def firebase
-    app = UIApplication.sharedApplication.delegate
-    return app.firebase
+  def firebaseRoot
+    return UIApplication.sharedApplication.delegate.firebaseRoot
+  end
+
+  def firebaseEnvironment
+    return UIApplication.sharedApplication.delegate.firebaseEnvironment
   end
 
   def family
@@ -145,12 +152,12 @@ class Account
     Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "account/#{accountKey}"
-    @currentAccountFB = firebase[accountPath]
+    @currentAccountFB = firebaseEnvironment[accountPath]
     Storage.instance.onCachedFirebaseValue(accountPath) do |accountData|
       if accountData
         family_id = accountData['family_id']
         familyPath = "family/#{family_id}"
-        @currentFamilyFB = firebase[familyPath]
+        @currentFamilyFB = firebaseEnvironment[familyPath]
         Storage.instance.onCachedFirebaseValue(familyPath) do |familyData|
           @familyData = familyData
           family.id = family_id
