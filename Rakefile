@@ -13,7 +13,7 @@ require './version'
 require_all 'tasks'
 require_all 'config'
 
-FACEBOOK_APP_ID = ENV.require('FACEBOOK_APP_ID')
+FACEBOOK_APP_ID = ENV.require('FACEBOOK_APP_ID') unless ENV['TRAVIS']
 
 Motion::Project::App.setup do |app|
   # Name, version, and identifier
@@ -24,7 +24,7 @@ Motion::Project::App.setup do |app|
   app.version = BUILD_VERSION
 
   # Authentication and entitlements
-  set_provisioning_profile app
+  set_provisioning_profile app unless ENV['TRAVIS']
   # app.entitlements['keychain-access-groups'] = ["#{app.seed_id}.#{app.identifier}"]
 
   # Interface
@@ -55,10 +55,12 @@ Motion::Project::App.setup do |app|
   app.vendor_project 'vendor/BlockBuilder', :static
 
   # Facebook
-  app.info_plist['FacebookAppID'] = FACEBOOK_APP_ID
-  app.info_plist['FacebookAppId'] = FACEBOOK_APP_ID # works around bug in FB SDK
-  app.info_plist['FacebookDisplayName'] = 'Seven Sitters'
-  app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FACEBOOK_APP_ID}"]}]
+  unless ENV['TRAVIS']
+    app.info_plist['FacebookAppID'] = FACEBOOK_APP_ID
+    app.info_plist['FacebookAppId'] = FACEBOOK_APP_ID # works around bug in FB SDK
+    app.info_plist['FacebookDisplayName'] = 'Seven Sitters'
+    app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FACEBOOK_APP_ID}"]}]
+  end
 
   sh "grunt update"
 end

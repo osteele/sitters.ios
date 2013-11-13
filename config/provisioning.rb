@@ -13,7 +13,7 @@ module Motion; module Project;
       return get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
     end
   end
-end; end
+end; end unless ENV['TRAVIS']
 
 # Can't use Motion::Project::App.setup because it runs before archive:distribution sets the build mode
 def set_provisioning_profile(app)
