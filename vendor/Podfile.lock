@@ -10,12 +10,12 @@ PODS:
   - ISO8601DateFormatter (0.7)
   - JRSwizzle (1.0)
   - NSDate-Extensions (0.0.1)
-  - ReactiveCocoa (2.1.6):
+  - ReactiveCocoa (2.1.7):
     - ReactiveCocoa/Core
     - ReactiveCocoa/no-arc
-  - ReactiveCocoa/Core (2.1.6):
+  - ReactiveCocoa/Core (2.1.7):
     - ReactiveCocoa/no-arc
-  - ReactiveCocoa/no-arc (2.1.6)
+  - ReactiveCocoa/no-arc (2.1.7)
   - TestFlightSDK (2.1.1-beta)
 
 DEPENDENCIES:
@@ -34,7 +34,7 @@ SPEC CHECKSUMS:
   ISO8601DateFormatter: 00944e437ea647f4244454ce8809d313861d08de
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
-  ReactiveCocoa: 63b3bae2d4008b897eb982042dfbc379f6d04a2e
+  ReactiveCocoa: 1117f7968c8667d2ca00b5aa47156fabcb56af75
   TestFlightSDK: dea28c16f0bf65c49c4ed8939b2ae0b0ed9bf8b0
 
-COCOAPODS: 0.27.1
+COCOAPODS: 0.28.0
