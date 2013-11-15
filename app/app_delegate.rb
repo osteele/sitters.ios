@@ -48,9 +48,8 @@ class AppDelegate
 
   def firebaseEnvironment
     @firebaseEnvironment ||= begin
-      fb = firebaseRoot
-      fb = fb['development'] if Device.simulator?
-      fb
+      namespace = Device.simulator? ? 'development' : 'production'
+      firebaseRoot[namespace]
     end
   end
 
