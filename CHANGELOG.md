@@ -1,5 +1,10 @@
+## Master
+* Use CardIO to enter credit card information. (Currently not stored.)
+* Runs against latest cloud server.
+
 ## 0.2.9 (2013-11-07)
-* UI refinements.
+* Improve timebar animation.
+* Misc. other UI refinements.
 
 ## 0.2.8 (2013-11-02)
 * Larger tap targets for day and hours indicators.

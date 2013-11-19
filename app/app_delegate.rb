@@ -35,7 +35,6 @@ class AppDelegate
     end
 
     App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
-      puts 'applicationWillAttemptLogin'
       @loginProgress ||= MRProgressOverlayView.showOverlayAddedTo window, animated:true
       @loginProgress.titleLabelText = "Connecting"
     end

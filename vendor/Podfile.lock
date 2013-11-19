@@ -1,4 +1,5 @@
 PODS:
+  - CardIO (3.4.0)
   - Facebook-iOS-SDK (3.9.0)
   - FMDB (2.1):
     - FMDB/standard
@@ -20,6 +21,7 @@ PODS:
   - TestFlightSDK (2.1.1-beta)
 
 DEPENDENCIES:
+  - CardIO
   - Facebook-iOS-SDK
   - FMDB
   - GRMustache
@@ -30,6 +32,7 @@ DEPENDENCIES:
   - TestFlightSDK
 
 SPEC CHECKSUMS:
+  CardIO: 0a892c73eee7d2649cc281f84fbd113916f0c9a7
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930

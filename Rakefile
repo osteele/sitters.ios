@@ -33,6 +33,8 @@ Motion::Project::App.setup do |app|
   # app.info_plist['UIStatusBarStyle'] = 'UIStatusBarStyleBlackTranslucent'
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
+  app.info_plist['CardioAppToken'] = ENV['CARDIO_APP_TOKEN'] if ENV['CARDIO_APP_TOKEN']
+
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
 
   # Testflight
@@ -46,11 +48,17 @@ Motion::Project::App.setup do |app|
     pod 'GRMustache'
     pod 'ISO8601DateFormatter'
     pod 'MRProgress'
+    pod "CardIO"
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
     pod 'TestFlightSDK'
   end
-  app.weak_frameworks += %w(AdSupport Social)
+
+  # Firebase Facebook Auth
+  app.weak_frameworks += %w[AdSupport Social]
+
+  # CardIO
+  app.weak_frameworks += %w[AudioToolbox AVFoundation CoreGraphics CoreMedia CoreVideo Foundation MobileCoreServices OpenGLES QuartzCore Security UIKit]
 
   app.vendor_project 'lib/OSUtils', :static
   app.vendor_project 'vendor/BlockBuilder', :static
