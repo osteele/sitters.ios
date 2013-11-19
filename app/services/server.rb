@@ -37,6 +37,9 @@ class Server
   end
 
   def setSitterCount(count)
+    # The early return presents a race condition for setting this twice in a high-latency
+    # environment, but this method is only used for test and demo purposes anyway.
+    return if count == Family.instance.sitters.length
     sendRequest :set_sitter_count, withParameters: {count:count}
   end
 
