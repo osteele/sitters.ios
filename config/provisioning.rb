@@ -20,8 +20,8 @@ def set_provisioning_profile(app)
   app.development do
     puts 'Provisioning for development'
     app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
-    # app.entitlements['aps-environment'] = 'development'
-    # app.entitlements['get-task-allow'] = true
+    app.entitlements['aps-environment'] = 'development'
+    app.entitlements['get-task-allow'] = true
   end
 
   app.release do
