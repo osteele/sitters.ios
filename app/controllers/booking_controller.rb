@@ -16,21 +16,23 @@ class BookingController < UIViewController
 
     App.notification_center.observe('sitterAcceptedConnection') do |notification|
       sitter = Sitter.findSitterById(notification.userInfo['sitterId'])
-      return unless sitter
-      App.alert 'Sitter Confirmed', message:"#{sitter.firstName} has accepted your request. We’ve added her to your Seven Sitters."
+      if sitter
+        App.alert 'Sitter Confirmed', message:"#{sitter.firstName} has accepted your request. We’ve added her to your Seven Sitters."
+      end
     end
 
     App.notification_center.observe('sitterConfirmedReservation') do |notification|
       sitter = Sitter.findSitterById(notification.userInfo['sitterId'])
-      return unless sitter
-      startTime = NSDate.dateFromISO8601String(notification.userInfo['startTime'])
-      endTime = NSDate.dateFromISO8601String(notification.userInfo['endTime'])
-      hourFormatter = NSDateFormatter.alloc.init.setTimeStyle(NSDateFormatterShortStyle)
-      startTimeString = hourFormatter.stringFromDate(startTime)
-      endTimeString = hourFormatter.stringFromDate(endTime)
-      dayString = startTime.relativeDayFromDate
-      message = "#{sitter.firstName} has confirmed your reservation from #{startTimeString} to #{endTimeString} #{dayString}"
-      App.alert 'Sitter Confirmed', message:message
+      if sitter
+        startTime = NSDate.dateFromISO8601String(notification.userInfo['startTime'])
+        endTime = NSDate.dateFromISO8601String(notification.userInfo['endTime'])
+        hourFormatter = NSDateFormatter.alloc.init.setTimeStyle(NSDateFormatterShortStyle)
+        startTimeString = hourFormatter.stringFromDate(startTime)
+        endTimeString = hourFormatter.stringFromDate(endTime)
+        dayString = startTime.relativeDayFromDate
+        message = "#{sitter.firstName} has confirmed your reservation from #{startTimeString} to #{endTimeString} #{dayString}"
+        App.alert 'Sitter Confirmed', message:message
+      end
     end
   end
 
