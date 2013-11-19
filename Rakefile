@@ -45,6 +45,7 @@ Motion::Project::App.setup do |app|
     pod 'FMDB'
     pod 'GRMustache'
     pod 'ISO8601DateFormatter'
+    pod 'MRProgress'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
     pod 'TestFlightSDK'

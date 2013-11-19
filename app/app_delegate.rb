@@ -1,8 +1,15 @@
 class AppDelegate
   include BW::KVO
+
+  private
+
   BackgroundColor = UIColor.whiteColor
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
   SplashFadeAnimationDuration = 0.3
+
+  attr_reader :window
+
+  public
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     return true if RUBYMOTION_ENV == 'test'
@@ -13,7 +20,7 @@ class AppDelegate
     application.applicationIconBadgeNumber = 0
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+    window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
       attachSplashViewTo controller.view
     end
@@ -24,11 +31,22 @@ class AppDelegate
     end
 
     observe(ExpirationChecker.instance, 'expired') do |_, expired|
-      @window.rootViewController = ExpiredController.alloc.init if expired
+      window.rootViewController = ExpiredController.alloc.init if expired
     end
 
-    @window.rootViewController.wantsFullScreenLayout = true
-    @window.makeKeyAndVisible
+    App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
+      puts 'applicationWillAttemptLogin'
+      @loginProgress ||= MRProgressOverlayView.showOverlayAddedTo window, animated:true
+      @loginProgress.titleLabelText = "Connecting"
+    end
+
+    App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
+      @loginProgress.dismiss true
+      @loginProgress = nil
+    end
+
+    window.rootViewController.wantsFullScreenLayout = true
+    window.makeKeyAndVisible
     true
   end
 
