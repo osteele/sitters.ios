@@ -1,4 +1,13 @@
 class Server
+  private
+
+  attr_reader :firebaseEnvironment
+  attr_reader :requestsFB
+  attr_reader :messagesFB
+  attr_reader :userMessagesFB
+
+  public
+
   def self.instance
     Dispatch.once { @instance ||= new }
     @instance
@@ -17,6 +26,7 @@ class Server
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
       end
     end
+    NSLog "Request %@ with %@", requestKey, parameters
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
@@ -35,7 +45,7 @@ class Server
   end
 
   def subscribeToMessagesForAccount(account)
-    unsubscribeFromMessages
+    unsubscribeFromUserMessages
     @userMessagesFB = firebaseEnvironment['message'][account.accountKey]
     NSLog "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
@@ -55,18 +65,13 @@ class Server
     sendRequest :register_device_token, withParameters:{token:token}
   end
 
-  def unsubscribeFromMessages
-    NSLog "Unsubscribing from %@", userMessagesFB if userMessagesFB
-    userMessagesFB.off if userMessagesFB
-    @userMessagesFB = nil
+  def unsubscribeFromUserMessages
+    if userMessagesFB
+      NSLog "Unsubscribing from %@", userMessagesFB
+      userMessagesFB.off
+      @userMessagesFB = nil
+    end
   end
-
-  private
-
-  attr_reader :firebaseEnvironment
-  attr_reader :requestsFB
-  attr_reader :messagesFB
-  attr_reader :userMessagesFB
 
   def shouldEmulateServer
     return NSUserDefaults.standardUserDefaults['emulateServer'] || Account.instance.user.nil?

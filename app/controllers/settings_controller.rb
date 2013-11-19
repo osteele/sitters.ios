@@ -1,6 +1,10 @@
 class SettingsController < Formotion::FormController
   include BW::KVO
 
+  def init
+    self.initWithForm(self.class.form)
+  end
+
   def initWithNibName(name, bundle:bundle)
     super
     self.tap do

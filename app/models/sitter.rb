@@ -10,10 +10,10 @@ class Sitter
     @sitters ||= []
   end
 
-  def self.updateFrom(json)
+  def self.updateFrom(sitterData)
     self.willChangeValueForKey :all
     @sitters ||= []
-    @sitters = json.map do |data|
+    @sitters = sitterData.map do |data|
       sitter = findSitterById(data['id'])
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end.reject(&:nil?)

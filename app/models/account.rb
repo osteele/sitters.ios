@@ -1,5 +1,12 @@
 class Account
   include BW::KVO
+
+  private
+  # Also in the build environment
+  FacebookAppId = '245805915569604'
+
+  public
+
   attr_accessor :user
   attr_reader :deviceToken
 
@@ -82,8 +89,6 @@ class Account
 
   private
 
-  FacebookAppId = '245805915569604'
-
   def add_user_methods(user)
     class << user
       def displayName
@@ -144,7 +149,7 @@ class Account
       @currentFamilyFB = nil
     end
     @familyData = nil
-    Server.instance.unsubscribeFromMessages
+    Server.instance.unsubscribeFromUserMessages
     return unless user
 
     Server.instance.registerUser user

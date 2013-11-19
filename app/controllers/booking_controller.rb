@@ -73,19 +73,19 @@ class BookingController < UIViewController
     navigationController.pushViewController sitterDetailsController, animated:true
   end
 
-  def performSitterAction(action, sitter:sitter)
+  def performSitterAction(requestType, sitter:sitter)
     parameters = {sitterId: sitter.id, familyId: Family.instance.id}
-    if [:request_sitter, :reserve_sitter].include?(action)
-      action = :reserve_sitter
+    if [:request_sitter, :reserve_sitter].include?(requestType)
+      requestType = :reserve_sitter
       parameters = parameters.merge(startTime:timeSelection.startTime, endTime:timeSelection.endTime)
     end
-    Server.instance.sendRequest action, withParameters:parameters
+    Server.instance.sendRequest requestType, withParameters:parameters
 
     messageTemplate = {
       add_sitter: "We’ve just sent a request to add {{sitter.firstName}} to your Seven Sitters. We’ll let you know when she confirms.",
       # reserve_sitter: "We’ve reserved {{sitter.firstName}} to babysit for you at the specified time. We’ll let you know when she confirms.",
       reserve_sitter: "We’ve just sent a request to {{sitter.firstName}}. We’ll let you know whether she’s available.",
-    }[action]
+    }[requestType]
     App.alert 'Request Sent', message:MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters) if messageTemplate
   end
 

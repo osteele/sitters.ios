@@ -15,15 +15,11 @@ class AppDelegate
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     @window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
-      splashView = SplashController.alloc.init.view
-      controller.view.addSubview splashView
-      App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
-        UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: -> _ { splashView.removeFromSuperview }
-      end
+      attachSplashViewTo controller.view
     end
 
-    Storage.instance.onCachedFirebaseValue('demo/sitters') do |data|
-      Sitter.updateFrom data
+    Storage.instance.onCachedFirebaseValue('sitter') do |sitterData|
+      Sitter.updateFrom sitterData.compact
       NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
     end
 
@@ -48,12 +44,13 @@ class AppDelegate
   end
 
   def firebaseEnvironment
-    @firebaseEnvironment ||= begin
-      namespace = Device.simulator? ? 'development' : 'production'
-      firebaseRoot[namespace]
-    end
+    @firebaseEnvironment ||= firebaseRoot[serverEnvironmentName]
   end
 
+  def serverEnvironmentName
+    return 'development' if NSUserDefaults.standardUserDefaults['simulateSitterConfirmationDelay']
+    Device.simulator? ? 'development' : 'production'
+  end
 
   #
   # Notifications
@@ -96,7 +93,7 @@ class AppDelegate
       SearchSittersController.alloc.init,
       UpdatesController.alloc.init,
       ChatController.alloc.init,
-      SettingsController.alloc.initWithForm(SettingsController.form)
+      SettingsController.alloc.init
     ]
   end
 
@@ -107,5 +104,13 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
+  end
+
+  def attachSplashViewTo(view)
+    splashView = SplashController.alloc.init.view
+    view.addSubview splashView
+    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
+      UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
+    end
   end
 end

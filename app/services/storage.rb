@@ -64,7 +64,7 @@ class Storage
   def onCachedFirebaseValue(path, options={}, &block)
     cacheKey = options[:cacheKey] || path
     cacheVersion = options[:cacheVersion] || 1
-    data = fetchDataForKey(cacheKey, version:cacheVersion)
+    data = UseCache && fetchDataForKey(cacheKey, version:cacheVersion)
     previous_json = nil
     if data
       previous_json = BW::JSON.generate(data)
@@ -79,11 +79,15 @@ class Storage
     firebaseEnvironment[path].on(:value) do |snapshot|
       data = snapshot.value
       if data and (not previous_json or previous_json != BW::JSON.generate(data))
-        NSLog "Cache update: #{path}"
+        NSLog "Subscription: %@", path
         storeData data, key:cacheKey, version:cacheVersion
         block.call data
       end
       previous_json = nil
     end
   end
+
+  private
+
+  UseCache = true
 end
