@@ -55,6 +55,42 @@ class BookingController < UIViewController
     timeSelectionController.setMode mode, animated:true
   end
 
+  def inviteSitter
+    peoplePicker = ABPeoplePickerNavigationController.alloc.init
+    peoplePicker.peoplePickerDelegate = self
+    self.presentViewController peoplePicker, animated:true, completion:nil
+  end
+
+  def peoplePickerNavigationController(controller, shouldContinueAfterSelectingPerson:person)
+    return true
+  end
+
+  def peoplePickerNavigationController(controller, shouldContinueAfterSelectingPerson:person, property:property, identifier:id)
+    index = id
+    # index = ABMultiValueGetIndexForIdentifier(property, id) unless id == KABMultiValueInvalidIdentifier
+    case property
+    when KABPersonEmailProperty
+    when KABPersonFirstNameProperty
+      name = 'email'
+    when KABPersonPhoneProperty
+      name = 'phone'
+    else
+      return false
+    end
+    self.dismissViewControllerAnimated true, completion:nil
+    values = ABRecordCopyValue(person, property)
+    array = ABMultiValueCopyArrayOfAllValues(values)
+    value = array[index]
+    firstName = ABRecordCopyValue(person, KABPersonFirstNameProperty)
+    message = "Your invitation will be sent to %s at %s." % [firstName, value]
+    App.alert "Invitation Underway", message:message
+    return false
+  end
+
+  def peoplePickerNavigationControllerDidCancel(controller)
+    self.dismissViewControllerAnimated true, completion:nil
+  end
+
   def presentSuggestedSitters
     TestFlight.passCheckpoint 'Suggested sitters'
     recommendedSittersController.title = 'Sitters'

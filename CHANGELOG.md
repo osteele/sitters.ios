@@ -1,5 +1,6 @@
 ## Master
 * Use CardIO to enter credit card information. (Currently not stored.)
+* “Invite a sitter” displays contacts from address book.
 * Runs against latest cloud server.
 
 ## 0.2.9 (2013-11-07)

@@ -54,6 +54,8 @@ Motion::Project::App.setup do |app|
     pod 'TestFlightSDK'
   end
 
+  app.weak_frameworks += %w[AddressBook AddressBookUI]
+
   # Firebase Facebook Auth
   app.weak_frameworks += %w[AdSupport Social]
 

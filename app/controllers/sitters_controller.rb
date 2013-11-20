@@ -30,7 +30,7 @@ class SittersController < UIViewController
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds), :scroll do
       createSitterAvatars
 
-      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button, do
+      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button do
         subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
         caption = subview UILabel, :big_button_caption, text: '', userInteractionEnabled: false
 
@@ -40,10 +40,11 @@ class SittersController < UIViewController
       end
       viewRecommended.when_tapped { delegate.presentSuggestedSitters }
 
-      subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :invite_sitter_button, do
+      inviteSitter = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :invite_sitter_button do
         subview UILabel, :big_button_label, text: 'Invite a Sitter'
         subview UILabel, :big_button_caption, text: 'to add a sitter you know'
       end
+      inviteSitter.when_tapped { delegate.inviteSitter }
 
       addSittersLabel = subview UILabel, :add_sitters_text
       addSittersCaption = subview UILabel, :add_sitters_caption
