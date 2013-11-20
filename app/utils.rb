@@ -51,7 +51,7 @@ end
 module Logging
   def self.breadcrumb(msg)
     NSLog msg
-    Crittercism.leaveBreadcrumb msg if UIApplication.sharedApplication.delegate.crittercismEnabled
+    Crittercism.leaveBreadcrumb msg if App.delegate.crittercismEnabled
     TestFlight.passCheckpoint msg if Object.const_defined?(:TestFlight)
   end
 end

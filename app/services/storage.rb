@@ -24,7 +24,7 @@ class Storage
   end
 
   def firebaseEnvironment
-    UIApplication.sharedApplication.delegate.firebaseEnvironment
+    App.delegate.firebaseEnvironment
   end
 
   def withJSONCache(cacheKey, version:cacheVersion, &block)

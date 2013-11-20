@@ -37,7 +37,7 @@ class SettingsController < Formotion::FormController
   end
 
   def createForm
-    app = UIApplication.sharedApplication.delegate
+    app = App.delegate
     form = Formotion::Form.new
 
     account = Account.instance

@@ -14,7 +14,7 @@ class Server
   end
 
   def initialize
-    @firebaseEnvironment = UIApplication.sharedApplication.delegate.firebaseEnvironment
+    @firebaseEnvironment = App.delegate.firebaseEnvironment
     @requestsFB = firebaseEnvironment['request']
   end
 
@@ -59,7 +59,7 @@ class Server
       messageType = message['messageType']
       parameters = message['parameters']
       NSLog "Relaying firebase #{messageType} with #{parameters}"
-      NSNotificationCenter.defaultCenter.postNotificationName messageType, object:self, userInfo:parameters
+      App.notification_center.postNotificationName messageType, object:self, userInfo:parameters
     end
   end
 
@@ -95,7 +95,7 @@ class EmulatedServer
     App.notification_center.observe(EmulatedServerMessageName) do |notification|
       messageType = notification.userInfo['messageType']
       NSLog "Relaying notification #{messageType} with #{notification.userInfo['parameters']}"
-      NSNotificationCenter.defaultCenter.postNotificationName messageType, object:self, userInfo:notification.userInfo['parameters']
+      App.notification_center.postNotificationName messageType, object:self, userInfo:notification.userInfo['parameters']
     end
   end
 
@@ -133,7 +133,7 @@ class EmulatedServer
   private
 
   def messagesFB
-    firebaseEnvironment = UIApplication.sharedApplication.delegate.firebaseEnvironment
+    firebaseEnvironment = App.delegate.firebaseEnvironment
     # don't cache, since changes when account changes
     return firebaseEnvironment['message'][Account.instance.accountKey]
   end

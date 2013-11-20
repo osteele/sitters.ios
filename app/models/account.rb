@@ -46,7 +46,7 @@ class Account
   def login
     return if user
     Logging.breadcrumb "Login"
-    NSNotificationCenter.defaultCenter.postNotification ApplicationWillAttemptLoginNotification
+    App.notification_center.postNotification ApplicationWillAttemptLoginNotification
     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
       authDidReturnUser user, error:error
@@ -110,11 +110,11 @@ class Account
   end
 
   def firebaseRoot
-    return UIApplication.sharedApplication.delegate.firebaseRoot
+    return App.delegate.firebaseRoot
   end
 
   def firebaseEnvironment
-    return UIApplication.sharedApplication.delegate.firebaseEnvironment
+    return App.delegate.firebaseEnvironment
   end
 
   def family
@@ -132,7 +132,7 @@ class Account
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
     end
-    NSNotificationCenter.defaultCenter.postNotificationName ApplicationDidAttemptLoginNotification.name,
+    App.notification_center.postNotificationName ApplicationDidAttemptLoginNotification.name,
       object:self,
       userInfo:{error:error, user:user}
   end

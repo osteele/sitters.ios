@@ -31,7 +31,7 @@ class AppDelegate
 
     Storage.instance.onCachedFirebaseValue('sitter') do |sitterData|
       Sitter.updateFrom sitterData.compact
-      NSNotificationCenter.defaultCenter.postNotification ApplicationDidLoadDataNotification
+      App.notification_center.postNotification ApplicationDidLoadDataNotification
     end
 
     observe(ExpirationChecker.instance, 'expired') do |_, expired|
@@ -111,7 +111,7 @@ class AppDelegate
     notificationName = notification.userInfo['notificationName']
     NSLog "didReceiveLocalNotification #{notificationName}"
     userInfo = notification.userInfo
-    NSNotificationCenter.defaultCenter.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
+    App.notification_center.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
     application.applicationIconBadgeNumber = 0
   end
 
