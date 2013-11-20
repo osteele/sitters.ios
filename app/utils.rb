@@ -48,9 +48,14 @@ class Scheduler
   end
 end
 
-module Logging
-  def self.breadcrumb(msg)
-    NSLog msg
+module Logger
+  def self.info(msg, *args)
+    msg = msg.gsub('%@', '%s') % args.map { |x| x.description.gsub(/\s*\n\s*/, ' ') }
+    Motion::Log.info msg
+  end
+
+  def self.checkpoint(msg)
+    Logger.info msg
     Crittercism.leaveBreadcrumb msg if App.delegate.crittercismEnabled
     TestFlight.passCheckpoint msg if Object.const_defined?(:TestFlight)
   end

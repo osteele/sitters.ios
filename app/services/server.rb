@@ -26,7 +26,7 @@ class Server
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
       end
     end
-    NSLog "Request %@ with %@", requestKey, parameters
+    Logger.info "Request %@ with %@", requestKey, parameters
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
@@ -50,7 +50,7 @@ class Server
   def subscribeToMessagesForAccount(account)
     unsubscribeFromUserMessages
     @userMessagesFB = firebaseEnvironment['message'][account.accountKey]
-    NSLog "Subscribing to %@", userMessagesFB
+    Logger.info "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
       # messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:parameters)
@@ -58,7 +58,7 @@ class Server
       userMessagesFB[snapshot.name].clear!
       messageType = message['messageType']
       parameters = message['parameters']
-      NSLog "Relaying firebase #{messageType} with #{parameters}"
+      Logger.info "Relaying firebase #{messageType} with #{parameters}"
       App.notification_center.postNotificationName messageType, object:self, userInfo:parameters
     end
   end
@@ -70,7 +70,7 @@ class Server
 
   def unsubscribeFromUserMessages
     if userMessagesFB
-      NSLog "Unsubscribing from %@", userMessagesFB
+      Logger.info "Unsubscribing from %@", userMessagesFB
       userMessagesFB.off
       @userMessagesFB = nil
     end
@@ -94,7 +94,7 @@ class EmulatedServer
   def initialize
     App.notification_center.observe(EmulatedServerMessageName) do |notification|
       messageType = notification.userInfo['messageType']
-      NSLog "Relaying notification #{messageType} with #{notification.userInfo['parameters']}"
+      Logger.info "Relaying notification #{messageType} with #{notification.userInfo['parameters']}"
       App.notification_center.postNotificationName messageType, object:self, userInfo:notification.userInfo['parameters']
     end
   end
@@ -125,7 +125,7 @@ class EmulatedServer
       Family.instance.setSitterCount parameters[:count]
 
     else
-      NSLog "Server emulator: unknown request type %@", requestKey
+      Logger.info "Server emulator: unknown request type %@", requestKey
 
     end
   end
@@ -145,7 +145,7 @@ class EmulatedServer
   # Don't use this, since it introduces a network dependency on demo mode
   # TODO use this when the user is signed in, for greater fidelity and since this requires the network anyway
   def sendMessageToClientUsingFirebase(messageType, messageTemplate:messageTemplate, withDelay:delay, withParameters:parameters)
-    NSLog "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
+    Logger.info "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
     messages = {
       messageType: messageType,
       messageTitle: messageTemplate[:messageTitle],
@@ -156,7 +156,7 @@ class EmulatedServer
   end
 
   def sendMessageToClientUsingLocalNotifications(messageType, messageTemplate:messageTemplate, withDelay:delay, withParameters:parameters)
-    NSLog "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
+    Logger.info "Schedule #{messageType} for t+#{delay}s with parameters=#{parameters}"
 
     messageText = MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters)
     # round-trip through JSON, to increase emulation fidelity to server

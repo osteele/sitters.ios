@@ -15,6 +15,9 @@ class AppDelegate
     return true if RUBYMOTION_ENV == 'test'
     # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
 
+    DDLog.addLogger DDASLLogger.sharedInstance
+    DDLog.addLogger DDTTYLogger.sharedInstance
+
     # Initialize 3rd-party SDKs
     initializeTestFlight
     initializeCrittercism
@@ -93,23 +96,23 @@ class AppDelegate
   end
 
   def application(application, didRegisterForRemoteNotificationsWithDeviceToken:token)
-    NSLog "didRegisterForRemoteNotificationsWithDeviceToken %@", token
+    Logger.info "didRegisterForRemoteNotificationsWithDeviceToken %@", token
     Account.instance.deviceToken = token
   end
 
   def application(application, didFailToRegisterForRemoteNotificationsWithError:error)
-    NSLog "didFailToRegisterForRemoteNotificationsWithError #{error.localizedDescription}"
+    Logger.info "didFailToRegisterForRemoteNotificationsWithError #{error.localizedDescription}"
   end
 
   def application(application, didReceiveRemoteNotification:notification)
-    NSLog 'didReceiveRemoteNotification'
+    Logger.info 'didReceiveRemoteNotification'
     application.applicationIconBadgeNumber = 0
   end
 
   # Server emulation mode uses this to emulate a message received via the Firebase queue
   def application(application, didReceiveLocalNotification:notification)
     notificationName = notification.userInfo['notificationName']
-    NSLog "didReceiveLocalNotification #{notificationName}"
+    Logger.info "didReceiveLocalNotification #{notificationName}"
     userInfo = notification.userInfo
     App.notification_center.postNotificationName notificationName, object:self, userInfo:userInfo if notificationName
     application.applicationIconBadgeNumber = 0

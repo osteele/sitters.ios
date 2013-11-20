@@ -85,7 +85,7 @@ class TimeSelectionController < UIViewController
       selectionMarkerLabel = subview UILabel, :day_of_week_overlay, left: x, text: name
       selectionMarkerLabel.userInteractionEnabled = false
       label.when_tapped do
-        Logging.breadcrumb "Tap day ###{i+1} (#{name})"
+        Logger.checkpoint "Tap day ###{i+1} (#{name})"
         self.timeSelection = timeSelection.onDate(date)
       end
       declareViewMode :interactive, label

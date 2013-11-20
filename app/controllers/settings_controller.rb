@@ -24,7 +24,7 @@ class SettingsController < Formotion::FormController
   end
 
   def userDidProvideCreditCardInfo(info, inPaymentViewController:scanViewController)
-    # NSLog "info = %@", info
+    # Logger.info "info = %@", info
     self.dismissViewControllerAnimated true, completion: nil
   end
 
@@ -86,7 +86,7 @@ class SettingsController < Formotion::FormController
     end if form.row(:logout)
 
     form.row(:payment).on_tap do |row|
-      Logging.breadcrumb "Enter card info"
+      Logger.checkpoint "Enter card info"
       cardio ||= CardIOPaymentViewController.alloc.initWithPaymentDelegate(self)
       cardioAppToken = NSBundle.mainBundle.objectForInfoDictionaryKey('CardioAppToken')
       cardio.appToken = cardioAppToken if cardioAppToken

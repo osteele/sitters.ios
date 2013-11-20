@@ -45,7 +45,7 @@ class Storage
       json = results.dataNoCopyForColumn(:json)
       error = Pointer.new(:id)
       data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:error)
-      NSLog error[0].description if error[0]
+      Logger.info error[0].description if error[0]
       data = nil if error[0]
     end
     return data
@@ -68,18 +68,18 @@ class Storage
     previous_json = nil
     if data
       previous_json = BW::JSON.generate(data)
-      NSLog "Cache hit: %@", path
+      Logger.info "Cache hit: %@", path
       Dispatch::Queue.main.async do
         block.call data
       end
     else
-      NSLog "Cache miss: %@", path
+      Logger.info "Cache miss: %@", path
     end
-    NSLog "Subscribing to %@", firebaseEnvironment[path]
+    Logger.info "Subscribing to %@", firebaseEnvironment[path]
     firebaseEnvironment[path].on(:value) do |snapshot|
       data = snapshot.value
       if data and (not previous_json or previous_json != BW::JSON.generate(data))
-        NSLog "Subscription: %@", path
+        Logger.info "Subscription: %@", path
         storeData data, key:cacheKey, version:cacheVersion
         block.call data
       end

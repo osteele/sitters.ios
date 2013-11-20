@@ -8,6 +8,8 @@ gem 'motion-cocoapods'
 gem 'require_all'
 gem 'rest-client'
 
+gem 'motion-logger'
+
 # foundation
 gem 'bubble-wrap'
 gem 'motion-map'

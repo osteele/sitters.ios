@@ -18,7 +18,7 @@ class Account
   def initialize
     firebaseRoot['.info/authenticated'].on(:value) do |snapshot|
       # value is 0 on initialization, and then true or false
-      NSLog "Auth status = #{snapshot.value}"
+      Logger.info "Auth status = #{snapshot.value}"
       self.user = nil if snapshot.value == false
     end
     observe(family, :sitters) do
@@ -27,10 +27,10 @@ class Account
   end
 
   def initialize_login_status
-    NSLog "auth.check"
+    Logger.info "auth.check"
     auth.check do |error, user|
-      NSLog "auth.check error=%@", error if error
-      NSLog "auth.check user=%@", user if user
+      Logger.info "auth.check error=%@", error if error
+      Logger.info "auth.check user=%@", user if user
       self.user = user
     end
   end
@@ -45,7 +45,7 @@ class Account
 
   def login
     return if user
-    Logging.breadcrumb "Login"
+    Logger.checkpoint "Login"
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
@@ -54,13 +54,13 @@ class Account
 
     # auth.check, below, never returns when the network is offline.
 
-    # NSLog "login: auth.check"
+    # Logger.info "login: auth.check"
     # auth.check do |error, user|
-    #   NSLog "login: auth.check callback"
+    #   Logger.info "login: auth.check callback"
     #   if error or user
     #     authDidReturnUser user, error:error
     #   else
-    #     NSLog "login: login_to_facebook"
+    #     Logger.info "login: login_to_facebook"
     #     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
     #     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
     #       authDidReturnUser user, error:error
@@ -70,7 +70,7 @@ class Account
   end
 
   def logout
-    Logging.breadcrumb "Logout"
+    Logger.checkpoint "Logout"
     auth.logout
     # the .info/authenticated observation clears self.user
   end
@@ -122,8 +122,8 @@ class Account
   end
 
   def authDidReturnUser(user, error:error)
-    NSLog "login: user=%@", user if user
-    NSLog "login: error=%@", error if error
+    Logger.info "login: user=%@", user if user
+    Logger.info "login: error=%@", error if error
     self.user = user
     if error
       UIAlertView.alloc.initWithTitle(error.localizedDescription,
@@ -141,12 +141,12 @@ class Account
   # TODO cache
   def updateUserDataSubscription
     if @currentAccountFB
-      NSLog "Unsubscribing from %@", @currentAccountFB
+      Logger.info "Unsubscribing from %@", @currentAccountFB
       @currentAccountFB.off
       @currentAccountFB = nil
     end
     if @currentFamilyFB
-      NSLog "Unsubscribing from %@", @currentFamilyFB
+      Logger.info "Unsubscribing from %@", @currentFamilyFB
       @currentFamilyFB.off
       @currentFamilyFB = nil
     end

@@ -1,5 +1,11 @@
 PODS:
   - CardIO (3.4.0)
+  - CocoaLumberjack (1.6.3):
+    - CocoaLumberjack/Core
+    - CocoaLumberjack/Extensions
+  - CocoaLumberjack/Core (1.6.3)
+  - CocoaLumberjack/Extensions (1.6.3):
+    - CocoaLumberjack/Core
   - CrittercismSDK (4.1.2)
   - Facebook-iOS-SDK (3.9.0)
   - FMDB (2.1):
@@ -23,6 +29,7 @@ PODS:
 
 DEPENDENCIES:
   - CardIO
+  - CocoaLumberjack
   - CrittercismSDK
   - Facebook-iOS-SDK
   - FMDB
@@ -35,6 +42,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   CardIO: 0a892c73eee7d2649cc281f84fbd113916f0c9a7
+  CocoaLumberjack: 0af89e0de15835a499fcc6ee5e0b6d396bc95976
   CrittercismSDK: 6182966dc89b633611b1acb87201952d84224120
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
