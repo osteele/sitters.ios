@@ -43,8 +43,18 @@ class AppDelegate
     end
 
     App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
-      @loginProgress.dismiss
-      @loginProgress = nil
+      if @loginProgress
+        if notification.userInfo[:error]
+          @loginProgress.dismiss
+          @loginProgress = nil
+        else
+          @loginProgress.showSuccessWithStatus 'Connection succeeded'
+          App.run_after(1) {
+            @loginProgress.dismiss
+            @loginProgress = nil
+          }
+        end
+      end
     end
 
     window.rootViewController.wantsFullScreenLayout = true
@@ -144,7 +154,7 @@ class AppDelegate
     return if Device.simulator?
     Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
     @crittercismEnabled = true
-    observe(Account.instance, :user) do |previousUser, user|
+    observe(Account.instance, :user) do |_, user|
       if user
         Crittercism.setUsername user.email
         Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey
@@ -160,7 +170,7 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
-    observe(Account.instance, :user) do |previousUser, user|
+    observe(Account.instance, :user) do |_, user|
       if user
         TestFlight.addCustomEnvironmentInformation user.email, forKey:'email'
         TestFlight.addCustomEnvironmentInformation Account.instance.accountKey, forKey:'accountKey'

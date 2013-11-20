@@ -45,9 +45,8 @@ class Account
 
   def login
     return if user
+    Logging.breadcrumb "Login"
     NSNotificationCenter.defaultCenter.postNotification ApplicationWillAttemptLoginNotification
-
-    NSLog "login: login_to_facebook"
     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
       authDidReturnUser user, error:error
@@ -71,7 +70,7 @@ class Account
   end
 
   def logout
-    NSLog 'login'
+    Logging.breadcrumb "Logout"
     auth.logout
     # the .info/authenticated observation clears self.user
   end
@@ -133,7 +132,9 @@ class Account
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
     end
-    NSNotificationCenter.defaultCenter.postNotification ApplicationDidAttemptLoginNotification
+    NSNotificationCenter.defaultCenter.postNotificationName ApplicationDidAttemptLoginNotification.name,
+      object:self,
+      userInfo:{error:error, user:user}
   end
 
   # TODO move some of this into storage manager
