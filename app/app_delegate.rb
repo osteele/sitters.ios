@@ -14,9 +14,10 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     return true if RUBYMOTION_ENV == 'test'
     # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
-    initializeTestFlight
 
-    Crittercism.enableWithAppID NSBundle.mainBundle.objectForInfoDictionaryKey('CrittercismAppID')
+    # Initialize 3rd-party SDKs
+    initializeTestFlight
+    Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
 
     Account.instance.initialize_login_status
     registerForRemoteNotifications
@@ -107,6 +108,10 @@ class AppDelegate
 
   private
 
+  def getSDKToken(name)
+    NSBundle.mainBundle.objectForInfoDictionaryKey(name)
+  end
+
   def tabControllers
     [
       BookingController.alloc.init,
@@ -120,7 +125,7 @@ class AppDelegate
   def initializeTestFlight
     return if Device.simulator?
     # return unless Object.const_defined?(:TestFlight)
-    app_token = NSBundle.mainBundle.objectForInfoDictionaryKey('TESTFLIGHT_APP_TOKEN')
+    app_token = getSDKToken('TESTFLIGHT_APP_TOKEN')
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
