@@ -1,5 +1,6 @@
 PODS:
   - CardIO (3.4.0)
+  - CrittercismSDK (4.1.2)
   - Facebook-iOS-SDK (3.9.0)
   - FMDB (2.1):
     - FMDB/standard
@@ -22,6 +23,7 @@ PODS:
 
 DEPENDENCIES:
   - CardIO
+  - CrittercismSDK
   - Facebook-iOS-SDK
   - FMDB
   - GRMustache
@@ -33,6 +35,7 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   CardIO: 0a892c73eee7d2649cc281f84fbd113916f0c9a7
+  CrittercismSDK: 6182966dc89b633611b1acb87201952d84224120
   Facebook-iOS-SDK: 5e1416dbdfc17b2620c2ca31c02e6feec042f2c1
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930

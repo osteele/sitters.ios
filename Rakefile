@@ -34,6 +34,7 @@ Motion::Project::App.setup do |app|
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   app.info_plist['CardioAppToken'] = ENV['CARDIO_APP_TOKEN'] if ENV['CARDIO_APP_TOKEN']
+  app.info_plist['CrittercismAppID'] = ENV['CRITTERCISM_APP_ID'] if ENV['CRITTERCISM_APP_ID']
 
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
 
@@ -43,6 +44,7 @@ Motion::Project::App.setup do |app|
   end
 
   app.pods do
+    pod 'CrittercismSDK'
     pod 'Facebook-iOS-SDK'
     pod 'FMDB'
     pod 'GRMustache'
@@ -53,6 +55,9 @@ Motion::Project::App.setup do |app|
     pod 'ReactiveCocoa'
     pod 'TestFlightSDK'
   end
+
+  # Crittercism
+  app.frameworks += %w[SystemConfiguration]
 
   app.weak_frameworks += %w[AddressBook AddressBookUI]
 

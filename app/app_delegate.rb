@@ -15,6 +15,9 @@ class AppDelegate
     return true if RUBYMOTION_ENV == 'test'
     # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
     initializeTestFlight
+
+    Crittercism.enableWithAppID NSBundle.mainBundle.objectForInfoDictionaryKey('CrittercismAppID')
+
     Account.instance.initialize_login_status
     registerForRemoteNotifications
     application.applicationIconBadgeNumber = 0
