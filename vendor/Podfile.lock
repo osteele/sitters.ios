@@ -11,7 +11,6 @@ PODS:
     - JRSwizzle (~> 1.0)
   - ISO8601DateFormatter (0.7)
   - JRSwizzle (1.0)
-  - MRProgress (0.2.2)
   - NSDate-Extensions (0.0.1)
   - ReactiveCocoa (2.1.7):
     - ReactiveCocoa/Core
@@ -19,6 +18,7 @@ PODS:
   - ReactiveCocoa/Core (2.1.7):
     - ReactiveCocoa/no-arc
   - ReactiveCocoa/no-arc (2.1.7)
+  - SVProgressHUD (1.0)
   - TestFlightSDK (2.1.1-beta)
 
 DEPENDENCIES:
@@ -28,9 +28,9 @@ DEPENDENCIES:
   - FMDB
   - GRMustache
   - ISO8601DateFormatter
-  - MRProgress
   - NSDate-Extensions
   - ReactiveCocoa
+  - SVProgressHUD
   - TestFlightSDK
 
 SPEC CHECKSUMS:
@@ -41,9 +41,9 @@ SPEC CHECKSUMS:
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
   ISO8601DateFormatter: 00944e437ea647f4244454ce8809d313861d08de
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
-  MRProgress: 51af562344c3fe38ce3c0617fd064f6f1ce55cd5
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
   ReactiveCocoa: 1117f7968c8667d2ca00b5aa47156fabcb56af75
+  SVProgressHUD: 5e10939a296debf5fe5a5895eda9539b8b2114f1
   TestFlightSDK: dea28c16f0bf65c49c4ed8939b2ae0b0ed9bf8b0
 
 COCOAPODS: 0.28.0

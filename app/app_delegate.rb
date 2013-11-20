@@ -39,12 +39,11 @@ class AppDelegate
     end
 
     App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
-      @loginProgress ||= MRProgressOverlayView.showOverlayAddedTo window, animated:true
-      @loginProgress.titleLabelText = "Connecting"
+      @loginProgress ||= SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
     end
 
     App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
-      @loginProgress.dismiss true
+      @loginProgress.dismiss
       @loginProgress = nil
     end
 
