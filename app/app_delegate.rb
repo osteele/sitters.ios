@@ -131,6 +131,12 @@ class AppDelegate
   # Third-Party Integrations
   #
 
+  public
+
+  attr_reader :crittercismEnabled
+
+  private
+
   def getSDKToken(name)
     NSBundle.mainBundle.objectForInfoDictionaryKey(name)
   end
@@ -138,6 +144,7 @@ class AppDelegate
   def initializeCrittercism
     return if Device.simulator?
     Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
+    @crittercismEnabled = true
     observe(Account.instance, :user) do |previousUser, user|
       Crittercism.setUsername user.email if user
       Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey

@@ -48,6 +48,14 @@ class Scheduler
   end
 end
 
+module Logging
+  def self.breadcrumb(msg)
+    NSLog msg
+    Crittercism.leaveBreadcrumb msg if UIApplication.sharedApplication.delegate.crittercismEnabled
+    TestFlight.passCheckpoint msg if Object.const_defined?(:TestFlight)
+  end
+end
+
 # `fire!` calls `block`, except that it delays or coalesces calls to ensure that it is not called
 # more than once per `seconds` seconds.
 class Debounced

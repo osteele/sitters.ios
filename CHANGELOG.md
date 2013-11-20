@@ -2,6 +2,7 @@
 * Use CardIO to enter credit card information. (Currently not stored.)
 * “Invite a sitter” displays contacts from address book.
 * Runs against latest cloud server.
+* Crash reports and breadcrumbs are logged to Crittercism
 
 ## 0.2.9 (2013-11-07)
 * Improve timebar animation.

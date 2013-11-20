@@ -78,14 +78,17 @@ class SettingsController < Formotion::FormController
     end if user #and false
 
     form.row(:login).on_tap do |row|
+      Logging.breadcrumb "Login"
       account.login
     end if form.row(:login)
 
     form.row(:logout).on_tap do |row|
+      Logging.breadcrumb "Logout"
       account.logout
     end if form.row(:logout)
 
     form.row(:payment).on_tap do |row|
+      Logging.breadcrumb "Enter card info"
       cardio ||= CardIOPaymentViewController.alloc.initWithPaymentDelegate(self)
       cardioAppToken = NSBundle.mainBundle.objectForInfoDictionaryKey('CardioAppToken')
       cardio.appToken = cardioAppToken if cardioAppToken

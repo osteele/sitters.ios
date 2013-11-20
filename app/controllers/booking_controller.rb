@@ -56,6 +56,7 @@ class BookingController < UIViewController
   end
 
   def inviteSitter
+    Logging.breadcrumb "Invite sitter"
     peoplePicker = ABPeoplePickerNavigationController.alloc.init
     peoplePicker.peoplePickerDelegate = self
     self.presentViewController peoplePicker, animated:true, completion:nil
@@ -92,13 +93,13 @@ class BookingController < UIViewController
   end
 
   def presentSuggestedSitters
-    TestFlight.passCheckpoint 'Suggested sitters'
+    Logging.breadcrumb 'Suggested sitters'
     recommendedSittersController.title = 'Sitters'
     navigationController.pushViewController recommendedSittersController, animated:true
   end
 
   def presentDetailsForSitter(sitter)
-    TestFlight.passCheckpoint "Sitter details: #{sitter.name}"
+    Logging.breadcrumb "Sitter details: #{sitter.name}"
     sitterDetailsController.title = sitter.firstName
     sitterDetailsController.sitter = sitter
     sitterDetailsController.sitter_action = case
@@ -110,6 +111,7 @@ class BookingController < UIViewController
   end
 
   def performSitterAction(requestType, sitter:sitter)
+    Logging.breadcrumb "Request sitter #{sitter.id}"
     parameters = {sitterId: sitter.id, familyId: Family.instance.id}
     if [:request_sitter, :reserve_sitter].include?(requestType)
       requestType = :reserve_sitter
