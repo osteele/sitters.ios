@@ -123,7 +123,8 @@ class Account
   end
 
   def authDidReturnUser(user, error:error)
-    NSLog "login: error=#{error} user=#{user}"
+    NSLog "login: user=%@", user if user
+    NSLog "login: error=%@", error if error
     self.user = user
     if error
       UIAlertView.alloc.initWithTitle(error.localizedDescription,

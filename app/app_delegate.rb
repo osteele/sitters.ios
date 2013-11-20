@@ -17,7 +17,7 @@ class AppDelegate
 
     # Initialize 3rd-party SDKs
     initializeTestFlight
-    Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
+    initializeCrittercism
 
     Account.instance.initialize_login_status
     registerForRemoteNotifications
@@ -108,10 +108,6 @@ class AppDelegate
 
   private
 
-  def getSDKToken(name)
-    NSBundle.mainBundle.objectForInfoDictionaryKey(name)
-  end
-
   def tabControllers
     [
       BookingController.alloc.init,
@@ -122,6 +118,33 @@ class AppDelegate
     ]
   end
 
+  def attachSplashViewTo(view)
+    splashView = SplashController.alloc.init.view
+    view.addSubview splashView
+    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
+      UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
+    end
+  end
+
+
+  #
+  # Third-Party Integrations
+  #
+
+  def getSDKToken(name)
+    NSBundle.mainBundle.objectForInfoDictionaryKey(name)
+  end
+
+  def initializeCrittercism
+    return if Device.simulator?
+    Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
+    observe(Account.instance, :user) do |previousUser, user|
+      Crittercism.setUsername user.email if user
+      Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey
+      Crittercism.setOptOutStatus user.nil?
+    end
+  end
+
   def initializeTestFlight
     return if Device.simulator?
     # return unless Object.const_defined?(:TestFlight)
@@ -129,13 +152,5 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
-  end
-
-  def attachSplashViewTo(view)
-    splashView = SplashController.alloc.init.view
-    view.addSubview splashView
-    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
-      UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
-    end
   end
 end
