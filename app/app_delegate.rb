@@ -146,9 +146,11 @@ class AppDelegate
     Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
     @crittercismEnabled = true
     observe(Account.instance, :user) do |previousUser, user|
-      Crittercism.setUsername user.email if user
-      Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey
-      Crittercism.setOptOutStatus user.nil?
+      if user
+        Crittercism.setUsername user.email
+        Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey
+        # Crittercism.setOptOutStatus user.nil?
+      end
     end
   end
 
@@ -159,5 +161,11 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
+    observe(Account.instance, :user) do |previousUser, user|
+      if user
+        TestFlight.addCustomEnvironmentInformation user.email, forKey:'email'
+        TestFlight.addCustomEnvironmentInformation Account.instance.accountKey, forKey:'accountKey'
+      end
+    end
   end
 end
