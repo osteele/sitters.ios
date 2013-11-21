@@ -29,7 +29,7 @@ class AppDelegate
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
-      attachSplashViewTo controller.view
+      # attachSplashViewTo controller.view
     end
 
     Storage.instance.onCachedFirebaseValue('sitter') do |sitterData|
@@ -42,6 +42,7 @@ class AppDelegate
 
     window.rootViewController.wantsFullScreenLayout = true
     window.makeKeyAndVisible
+    presentSplashView
     true
   end
 
@@ -132,9 +133,21 @@ class AppDelegate
   def attachSplashViewTo(view)
     splashView = SplashController.alloc.init.view
     view.addSubview splashView
-    progress = SVProgressHUD.showWithStatus "Connecting"
+    progress = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
       UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
+      progress.dismiss
+    end
+  end
+
+  def presentSplashView
+    splashController = SplashController.alloc.init
+    splashController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve
+    # splashController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal
+    window.rootViewController.presentViewController splashController, animated:false, completion:nil
+    progress = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
+    App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
+      window.rootViewController.dismissViewControllerAnimated true, completion:nil
       progress.dismiss
     end
   end
