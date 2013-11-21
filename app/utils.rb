@@ -49,15 +49,17 @@ class Scheduler
 end
 
 module Logger
-  def self.info(msg, *args)
-    msg = msg.gsub('%@', '%s') % args.map { |x| x.description.gsub(/\s*\n\s*/, ' ') }
-    Motion::Log.info msg
+  def self.info(format, *args)
+    message = format.gsub('%@', '%s') % args.map { |x| x.description.gsub(/\s*\n\s*/, ' ') }
+    Motion::Log.info message
+    # LogMessage tag, level, message
+    LogMessageCompat format, *args
   end
 
-  def self.checkpoint(msg)
-    Logger.info msg
-    Crittercism.leaveBreadcrumb msg if App.delegate.crittercismEnabled
-    TestFlight.passCheckpoint msg if Object.const_defined?(:TestFlight)
+  def self.checkpoint(message)
+    self.info "Checkpoint: #{message}"
+    Crittercism.leaveBreadcrumb message if App.delegate.crittercismEnabled
+    TestFlight.passCheckpoint message if Object.const_defined?(:TestFlight)
   end
 end
 
