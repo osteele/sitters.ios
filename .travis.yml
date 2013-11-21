@@ -1,4 +1,11 @@
-language: objective-c
-before_install: rvm use ruby-1.9.3-p392
-install: bundle install && bundle exec rake pods:install
+language:
+- objective-c
+- ruby
+before_install:
+- ruby --version
+rvm:
+- 1.9.3
+install:
+- bundle
+- bundle exec rake pods:install
 script: bundle exec rake spec
