@@ -44,7 +44,7 @@ Motion::Project::App.setup do |app|
   end
 
   app.pods do
-    pod 'NSLogger'
+    # pod 'NSLogger'
     pod 'CrittercismSDK'
     pod 'Facebook-iOS-SDK'
     pod 'FMDB'

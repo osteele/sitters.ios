@@ -52,8 +52,7 @@ module Logger
   def self.info(format, *args)
     message = format.gsub('%@', '%s') % args.map { |x| x.description.gsub(/\s*\n\s*/, ' ') }
     Motion::Log.info message
-    # LogMessage tag, level, message
-    LogMessageCompat format, *args
+    # LogMessageCompat format, *args
   end
 
   def self.checkpoint(message)
