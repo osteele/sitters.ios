@@ -133,8 +133,10 @@ class AppDelegate
   def attachSplashViewTo(view)
     splashView = SplashController.alloc.init.view
     view.addSubview splashView
+    progress = SVProgressHUD.showWithStatus "Connecting"
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
       UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
+      progress.dismiss
     end
   end
 
