@@ -37,28 +37,8 @@ class AppDelegate
       App.notification_center.postNotification ApplicationDidLoadDataNotification
     end
 
-    observe(ExpirationChecker.instance, 'expired') do |_, expired|
-      window.rootViewController = ExpiredController.alloc.init if expired
-    end
-
-    App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
-      @loginProgress ||= SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
-    end
-
-    App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
-      if @loginProgress
-        if notification.userInfo[:error]
-          @loginProgress.dismiss
-          @loginProgress = nil
-        else
-          @loginProgress.showSuccessWithStatus 'Connection succeeded'
-          App.run_after(1) {
-            @loginProgress.dismiss
-            @loginProgress = nil
-          }
-        end
-      end
-    end
+    installExpirationObserver
+    installConnectionProgressHUD
 
     window.rootViewController.wantsFullScreenLayout = true
     window.makeKeyAndVisible
@@ -84,6 +64,7 @@ class AppDelegate
     return 'development' if NSUserDefaults.standardUserDefaults['simulateSitterConfirmationDelay']
     Device.simulator? ? 'development' : 'production'
   end
+
 
   #
   # Notifications
@@ -118,6 +99,24 @@ class AppDelegate
     application.applicationIconBadgeNumber = 0
   end
 
+
+  #
+  # Expiration
+  #
+
+  private
+
+  def installExpirationObserver
+    observe(ExpirationChecker.instance, 'expired') do |_, expired|
+      window.rootViewController = ExpiredController.alloc.init if expired
+    end
+  end
+
+
+  #
+  # Views
+  #
+
   private
 
   def tabControllers
@@ -137,6 +136,27 @@ class AppDelegate
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
       UIView.animateWithDuration SplashFadeAnimationDuration, animations: -> { splashView.alpha = 0 }, completion: ->_ { splashView.removeFromSuperview }
       progress.dismiss
+    end
+  end
+
+  def installConnectionProgressHUD
+    App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
+      @loginProgress ||= SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
+    end
+
+    App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
+      if @loginProgress
+        if notification.userInfo[:error]
+          @loginProgress.dismiss
+          @loginProgress = nil
+        else
+          @loginProgress.showSuccessWithStatus 'Connection succeeded'
+          App.run_after(1) {
+            @loginProgress.dismiss
+            @loginProgress = nil
+          }
+        end
+      end
     end
   end
 
