@@ -25,7 +25,7 @@ def set_provisioning_profile(app)
   end
 
   app.release do
-    puts 'Provisioning for release'
+    puts 'Provisioning for distribution'
     app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_PRODUCTION_PROFILE_ID'))
     app.entitlements['aps-environment'] = 'production'
     app.entitlements['get-task-allow'] = false

@@ -35,6 +35,7 @@ Motion::Project::App.setup do |app|
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
   app.info_plist['CardioAppToken'] = ENV['CARDIO_APP_TOKEN'] if ENV['CARDIO_APP_TOKEN']
   app.info_plist['CrittercismAppID'] = ENV['CRITTERCISM_APP_ID'] if ENV['CRITTERCISM_APP_ID']
+  app.info_plist['MixpanelToken'] = ENV['MIXPANEL_TOKEN'] if ENV['MIXPANEL_TOKEN']
 
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
 
@@ -50,7 +51,8 @@ Motion::Project::App.setup do |app|
     pod 'FMDB'
     pod 'GRMustache'
     pod 'ISO8601DateFormatter'
-    pod "CardIO"
+    pod 'CardIO'
+    pod 'Mixpanel'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
     pod 'SVProgressHUD'
