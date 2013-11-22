@@ -45,7 +45,7 @@ class Account
 
   def login
     return if user
-    Logger.checkpoint "Login"
+    Logger.checkpoint 'Login'
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
@@ -70,7 +70,7 @@ class Account
   end
 
   def logout
-    Logger.checkpoint "Logout"
+    Logger.checkpoint 'Logout'
     auth.logout
     # the .info/authenticated observation clears self.user
   end

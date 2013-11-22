@@ -56,7 +56,7 @@ class BookingController < UIViewController
   end
 
   def inviteSitter
-    Logger.checkpoint "Invite sitter"
+    Logger.checkpoint 'Invite sitter'
     peoplePicker = ABPeoplePickerNavigationController.alloc.init
     peoplePicker.peoplePickerDelegate = self
     self.presentViewController peoplePicker, animated:true, completion:nil
@@ -99,7 +99,7 @@ class BookingController < UIViewController
   end
 
   def presentDetailsForSitter(sitter)
-    Logger.checkpoint "Sitter details: #{sitter.name}"
+    Logger.checkpoint 'Sitter details'
     sitterDetailsController.title = sitter.firstName
     sitterDetailsController.sitter = sitter
     sitterDetailsController.sitter_action = case
@@ -111,7 +111,7 @@ class BookingController < UIViewController
   end
 
   def performSitterAction(requestType, sitter:sitter)
-    Logger.checkpoint "Request sitter #{sitter.id}"
+    Logger.checkpoint 'Request sitter'
     parameters = {sitterId: sitter.id, familyId: Family.instance.id}
     if [:request_sitter, :reserve_sitter].include?(requestType)
       requestType = :reserve_sitter

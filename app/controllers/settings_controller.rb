@@ -86,7 +86,7 @@ class SettingsController < Formotion::FormController
     end if form.row(:logout)
 
     form.row(:payment).on_tap do |row|
-      Logger.checkpoint "Enter card info"
+      Logger.checkpoint 'Enter card'
       cardio ||= CardIOPaymentViewController.alloc.initWithPaymentDelegate(self)
       cardioAppToken = NSBundle.mainBundle.objectForInfoDictionaryKey('CardioAppToken')
       cardio.appToken = cardioAppToken if cardioAppToken
