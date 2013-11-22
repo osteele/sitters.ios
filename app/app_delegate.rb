@@ -63,7 +63,7 @@ class AppDelegate
   end
 
   def serverEnvironmentName
-    return 'development' if NSUserDefaults.standardUserDefaults['simulateSitterConfirmationDelay']
+    return 'development' if NSUserDefaults.standardUserDefaults['useDevelopmentServer']
     Device.simulator? ? 'development' : 'production'
   end
 

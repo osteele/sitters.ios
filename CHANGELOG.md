@@ -1,5 +1,9 @@
+## Trunk
+* Add MixPanel analytics
+* Default to production server; obey Setttings switch
+
 ## 0.2.10 (2013-11-21)
-* Uses CardIO to enter credit card information. (Currently not stored.)
+* The Settings tab uses CardIO to enter credit card information. (Currently not stored.)
 * Invite a sitter displays contacts from address book.
 * Crash reports and breadcrumbs are logged to Crittercism
 * Update to current server API.
