@@ -3,11 +3,12 @@ language:
 - ruby
 before_install:
 - ruby --version
-- env
 rvm:
 - 1.9.3
 install:
 - bundle
 - bundle exec rake pods:install
-- env
 script: bundle exec rake spec
+env:
+  global:
+    secure: MbsQb9erz9CQHpR1MESAwJjFUDDhaH9mjNZV9+vGvBs/0W/eUf/fr47MHqp+QWli/DxjTUROQrS+JZZjcWHDymSeGBUx1+tN3T0mBX8DnmNGgBdltpbXay3h64Udrs6/mAooK4x8Pth8LMdm1b0v25gOFV2HEzF4KiwHSsFjLvE=
