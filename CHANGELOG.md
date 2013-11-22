@@ -1,4 +1,4 @@
-## Trunk
+## 0.2.11 (2013-11-22)
 * Add MixPanel analytics
 * Default to production server; obey Setttings switch
 
