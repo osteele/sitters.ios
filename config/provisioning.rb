@@ -13,13 +13,15 @@ module Motion; module Project;
       return get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
     end
   end
-end; end unless ENV['TRAVIS']
+end; end if ENV['IOS_APP_DEVELOPMENT_PROFILE_ID']
 
 # Can't use Motion::Project::App.setup because it runs before archive:distribution sets the build mode
 def set_provisioning_profile(app)
   app.development do
     puts 'Provisioning for development'
-    app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
+    if ENV['IOS_APP_DEVELOPMENT_PROFILE_ID']
+      app.provisioning_profile = get_provisioning_profile_for(ENV.require('IOS_APP_DEVELOPMENT_PROFILE_ID'))
+    end
     app.entitlements['aps-environment'] = 'development'
     app.entitlements['get-task-allow'] = true
   end
