@@ -21,6 +21,7 @@ class AppDelegate
     # Initialize 3rd-party SDKs
     initializeTestFlight
     initializeCrittercism
+    initializeMixpanel
 
     Account.instance.initialize_login_status
     registerForRemoteNotifications
@@ -80,6 +81,7 @@ class AppDelegate
   def application(application, didRegisterForRemoteNotificationsWithDeviceToken:token)
     Logger.info "didRegisterForRemoteNotificationsWithDeviceToken %@", token
     Account.instance.deviceToken = token
+    Mixpanel.sharedInstance.people.addPushDeviceToken token
   end
 
   def application(application, didFailToRegisterForRemoteNotificationsWithError:error)
@@ -191,12 +193,26 @@ class AppDelegate
   def initializeCrittercism
     return if Device.simulator?
     Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
+    Crittercism.setValue 'environment', forKey:serverEnvironmentName
     @crittercismEnabled = true
     observe(Account.instance, :user) do |_, user|
       if user
         Crittercism.setUsername user.email
         Crittercism.setValue 'accountKey', forKey:Account.instance.accountKey
         # Crittercism.setOptOutStatus user.nil?
+      end
+    end
+  end
+
+  def initializeMixpanel
+    Mixpanel.sharedInstanceWithToken getSDKToken('MixpanelToken')
+    mixpanel = Mixpanel.sharedInstance
+    mixpanel.registerSuperProperties({environment:serverEnvironmentName})
+    observe(Account.instance, :user) do |_, user|
+      if user
+        mixpanel.createAlias user.email, forDistinctID:mixpanel.distinctId
+        mixpanel.identify mixpanel.distinctId
+        mixpanel.people.set({'$email' => user.email, accountKey:Account.instance.accountKey})
       end
     end
   end
@@ -208,6 +224,7 @@ class AppDelegate
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
+    TestFlight.addCustomEnvironmentInformation serverEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
         TestFlight.addCustomEnvironmentInformation user.email, forKey:'email'

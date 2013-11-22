@@ -56,8 +56,9 @@ module Logger
   end
 
   def self.checkpoint(message)
-    self.info "Checkpoint: #{message}"
+    # self.info "Checkpoint: #{message}"
     Crittercism.leaveBreadcrumb message if App.delegate.crittercismEnabled
+    Mixpanel.sharedInstance.track 'checkpoint', properties:{message:message}
     TestFlight.passCheckpoint message if Object.const_defined?(:TestFlight)
   end
 end
