@@ -3,9 +3,11 @@ language:
 - ruby
 before_install:
 - ruby --version
+- env
 rvm:
 - 1.9.3
 install:
 - bundle
 - bundle exec rake pods:install
+- env
 script: bundle exec rake spec
