@@ -23,12 +23,12 @@ class SearchSittersController < UITableViewController
 
   def viewDidAppear(animated)
     super
-    UIApplication.sharedApplication.setStatusBarHidden true
+    App.shared.setStatusBarHidden true
   end
 
   def viewDidDisappear(animated)
     super
-    UIApplication.sharedApplication.setStatusBarHidden false
+    App.shared.setStatusBarHidden false
   end
 
   layout do

@@ -172,7 +172,7 @@ class EmulatedServer
       messageText: messageText,
       parameters: parameters
     }
-    UIApplication.sharedApplication.scheduleLocalNotification notification
+    App.shared.scheduleLocalNotification notification
   end
 
   # alias_method 'sendMessageToClient:messageTemplate:withDelay:withParameters:', 'sendMessageToClientUsingFirebase:messageTemplate:withDelay:withParameters:'

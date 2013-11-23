@@ -12,7 +12,7 @@ class ExpiredController < UIViewController
     button.font = button.font.fontWithSize(28)
 
     button.when_tapped do
-      UIApplication.sharedApplication.openURL NSURL.URLWithString('https://testflightapp.com/m/apps')
+      App.open_url 'https://testflightapp.com/m/apps'
     end
   end
 end
