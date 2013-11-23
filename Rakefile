@@ -36,13 +36,9 @@ Motion::Project::App.setup do |app|
   app.info_plist['CardioAppToken'] = ENV['CARDIO_APP_TOKEN'] if ENV['CARDIO_APP_TOKEN']
   app.info_plist['CrittercismAppID'] = ENV['CRITTERCISM_APP_ID'] if ENV['CRITTERCISM_APP_ID']
   app.info_plist['MixpanelToken'] = ENV['MIXPANEL_TOKEN'] if ENV['MIXPANEL_TOKEN']
+  app.info_plist['TestflightAppToken'] = ENV['TESTFLIGHT_APP_TOKEN'] if ENV['TESTFLIGHT_APP_TOKEN']
 
   # app.info_plist['ExpirationDate'] = (now + 5).strftime('%Y-%m-%dT%H:%M:%S%z')
-
-  # Testflight
-  for token_name in ['TESTFLIGHT_APP_TOKEN']
-    app.info_plist[token_name] = ENV[token_name] if ENV[token_name]
-  end
 
   app.pods do
     # pod 'NSLogger'
@@ -59,10 +55,12 @@ Motion::Project::App.setup do |app|
     pod 'TestFlightSDK'
   end
 
+  # App
+  app.weak_frameworks += %w[AddressBook AddressBookUI]
+  app.vendor_project 'lib/OSUtils', :static
+
   # Crittercism
   app.frameworks += %w[SystemConfiguration]
-
-  app.weak_frameworks += %w[AddressBook AddressBookUI]
 
   # Firebase Facebook Auth
   app.weak_frameworks += %w[AdSupport Social]
@@ -70,7 +68,7 @@ Motion::Project::App.setup do |app|
   # CardIO
   app.weak_frameworks += %w[AudioToolbox AVFoundation CoreGraphics CoreMedia CoreVideo Foundation MobileCoreServices OpenGLES QuartzCore Security UIKit]
 
-  app.vendor_project 'lib/OSUtils', :static
+  # ReactiveCocoa bridge
   app.vendor_project 'vendor/BlockBuilder', :static
 
   # Facebook

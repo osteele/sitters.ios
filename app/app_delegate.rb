@@ -220,7 +220,7 @@ class AppDelegate
   def initializeTestFlight
     return if Device.simulator?
     # return unless Object.const_defined?(:TestFlight)
-    app_token = getSDKToken('TESTFLIGHT_APP_TOKEN')
+    app_token = getSDKToken('TestflightAppToken')
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff app_token
