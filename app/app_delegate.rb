@@ -54,6 +54,10 @@ class AppDelegate
     end
   end
 
+  def buildNumber
+    NSBundle.mainBundle.objectForInfoDictionaryKey:'CFBundleVersion'
+  end
+
   def firebaseRoot
     @firebaseRoot ||= Firebase.new(FirebaseNS)
   end
@@ -193,11 +197,13 @@ class AppDelegate
 
   def initializeCrittercism
     return if Device.simulator?
+    return unless Object.const_defined?(:Crittercism)
     token = getSDKToken('CrittercismAppID')
     return unless token
     Crittercism.enableWithAppID token
-    Crittercism.setValue 'environment', forKey:serverEnvironmentName
     @crittercismEnabled = true
+    Crittercism.setValue serverEnvironmentName, forKey:'environment'
+    Crittercism.setValue buildNumber, forKey:'build'
     observe(Account.instance, :user) do |_, user|
       if user
         Crittercism.setUsername user.email
@@ -208,12 +214,16 @@ class AppDelegate
   end
 
   def initializeMixpanel
+    return unless Object.const_defined?(:Mixpanel)
     token = getSDKToken('MixpanelToken')
     return unless token
     Mixpanel.sharedInstanceWithToken token
-    mixpanel = Mixpanel.sharedInstance
     @mixpanelEnabled = true
-    mixpanel.registerSuperProperties({environment:serverEnvironmentName})
+    mixpanel = Mixpanel.sharedInstance
+    mixpanel.registerSuperProperties({
+      environment:serverEnvironmentName,
+      build:buildNumber
+    })
     observe(Account.instance, :user) do |_, user|
       if user
         mixpanel.createAlias user.email, forDistinctID:mixpanel.distinctId
@@ -225,7 +235,7 @@ class AppDelegate
 
   def initializeTestFlight
     return if Device.simulator?
-    # return unless Object.const_defined?(:TestFlight)
+    return unless Object.const_defined?(:TestFlight)
     token = getSDKToken('TestflightAppToken')
     return unless token
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
