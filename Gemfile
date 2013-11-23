@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 # ruby-gemset=sitters
 
 # build
+gem 'activesupport', :require => 'active_support/core_ext/string'
 gem 'dotenv'
 gem 'launchy'
 gem 'motion-cocoapods'
