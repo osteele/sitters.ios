@@ -183,6 +183,7 @@ class AppDelegate
   public
 
   attr_reader :crittercismEnabled
+  attr_reader :mixpanelEnabled
 
   private
 
@@ -192,7 +193,9 @@ class AppDelegate
 
   def initializeCrittercism
     return if Device.simulator?
-    Crittercism.enableWithAppID getSDKToken('CrittercismAppID')
+    token = getSDKToken('CrittercismAppID')
+    return unless token
+    Crittercism.enableWithAppID token
     Crittercism.setValue 'environment', forKey:serverEnvironmentName
     @crittercismEnabled = true
     observe(Account.instance, :user) do |_, user|
@@ -205,8 +208,11 @@ class AppDelegate
   end
 
   def initializeMixpanel
-    Mixpanel.sharedInstanceWithToken getSDKToken('MixpanelToken')
+    token = getSDKToken('MixpanelToken')
+    return unless token
+    Mixpanel.sharedInstanceWithToken token
     mixpanel = Mixpanel.sharedInstance
+    @mixpanelEnabled = true
     mixpanel.registerSuperProperties({environment:serverEnvironmentName})
     observe(Account.instance, :user) do |_, user|
       if user
@@ -220,10 +226,11 @@ class AppDelegate
   def initializeTestFlight
     return if Device.simulator?
     # return unless Object.const_defined?(:TestFlight)
-    app_token = getSDKToken('TestflightAppToken')
+    token = getSDKToken('TestflightAppToken')
+    return unless token
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
-    TestFlight.takeOff app_token
+    TestFlight.takeOff token
     TestFlight.addCustomEnvironmentInformation serverEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
