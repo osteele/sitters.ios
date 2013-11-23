@@ -21,13 +21,12 @@ class NSAttributedString
   }
 
   def drawOnArc(cx, cy, radius)
-    context = UIGraphicsGetCurrentContext()
     radius += TextArcSettings[:dRadius]
-
-    aString = self
     tracking = TextArcSettings[:tracking]
-    lineWidth = aString.size.width * tracking
-    lineHeight = aString.size.height
+
+    context = UIGraphicsGetCurrentContext()
+    lineWidth = self.size.width * tracking
+    lineHeight = self.size.height
     radius += lineHeight / 2
     lineAngle = lineWidth / radius
     cursorAngle = Math::PI / 2 - lineAngle / 2
@@ -35,9 +34,9 @@ class NSAttributedString
     dy = lineHeight * TextArcSettings[:baseline]
     radius += dy
 
-    for glyphIndex in 0...aString.length
+    for glyphIndex in 0...self.length
       glyphRange = NSMakeRange(glyphIndex, 1)
-      glyphString = aString.attributedSubstringFromRange(glyphRange)
+      glyphString = self.attributedSubstringFromRange(glyphRange)
       glyphWidth = glyphString.size.width * tracking
       glyphAngle = glyphWidth / radius
       cursorAngle += glyphAngle * TextArcSettings[:left]

@@ -28,46 +28,57 @@ class SittersController < UIViewController
     view.stylename = :sitters
 
     @scrollView = subview UIScrollView.alloc.initWithFrame(self.view.bounds), :scroll do
-      createSitterAvatars
-
-      viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button do
-        subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
-        caption = subview UILabel, :big_button_caption, text: '', userInteractionEnabled: false
-
-        observe(family, :recommended_sitters) do |a, b|
-          caption.text = "#{family.recommended_sitters.length} connected sitters"
-        end
-      end
-      viewRecommended.when_tapped { delegate.presentSuggestedSitters }
-
-      inviteSitter = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :invite_sitter_button do
-        subview UILabel, :big_button_label, text: 'Invite a Sitter'
-        subview UILabel, :big_button_caption, text: 'to add a sitter you know'
-      end
-      inviteSitter.when_tapped { delegate.inviteSitter }
-
-      addSittersLabel = subview UILabel, :add_sitters_text
-      addSittersCaption = subview UILabel, :add_sitters_caption
-      addSittersLabel.when_tapped { delegate.presentSuggestedSitters }
-
-      spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
-
-      updateAddSitterText = -> do
-        sitters = Family.instance.sitters
-        remainingSitterCount = 7 - sitters.length
-        toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
-        pl = remainingSitterCount == 1 ? '' : 's'
-        addSittersLabel.text = "Add #{toSevenString} more sitter#{pl}"
-        [addSittersLabel, addSittersCaption].each do |v| v.hidden = remainingSitterCount <= 0 end
-      end
-      observe(Family.instance, :sitters) do updateAddSitterText.call end
-      updateAddSitterText.call
+      createSitterViews
+      createRecommendedSittersButton
+      createInviteSitterButton
+      createAddSittersText
+      registerObservers
+      updateSitterAvailability
     end
   end
 
   private
 
   attr_reader :sitterControllers
+
+  def createRecommendedSittersButton
+    viewRecommended = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :recommended_sitters_button do
+      subview UILabel, :big_button_label, text: 'View Recommended', userInteractionEnabled: false
+      caption = subview UILabel, :big_button_caption, text: '', userInteractionEnabled: false
+
+      observe(family, :recommended_sitters) do |a, b|
+        caption.text = "#{family.recommended_sitters.length} connected sitters"
+      end
+    end
+    viewRecommended.when_tapped { delegate.presentSuggestedSitters }
+  end
+
+  def createInviteSitterButton
+    inviteSitter = subview UIButton.buttonWithType(UIButtonTypeRoundedRect), :invite_sitter_button do
+      subview UILabel, :big_button_label, text: 'Invite a Sitter'
+      subview UILabel, :big_button_caption, text: 'to add a sitter you know'
+    end
+    inviteSitter.when_tapped { delegate.inviteSitter }
+  end
+
+  def createAddSittersText
+    addSittersLabel = subview UILabel, :add_sitters_text
+    addSittersCaption = subview UILabel, :add_sitters_caption
+    addSittersLabel.when_tapped { delegate.presentSuggestedSitters }
+
+    spellOutFormatter = NSNumberFormatter.alloc.init.setNumberStyle(NSNumberFormatterSpellOutStyle)
+
+    updateAddSitterText = -> do
+      sitters = Family.instance.sitters
+      remainingSitterCount = 7 - sitters.length
+      toSevenString = spellOutFormatter.stringFromNumber(remainingSitterCount)
+      pl = remainingSitterCount == 1 ? '' : 's'
+      addSittersLabel.text = "Add #{toSevenString} more sitter#{pl}"
+      [addSittersLabel, addSittersCaption].each do |v| v.hidden = remainingSitterCount <= 0 end
+    end
+    observe(Family.instance, :sitters) do updateAddSitterText.call end
+    updateAddSitterText.call
+  end
 
   def updateSitterAvailability
     sitterControllers.each do |controller|
@@ -76,7 +87,7 @@ class SittersController < UIViewController
     end
   end
 
-  def createSitterAvatars
+  def createSitterViews
     self.sitters = family.sitters
     @sitterControllers = []
     sitterViews = []
@@ -98,8 +109,9 @@ class SittersController < UIViewController
     end
 
     HexagonLayout.new.applyTo sitterViews
-    updateSitterAvailability
+  end
 
+  def registerObservers
     observe(family, :sitters) do
       sitters = family.sitters
       sitterControllers.each_with_index do |view, i|

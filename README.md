@@ -1,3 +1,5 @@
+[![Code Climate](https://codeclimate.com/repos/5290f2d67e00a43c5d053345/badges/923265ce69ba80f69de3/gpa.png)](https://codeclimate.com/repos/5290f2d67e00a43c5d053345/feed)
+
 # Development Environment
 
 Install these:
@@ -30,3 +32,4 @@ Copy `~/.env.template` to `~/.env` and edit in the token values.
 # App Store Release Checklist
 1. Remove the call to `UIDevice.currentDevice.uniqueIdentifier` from `./app/app_delegate.rb`.
 There may be something to replace this by then; check on TestFlight.
+2. Add acknowledgements for third-party software.
