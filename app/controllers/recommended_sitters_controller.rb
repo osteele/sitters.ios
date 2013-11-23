@@ -36,9 +36,13 @@ class RecommendedSittersController < UITableViewController
     end
   end
 
-  def numberOfSectionsInTableView(tableView); 1; end
+  def numberOfSectionsInTableView(tableView)
+    1
+  end
 
-  def tableView(tableView, heightForHeaderInSection:section); ViewHeaderHeight + TableTextHeaderHeight; end
+  def tableView(tableView, heightForHeaderInSection:section)
+    ViewHeaderHeight + TableTextHeaderHeight
+  end
 
   def tableView(tableView, viewForHeaderInSection:section)
     UIView.alloc.initWithFrame([[0, 0], [320, ViewHeaderHeight + TableTextHeaderHeight]]).tap do |view|
@@ -71,6 +75,7 @@ class RecommendedSittersController < UITableViewController
     cellIdentifier = self.class.name
     cell = tableView.dequeueReusableCellWithIdentifier(cellIdentifier)
     font = UIFont.fontWithName('HelveticaNeue', size:14)
+
     unless cell
       cell = UITableViewCell.alloc.initWithStyle(UITableViewCellStyleSubtitle, reuseIdentifier:cellIdentifier)
       cell.backgroundColor = UIColor.clearColor

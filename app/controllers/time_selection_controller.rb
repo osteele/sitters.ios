@@ -170,7 +170,7 @@ class TimeSelectionController < UIViewController
     hourMinutePeriodFormatter = NSDateFormatter.alloc.init.setDateFormat('h:mma')
     periodFormatter = NSDateFormatter.alloc.init.setDateFormat('a')
     observe(self, :timeSelection) do |_, timeSpan|
-      delegate.timeSelectionChanged timeSpan if delegate
+      delegate.timeSelectionDidChangeTo timeSpan if delegate
 
       createHourRangeString = -> label, condensed=false {
         labelFont = hourRangeLabel.font

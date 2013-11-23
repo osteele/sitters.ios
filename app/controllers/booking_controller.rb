@@ -46,7 +46,7 @@ class BookingController < UIViewController
     subview @timeSelectionController.view
   end
 
-  def timeSelectionChanged(timeSelection)
+  def timeSelectionDidChangeTo(timeSelection)
     familySittersController.timeSelection = timeSelection
   end
 

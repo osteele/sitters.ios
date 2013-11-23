@@ -23,7 +23,7 @@ class AppDelegate
     initializeCrittercism
     initializeMixpanel
 
-    Account.instance.initialize_login_status
+    Account.instance.initializeLoginStatus
     registerForRemoteNotifications
     application.applicationIconBadgeNumber = 0
 

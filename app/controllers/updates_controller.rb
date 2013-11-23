@@ -70,14 +70,14 @@ class UpdatesController < UITableViewController
       end
     end
 
-    update = @items[indexPath.row]
+    item = @items[indexPath.row]
 
-    cell.viewWithTag(ImageTag).image = update.image
-    cell.viewWithTag(TitleTag).text = update.contact
-    cell.viewWithTag(TitleTag).font = update.today? ? boldFont : plainFont
-    cell.viewWithTag(DescriptionTag).text = update.description
-    cell.viewWithTag(TimestampTag).textColor = update.today? ? UIColor.blackColor : UIColor.grayColor
-    cell.viewWithTag(TimestampTag).text = update.timestamp
+    cell.viewWithTag(ImageTag).image = item.image
+    cell.viewWithTag(TitleTag).font = item.today? ? boldFont : plainFont
+    cell.viewWithTag(TitleTag).text = item.contact
+    cell.viewWithTag(DescriptionTag).text = item.description
+    cell.viewWithTag(TimestampTag).textColor = item.today? ? UIColor.blackColor : UIColor.grayColor
+    cell.viewWithTag(TimestampTag).text = item.timestamp
     cell
   end
 end

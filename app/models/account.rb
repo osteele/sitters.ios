@@ -26,7 +26,7 @@ class Account
     end
   end
 
-  def initialize_login_status
+  def initializeLoginStatus
     Logger.info "auth.check"
     auth.check do |error, user|
       Logger.info "auth.check error=%@", error if error
@@ -37,7 +37,7 @@ class Account
 
   def user=(user)
     self.willChangeValueForKey :user
-    add_user_methods user if user
+    injectUserInstanceMethods user if user
     @user = user
     self.didChangeValueForKey :user
     updateUserDataSubscription
@@ -88,7 +88,7 @@ class Account
 
   private
 
-  def add_user_methods(user)
+  def injectUserInstanceMethods(user)
     class << user
       def displayName
         self.thirdPartyUserData['displayName']
