@@ -25,6 +25,7 @@ PODS:
   - ReactiveCocoa/Core (2.1.7):
     - ReactiveCocoa/no-arc
   - ReactiveCocoa/no-arc (2.1.7)
+  - Stripe (1.0.1)
   - SVProgressHUD (1.0)
   - TestFlightSDK (2.1.1-beta)
 
@@ -39,6 +40,7 @@ DEPENDENCIES:
   - Mixpanel
   - NSDate-Extensions
   - ReactiveCocoa
+  - Stripe
   - SVProgressHUD
   - TestFlightSDK
 
@@ -54,6 +56,7 @@ SPEC CHECKSUMS:
   Mixpanel: 9f7312f3d29c58ea7067c5de79a922c6adccf846
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
   ReactiveCocoa: 1117f7968c8667d2ca00b5aa47156fabcb56af75
+  Stripe: 739fef5b9d2a0ec5c9e20bba21569bf70954dbbb
   SVProgressHUD: 5e10939a296debf5fe5a5895eda9539b8b2114f1
   TestFlightSDK: dea28c16f0bf65c49c4ed8939b2ae0b0ed9bf8b0
 

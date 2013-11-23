@@ -36,15 +36,20 @@ class Server
     end
   end
 
+  def registerPaymentToken(token)
+    sendRequest :register_payment_token, withParameters:{token:token}
+  end
+
+  def registerUser(user)
+    sendRequest :register_user, withParameters:{displayName:user.displayName, email:user.email}
+  end
+
+  # For demo and testing
   def setSitterCount(count)
     # The early return presents a race condition for setting this twice in a high-latency
     # environment, but this method is only used for test and demo purposes anyway.
     return if count == Family.instance.sitters.length
-    sendRequest :set_sitter_count, withParameters: {count:count}
-  end
-
-  def registerUser(user)
-    sendRequest :register_user, withParameters: {displayName:user.displayName, email:user.email}
+    sendRequest :set_sitter_count, withParameters:{count:count}
   end
 
   def subscribeToMessagesForAccount(account)
@@ -102,6 +107,8 @@ class EmulatedServer
   def handleRequest(requestKey, withParameters:parameters)
     parameters = MotionMap::Map.new(parameters)
     case requestKey
+    when :register_device_token
+    when :register_payment_token
 
     when :add_sitter
       sendMessageToClient :sitterAcceptedConnection,

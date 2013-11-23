@@ -24,8 +24,22 @@ class SettingsController < Formotion::FormController
   end
 
   def userDidProvideCreditCardInfo(info, inPaymentViewController:scanViewController)
-    # Logger.info "info = %@", info
     self.dismissViewControllerAnimated true, completion: nil
+    card = STPCard.alloc.init
+    card.number = info.cardNumber
+    card.expMonth = info.expiryMonth
+    card.expYear = info.expiryYear
+    card.cvc = info.cvv
+    progress = SVProgressHUD.showWithStatus "Validating Card", maskType:SVProgressHUDMaskTypeBlack
+    Stripe.createTokenWithCard card, success:->token {
+      Logger.info "Token created with ID: %@", token.tokenId
+      Server.instance.registerPaymentToken token.tokenId
+      progress.showSuccessWithStatus 'Validation Succeeded'
+      App.run_after(1) { progress.dismiss }
+    }, error:->error {
+      progress.dismiss
+      App.alert 'Card Error', message:error.localizedDescription
+    }
   end
 
   private

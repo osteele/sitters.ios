@@ -35,11 +35,11 @@ Motion::Project::App.setup do |app|
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
 
   # SDK Tokens
-  for name in %w[CardioAppToken CrittercismAppID MixpanelToken TestflightAppToken]
+  for name in %w[CardioAppToken CrittercismAppID MixpanelToken StripePublicKey TestflightAppToken]
     env_name = name.underscore.upcase
     env_value = ENV[env_name]
     if env_value
-      app.info_plist[name.camelize] = env_name
+      app.info_plist[name.camelize] = env_value
     else
       puts "Warning: environment variable #{env_name} is undefined"
     end
@@ -56,6 +56,7 @@ Motion::Project::App.setup do |app|
     pod 'Mixpanel'
     pod 'NSDate-Extensions'
     pod 'ReactiveCocoa'
+    pod 'Stripe'
     pod 'SVProgressHUD'
     pod 'TestFlightSDK'
   end

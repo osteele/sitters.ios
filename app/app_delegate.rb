@@ -22,6 +22,7 @@ class AppDelegate
     initializeTestFlight
     initializeCrittercism
     initializeMixpanel
+    initializeStripe
 
     Account.instance.initializeLoginStatus
     registerForRemoteNotifications
@@ -39,7 +40,7 @@ class AppDelegate
     end
 
     installExpirationObserver
-    installConnectionProgressHUD
+    presentConnectionProgressHUD
 
     window.rootViewController.wantsFullScreenLayout = true
     window.makeKeyAndVisible
@@ -136,6 +137,7 @@ class AppDelegate
     ]
   end
 
+  # unused
   def attachSplashViewTo(view)
     splashView = SplashController.alloc.init.view
     view.addSubview splashView
@@ -158,7 +160,7 @@ class AppDelegate
     end
   end
 
-  def installConnectionProgressHUD
+  def presentConnectionProgressHUD
     App.notification_center.observe ApplicationWillAttemptLoginNotification.name do |notification|
       @loginProgress ||= SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
     end
@@ -170,7 +172,7 @@ class AppDelegate
           @loginProgress = nil
         else
           @loginProgress.showSuccessWithStatus 'Connection succeeded'
-          App.run_after(1) {
+          App.run_after(0.5) {
             @loginProgress.dismiss
             @loginProgress = nil
           }
@@ -189,11 +191,13 @@ class AppDelegate
   attr_reader :crittercismEnabled
   attr_reader :mixpanelEnabled
 
-  private
-
   def getSDKToken(name)
-    NSBundle.mainBundle.objectForInfoDictionaryKey(name)
+    token = NSBundle.mainBundle.objectForInfoDictionaryKey(name)
+    Logger.error "Token #{name} is not defined" unless token
+    return token
   end
+
+  private
 
   def initializeCrittercism
     return if Device.simulator?
@@ -231,6 +235,13 @@ class AppDelegate
         mixpanel.people.set({'$email' => user.email, accountKey:Account.instance.accountKey})
       end
     end
+  end
+
+  def initializeStripe
+    return unless Object.const_defined?(:Stripe)
+    token = getSDKToken('StripePublicKey')
+    return unless token
+    Stripe.setDefaultPublishableKey token
   end
 
   def initializeTestFlight
