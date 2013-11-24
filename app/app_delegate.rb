@@ -234,9 +234,11 @@ class AppDelegate
   attr_reader :crittercismEnabled
   attr_reader :mixpanelEnabled
 
-  def getSDKToken(name)
-    token = NSBundle.mainBundle.objectForInfoDictionaryKey(name)
-    Logger.error "Token #{name} is not defined" unless token
+  # Returns the SDK token for tokenName, or nil if the bundle does not
+  # provide a value for this token.
+  def getAPIToken(tokenName)
+    token = NSBundle.mainBundle.objectForInfoDictionaryKey(tokenName)
+    Logger.warn "Token #{tokenName} is not defined" unless token
     return token
   end
 
@@ -245,12 +247,12 @@ class AppDelegate
   def initializeCrittercism
     return if Device.simulator?
     return unless Object.const_defined?(:Crittercism)
-    token = getSDKToken('CrittercismAppID')
+    token = getAPIToken('CrittercismAppId')
     return unless token
     Crittercism.enableWithAppID token
     @crittercismEnabled = true
-    Crittercism.setValue serverEnvironmentName, forKey:'environment'
     Crittercism.setValue buildNumber, forKey:'build'
+    Crittercism.setValue serverEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
         Crittercism.setUsername user.email
@@ -262,14 +264,14 @@ class AppDelegate
 
   def initializeMixpanel
     return unless Object.const_defined?(:Mixpanel)
-    token = getSDKToken('MixpanelToken')
+    token = getAPIToken('MixpanelToken')
     return unless token
     Mixpanel.sharedInstanceWithToken token
     @mixpanelEnabled = true
     mixpanel = Mixpanel.sharedInstance
     mixpanel.registerSuperProperties({
-      environment:serverEnvironmentName,
-      build:buildNumber
+      build:buildNumber,
+      environment:serverEnvironmentName
     })
     observe(Account.instance, :user) do |_, user|
       if user
@@ -282,7 +284,7 @@ class AppDelegate
 
   def initializeStripe
     return unless Object.const_defined?(:Stripe)
-    token = getSDKToken('StripePublicKey')
+    token = getAPIToken('StripePublicKey')
     return unless token
     Stripe.setDefaultPublishableKey token
   end
@@ -290,7 +292,7 @@ class AppDelegate
   def initializeTestFlight
     return if Device.simulator?
     return unless Object.const_defined?(:TestFlight)
-    token = getSDKToken('TestflightAppToken')
+    token = getAPIToken('TestflightAppToken')
     return unless token
     # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier

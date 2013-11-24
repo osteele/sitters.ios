@@ -34,8 +34,8 @@ Motion::Project::App.setup do |app|
 
   app.info_plist['BuildDate'] = BUILD_DATE.iso8601
 
-  # SDK Tokens
-  for name in %w[CardioAppToken CrittercismAppID MixpanelToken StripePublicKey TestflightAppToken]
+  # API Tokens
+  for name in %w[CardioAppToken CrittercismAppId FacebookAppId MixpanelToken StripePublicKey TestflightAppToken]
     env_name = name.underscore.upcase
     env_value = ENV[env_name]
     if env_value

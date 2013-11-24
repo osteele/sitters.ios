@@ -1,11 +1,7 @@
 class Account
   include BW::KVO
-
-  private
-  # Also in the build environment
-  FacebookAppId = '245805915569604'
-
-  public
+  FacebookPermissions = ['email']
+  # FacebookPermissions = %w[email read_friendlists user_hometown user_location user_relationships]
 
   attr_accessor :user
   attr_reader :deviceToken
@@ -47,32 +43,17 @@ class Account
     return if user
     Logger.checkpoint 'Login'
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
-    permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
-    auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
+    # avoid auth.check because it never returns when the network is offline.
+    facebookAppId = App.delegate.getAPIToken('FacebookAppId')
+    auth.login_to_facebook(app_id:facebookAppId, permissions:FacebookPermissions) do |error, user|
       authDidReturnUser user, error:error
     end
-
-    # auth.check, below, never returns when the network is offline.
-
-    # Logger.info "login: auth.check"
-    # auth.check do |error, user|
-    #   Logger.info "login: auth.check callback"
-    #   if error or user
-    #     authDidReturnUser user, error:error
-    #   else
-    #     Logger.info "login: login_to_facebook"
-    #     permissions = ['email', 'read_friendlists', 'user_hometown', 'user_location', 'user_relationships']
-    #     auth.login_to_facebook(app_id: FacebookAppId, permissions: ['email']) do |error, user|
-    #       authDidReturnUser user, error:error
-    #     end
-    #   end
-    # end
   end
 
   def logout
     Logger.checkpoint 'Logout'
     auth.logout
-    # the .info/authenticated observation clears self.user
+    # the .info/authenticated observation clears self.user if logout succeeded
   end
 
   def accountKey

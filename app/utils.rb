@@ -61,6 +61,11 @@ module Logger
     Motion::Log.error message
   end
 
+  def self.warn(format, *args)
+    message = format.gsub('%@', '%s') % args.map { |x| x.description.gsub(/\s*\n\s*/, ' ') }
+    Motion::Log.warn message
+  end
+
   def self.checkpoint(message)
     # self.info "Checkpoint: #{message}"
     Crittercism.leaveBreadcrumb message if App.delegate.crittercismEnabled
