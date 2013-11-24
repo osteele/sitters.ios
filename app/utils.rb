@@ -82,7 +82,7 @@ class Debounced
     return if @scheduler.pending
     now = NSDate.date.timeIntervalSince1970
     if @nextTime and now < @nextTime
-      @scheduler.after @delay, do fireAndDelay end
+      @scheduler.after(@delay) { fireAndDelay }
     else
       fireAndDelay
     end
