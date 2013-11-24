@@ -1,19 +1,32 @@
 [![Code Climate](https://codeclimate.com/repos/5290f2d67e00a43c5d053345/badges/923265ce69ba80f69de3/gpa.png)](https://codeclimate.com/repos/5290f2d67e00a43c5d053345/feed)
 
-# Development Environment
+# Getting Started
 
 Install these:
 
-- XCode
-- [RubyMotion](http://www.rubymotion.com/developer-center/guides/getting-started/)
-- [CocoaPods](http://cocoapods.org/): `gem install cocoapods && pod setup`
-- [Homebrew]
-- `brew install npm`
-- `npm install`
-- `bundle install`
-- `rake pod:install`
+* Install XCode [from the App Store](https://itunes.apple.com/us/app/xcode/id497799835)
+* Install the XCode command line tools: enter `gcc -v` in the terminal and press the `Install` button in the dialog. If gcc instead prints version information, the XCode command line line tools are already installed.
+* Download and install [RubyMotion](http://www.rubymotion.com/developer-center/guides/getting-started/)
+* Install [CocoaPods](http://cocoapods.org/): `gem install cocoapods && pod setup`
+* Install [Homebrew](http://brew.sh)
+* `brew install git node postgresql rbenv ruby ruby-build`
+* `npm install`
+* `bundle install`
+* `rake pod:install`
 
-Copy `~/.env.template` to `~/.env` and edit in the token values.
+Copy `./.env.template` to `./.env` and edit in the required values.
+
+
+# Building and Running
+
+Run on the simulator: `rake`
+
+Run on a USB-attached device: `rake device`
+
+
+# API Documentation
+
+`yard` builds the documentation into`./docs`.
 
 
 # Adding a User
@@ -23,11 +36,13 @@ Copy `~/.env.template` to `~/.env` and edit in the token values.
 4. Download and install the modified provisioning profile.
 5. Edit the value of `IOS_APP_7S_PRODUCTION_PROFILE_ID` in `~/.env`.
 
-# Uploading a Build
+
+# Distributing via TestFlight
 1. `rake testflight:upload`
 2. If the provisioning profile changed, upload the new profile from `~/Library/MobileDevice/'Provisioning Profiles'`.
 `rake profiles:open` will open this folder.
 3. Open the TestFlight build page and add users.
+
 
 # App Store Release Checklist
 1. Remove the call to `UIDevice.currentDevice.uniqueIdentifier` from `./app/app_delegate.rb`.
