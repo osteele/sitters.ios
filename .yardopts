@@ -1,6 +1,8 @@
---exclude app/rac_extensions.rb
---no-private
+--no-stats
+--output-dir build/doc
 --plugin tomdoc
+--use-cache
 
+--readme README.md
+--exclude app/rac_extensions.rb
 app
-README

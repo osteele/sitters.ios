@@ -26,7 +26,17 @@ Run on a USB-attached device: `rake device`
 
 # API Documentation
 
-`yard` builds the documentation into`./docs`.
+`yard` builds the documentation into`./build/doc`.
+Open `./build/doc/index.html` in a browser to view the documentation.
+
+
+# Coding Standards
+
+* Indent with spaces, two per indentation level.
+* Use PascalCase for class names; camelCase for method and variable names. (This is the same as Objective C.)
+* Used ClassName:ConstantName or ModuleName:ConstantName for constants and other globals that pertain to a class or module.
+* A file that defines ThisClass should be named this_class.rb.
+* Use [TomDoc](http://tomdoc.org) documentation standards.
 
 
 # Adding a User

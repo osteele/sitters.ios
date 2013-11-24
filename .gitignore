@@ -31,4 +31,3 @@ resources/sitter_details.html
 *.o
 *.a
 .yardoc
-doc
