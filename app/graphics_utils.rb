@@ -20,6 +20,7 @@ class NSAttributedString
     baseline: -0.5
   }
 
+  # Draws the attributed string along an arc of the circle centered at (cx, cy), with radius radius.
   def drawOnArc(cx, cy, radius)
     radius += TextArcSettings[:dRadius]
     tracking = TextArcSettings[:tracking]

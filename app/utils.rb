@@ -1,4 +1,5 @@
 class UIFont
+  # Returns a font object that is the same as the receiver but which has the specified size instead.
   def fontWithSymbolicTraits(traits)
     fontName = fontDescriptor.fontDescriptorWithSymbolicTraits(traits).postscriptName
     return UIFont.fontWithName(fontName, size:pointSize)
@@ -96,8 +97,8 @@ class Debounced
   end
 end
 
-# This implements a subset of the functionality of a UICollectionViewLayout and associated classes.
-# It's much simpler than the full protocol since there's too few cells to require a flyweight,
+# The `HexagonLayout` class implements a subset of the functionality of `UICollectionViewLayout` and its associated classes.
+# It's much simpler than the full protocol since there's too few cells to require the flyweight pattern,
 # and there's just the one fixed layout.
 class HexagonLayout
   attr_accessor :cellWidth, :cellHeight, :leftMargin
@@ -108,11 +109,16 @@ class HexagonLayout
     @leftMargin = 19
   end
 
+  # Arrange my views in a hexagonal lattice.
+  #
+  # views - an array of UIView
   def applyTo(views)
     views.each_with_index do |view, i|
       view.origin = originForIndex(i)
     end
   end
+
+  private
 
   def originForIndex(n)
     cellsPerEvenRow = 2
