@@ -4,7 +4,7 @@ class Server
   attr_reader :firebaseEnvironment
   attr_reader :requestsFB
   attr_reader :messagesFB
-  attr_reader :userMessagesFB
+  attr_reader :accountMessagesFB
 
   public
 
@@ -36,12 +36,16 @@ class Server
     end
   end
 
-  def registerPaymentToken(token)
-    sendRequest :register_payment_token, withParameters:{token:token}
+  def registerPaymentToken(token, cardInfo)
+    sendRequest :register_payment_token, withParameters:{token:token, cardInfo:cardInfo}
   end
 
   def registerUser(user)
     sendRequest :register_user, withParameters:{displayName:user.displayName, email:user.email}
+  end
+
+  def removePaymentCard(cardInfo)
+    sendRequest :remove_payment_card, withParameters:{cardInfo:cardInfo}
   end
 
   # For demo and testing
@@ -53,14 +57,14 @@ class Server
   end
 
   def subscribeToMessagesForAccount(account)
-    unsubscribeFromUserMessages
-    @userMessagesFB = firebaseEnvironment['message'][account.accountKey]
-    Logger.info "Subscribing to %@", userMessagesFB
-    userMessagesFB.on(:child_added) do |snapshot|
+    unsubscribeFromAccountMessages
+    @accountMessagesFB = firebaseEnvironment['message'][account.accountKey]
+    Logger.info "Subscribing to %@", accountMessagesFB
+    accountMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
       # messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:parameters)
       # App.alert message['messageTitle'], message:messageText
-      userMessagesFB[snapshot.name].clear!
+      accountMessagesFB[snapshot.name].clear!
       messageType = message['messageType']
       parameters = message['parameters']
       Logger.info "Relaying firebase #{messageType} with #{parameters}"
@@ -73,11 +77,11 @@ class Server
     sendRequest :register_device_token, withParameters:{token:token}
   end
 
-  def unsubscribeFromUserMessages
-    if userMessagesFB
-      Logger.info "Unsubscribing from %@", userMessagesFB
-      userMessagesFB.off
-      @userMessagesFB = nil
+  def unsubscribeFromAccountMessages
+    if accountMessagesFB
+      Logger.info "Unsubscribing from %@", accountMessagesFB
+      accountMessagesFB.off
+      @accountMessagesFB = nil
     end
   end
 
@@ -108,8 +112,6 @@ class EmulatedServer
   def handleRequest(requestKey, withParameters:parameters)
     parameters = MotionMap::Map.new(parameters)
     case requestKey
-    when :register_device_token
-    when :register_payment_token
 
     when :add_sitter
       sendMessageToClient :sitterAcceptedConnection,
@@ -131,10 +133,6 @@ class EmulatedServer
 
     when :set_sitter_count
       Family.instance.setSitterCount parameters[:count]
-
-    else
-      Logger.info "Server emulator: unknown request type %@", requestKey
-
     end
   end
 

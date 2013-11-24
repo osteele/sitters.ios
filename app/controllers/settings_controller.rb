@@ -24,7 +24,6 @@ class SettingsController < Formotion::FormController
   end
 
   def userDidProvideCreditCardInfo(info, inPaymentViewController:scanViewController)
-    self.dismissViewControllerAnimated true, completion: nil
     card = STPCard.alloc.init
     card.number = info.cardNumber
     card.expMonth = info.expiryMonth
@@ -33,10 +32,15 @@ class SettingsController < Formotion::FormController
     progress = SVProgressHUD.showWithStatus "Validating Card", maskType:SVProgressHUDMaskTypeBlack
     Stripe.createTokenWithCard card, success:->token {
       Logger.info "Token created with ID: %@", token.tokenId
-      Server.instance.registerPaymentToken token.tokenId
+      cardType = CardIOCreditCardInfo.displayStringForCardType(info.cardType, usingLanguageOrLocale:NSLocale.currentLocale.localeIdentifier)
+      Account.instance.cardInfo = {cardType:cardType, last4: info.cardNumber[/.{4}$/], expirationMonth:info.expiryMonth, expirationYear:info.expiryYear}
+      Server.instance.registerPaymentToken token.tokenId, Account.instance.cardInfo
+      updateForm
       progress.showSuccessWithStatus 'Validation Succeeded'
+      self.dismissViewControllerAnimated true, completion: nil
       App.run_after(1) { progress.dismiss }
     }, error:->error {
+      self.dismissViewControllerAnimated true, completion: nil
       progress.dismiss
       App.alert 'Card Error', message:error.localizedDescription
     }
@@ -84,12 +88,26 @@ class SettingsController < Formotion::FormController
 
     form.build_section do |section|
       section.title = 'Payment'
-      section.build_row do |row|
-        row.title = 'Enter payment information'
-        row.type = :button
-        row.key = :payment
+      if Account.instance.cardInfo
+        section.build_row do |row|
+          row.type = :static
+          puts "build #{Account.instance.cardInfo}"
+          info = Account.instance.cardInfo
+          row.title = "#{info[:cardType]} •••• #{info[:last4]}"
+        end
+        section.build_row do |row|
+          row.title = 'Remove card'
+          row.type = :button
+          row.key = :remove_payment_card
+        end
+      else
+        section.build_row do |row|
+          row.title = 'Add credit card'
+          row.type = :button
+          row.key = :enter_payment_card
+        end
       end
-    end if user #and false
+    end if user
 
     form.row(:login).on_tap do |row|
       account.login
@@ -99,13 +117,20 @@ class SettingsController < Formotion::FormController
       account.logout
     end if form.row(:logout)
 
-    form.row(:payment).on_tap do |row|
-      Logger.checkpoint 'Enter card'
-      cardio ||= CardIOPaymentViewController.alloc.initWithPaymentDelegate(self)
+    form.row(:enter_payment_card).on_tap do |row|
+      Logger.checkpoint 'Enter payment card'
+      cardController ||= CardIOPaymentViewController.alloc.initWithPaymentDelegate(self)
       cardioAppToken = NSBundle.mainBundle.objectForInfoDictionaryKey('CardioAppToken')
-      cardio.appToken = cardioAppToken if cardioAppToken
-      self.presentViewController cardio, animated:true, completion:nil
-    end if form.row(:payment)
+      cardController.appToken = cardioAppToken if cardioAppToken
+      self.presentViewController cardController, animated:true, completion:nil
+    end if form.row(:enter_payment_card)
+
+    form.row(:remove_payment_card).on_tap do |row|
+      Logger.checkpoint 'Remove payment card'
+      Server.instance.removePaymentCard Account.instance.cardInfo
+      Account.instance.cardInfo = nil
+      updateForm
+    end if form.row(:remove_payment_card)
 
     if false
       buildDate = app.buildDate

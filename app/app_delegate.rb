@@ -194,12 +194,16 @@ class AppDelegate
   def presentSplashView
     splashController = SplashController.alloc.init
     splashController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve
-    # splashController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal
     window.rootViewController.presentViewController splashController, animated:false, completion:nil
-    progress = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack
+    progress = nil
+    state = {loaded:false}
+    App.run_after(0.5) {
+      progress = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack unless state[:loaded]
+    }
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
+      progress.dismiss if progress
+      state[:loaded] = true
       window.rootViewController.dismissViewControllerAnimated true, completion:nil
-      progress.dismiss
     end
   end
 

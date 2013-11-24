@@ -4,7 +4,18 @@ class Account
   # FacebookPermissions = %w[email read_friendlists user_hometown user_location user_relationships]
 
   attr_accessor :user
+
+  # The device APNS token. This is saved in the account so that a future login can send it to the server.
   attr_reader :deviceToken
+
+  # The credit card, or nil.
+  #
+  # Properties:
+  #  :last4 - The last four digits of the card number
+  #  :cardType - String
+  #  :expirationMonth - Number
+  #  :expirationYear - Number
+  attr_accessor :cardInfo
 
   def self.instance
     Dispatch.once { @instance ||= new }
@@ -132,7 +143,7 @@ class Account
       @currentFamilyFB = nil
     end
     @familyData = nil
-    Server.instance.unsubscribeFromUserMessages
+    Server.instance.unsubscribeFromAccountMessages
     return unless user
 
     Server.instance.registerUser user
@@ -143,12 +154,13 @@ class Account
     @currentAccountFB = firebaseEnvironment[accountPath]
     Storage.instance.onCachedFirebaseValue(accountPath) do |accountData|
       if accountData
-        family_id = accountData['family_id']
-        familyPath = "family/#{family_id}"
+        self.cardInfo = accountData['cardInfo'] ? MotionMap::Map.new(accountData['cardInfo']) : nil
+        familyId = accountData['family_id']
+        familyPath = "family/#{familyId}"
         @currentFamilyFB = firebaseEnvironment[familyPath]
         Storage.instance.onCachedFirebaseValue(familyPath) do |familyData|
           @familyData = familyData
-          family.id = family_id
+          family.id = familyId
           family.updateFrom familyData if familyData
         end
       end
