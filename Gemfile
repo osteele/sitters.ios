@@ -8,8 +8,11 @@ gem 'launchy'
 gem 'motion-cocoapods'
 gem 'require_all'
 gem 'rest-client'
-
 gem 'motion-logger'
+
+# docs
+gem 'yard-tomdoc'
+gem 'redcarpet'
 
 # foundation
 gem 'bubble-wrap'

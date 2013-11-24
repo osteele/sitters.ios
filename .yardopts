@@ -1,0 +1,6 @@
+--exclude app/rac_extensions.rb
+--no-private
+--plugin tomdoc
+
+app
+README

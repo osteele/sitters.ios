@@ -30,3 +30,5 @@ resources/sitter_details.html
 *.bridgesupport
 *.o
 *.a
+.yardoc
+doc
