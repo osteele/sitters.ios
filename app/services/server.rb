@@ -82,7 +82,8 @@ class Server
   end
 
   def shouldEmulateServer
-    return NSUserDefaults.standardUserDefaults['emulateServer'] || Account.instance.user.nil?
+    return true if Account.instance.user.nil?
+    return App.delegate.recordUserSettingDependency('emulateServer')
   end
 end
 
