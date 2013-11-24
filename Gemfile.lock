@@ -85,4 +85,5 @@ DEPENDENCIES
   require_all
   rest-client
   teacup
+  yard
   yard-tomdoc

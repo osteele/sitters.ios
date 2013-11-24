@@ -11,6 +11,7 @@ gem 'rest-client'
 gem 'motion-logger'
 
 # docs
+gem 'yard'
 gem 'yard-tomdoc'
 gem 'redcarpet'
 
