@@ -28,9 +28,6 @@ class Account
       Logger.info "Auth status = #{snapshot.value}"
       self.user = nil if snapshot.value == false
     end
-    observe(family, :sitters) do
-      familySittersDidChange
-    end
   end
 
   def initializeLoginStatus
@@ -164,13 +161,6 @@ class Account
           family.updateFrom familyData if familyData
         end
       end
-    end
-  end
-
-  def familySittersDidChange
-    sitter_ids = family.sitters.map(&:id)
-    if @currentFamilyDataFB and @currentFamilyDataFB['sitter_ids'] != sitter_ids
-      @currentFamilyDataFB['sitter_ids'] = sitter_ids
     end
   end
 end
