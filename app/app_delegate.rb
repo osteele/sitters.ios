@@ -98,7 +98,6 @@ class AppDelegate
     changed = @recordedUserSettings.reject { |key, value|
       newValue = NSUserDefaults.standardUserDefaults[key]
       value == newValue
-      false
     }.keys.compact
     if changed.any?
       message = <<-TEXT
