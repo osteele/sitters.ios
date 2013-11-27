@@ -46,19 +46,9 @@ Motion::Project::App.setup do |app|
   end
 
   app.pods do
-    # pod 'NSLogger'
-    pod 'CrittercismSDK'
-    pod 'Facebook-iOS-SDK'
-    pod 'FMDB'
-    pod 'GRMustache'
-    pod 'ISO8601DateFormatter'
-    pod 'CardIO'
-    pod 'Mixpanel'
-    pod 'NSDate-Extensions'
-    pod 'ReactiveCocoa'
-    pod 'Stripe'
-    pod 'SVProgressHUD'
-    pod 'TestFlightSDK'
+    File.readlines('Podfile').select { |line| line =~ /^pod /}.each do |pod_line|
+      eval pod_line
+    end
   end
 
   # App
