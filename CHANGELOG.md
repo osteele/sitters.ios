@@ -1,3 +1,8 @@
+## 0.2.12 (2013-11-27)
+* Credit card information is saved in the cloud.
+* Better analytics
+* Ping the production server.
+
 ## 0.2.11 (2013-11-22)
 * Add MixPanel analytics
 * Default to production server; obey Setttings switch
