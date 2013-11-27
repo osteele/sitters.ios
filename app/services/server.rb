@@ -33,6 +33,8 @@ class Server
       requestString = requestKey.gsub(/_(.)/) { $1.upcase } # snake_case -> camelCase
       request = {requestType:requestString, accountKey:Account.instance.accountKey, parameters:parameters}
       requestsFB << request
+      # ping the server to wake it
+      BW::HTTP.get 'https://seven-sitters.herokuapp.com/ping' unless Device.simulator?
     end
   end
 
