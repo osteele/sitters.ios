@@ -1,33 +1,65 @@
-.repl_history
-build
-tags
-resources/*.nib
-resources/*.momd
-resources/*.storyboardc
+# OS X
 .DS_Store
+
+# IDEs
+.idea
+
+# Misc
+tags
 nbproject
-.redcar
-#*#
-*~
 *.sw[po]
 .eprj
-.idea
 .dat*.*
-vendor/pods
-node_modules
-resources/Settings.bundle
+node_modules/
+
+# Workspace
 .env
 
+# Editors
+#*#
+*~
+
 # Build caches
-.sass-cache
+.redcar/
+.sass-cache/
+.yardoc/
 
 # Generated
 resources/styles/sitter_details.css
 resources/sitter_details.html
 
 # Generated
+build/
 *.pch
+
+# Ruby Motion
 *.bridgesupport
 *.o
 *.a
-.yardoc
+.repl_history
+vendor/pods/
+
+resources/*.nib
+resources/*.momd
+resources/*.storyboardc
+resources/Settings.bundle
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+profile
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+
+# CocoaPods
+Pods
