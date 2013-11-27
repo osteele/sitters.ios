@@ -34,7 +34,7 @@ class Server
       request = {requestType:requestString, accountKey:Account.instance.accountKey, parameters:parameters}
       requestsFB << request
       # ping the server to wake it
-      BW::HTTP.get 'https://seven-sitters.herokuapp.com/ping' unless Device.simulator?
+      BW::HTTP.get 'http://api.7sitters.com/ping' unless Device.simulator?
     end
   end
 
