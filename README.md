@@ -39,6 +39,15 @@ Open `./build/doc/index.html` in a browser to view the documentation.
 * Use [TomDoc](http://tomdoc.org) documentation standards.
 
 
+# Service Dashboards
+
+* [Crittercism](https://app.crittercism.com/developers) crash reports
+* [Firebase](https://sevensitters.firebaseio.com/) storage synchronization
+* [MixPanel](https://mixpanel.com/report/316033/events/#events) analytics
+* [Testflight](https://www.testflightapp.com/dashboard/) app distribution
+* Also see the [service storage dashboards](http://github.com/osteele/sitters.server#service-dashboards).
+
+
 # Adding a User
 1. Invite the user to TestFlight. TestFlight will collect their UDID.
 2. Sign into the iOS developer center. Add the user's UDID to the [device list](https://developer.apple.com/account/ios/device/deviceList.action).
