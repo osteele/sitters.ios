@@ -61,9 +61,3 @@ Open `./build/doc/index.html` in a browser to view the documentation.
 2. If the provisioning profile changed, upload the new profile from `~/Library/MobileDevice/'Provisioning Profiles'`.
 `rake profiles:open` will open this folder.
 3. Open the TestFlight build page and add users.
-
-
-# App Store Release Checklist
-1. Remove the call to `UIDevice.currentDevice.uniqueIdentifier` from `./app/app_delegate.rb`.
-There may be something to replace this by then; check on TestFlight.
-2. Add acknowledgements for third-party software.

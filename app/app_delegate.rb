@@ -297,8 +297,7 @@ class AppDelegate
     return unless Object.const_defined?(:TestFlight)
     token = getAPIToken('TestflightAppToken')
     return unless token
-    # TODO remove call to TestFlight.setDeviceIdentifier before submitting to app store
-    TestFlight.setDeviceIdentifier UIDevice.currentDevice.uniqueIdentifier
+    TestFlight.setDeviceIdentifier UIDevice.currentDevice.identifierForVendor.UUIDString # UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff token
     TestFlight.addCustomEnvironmentInformation serverEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
