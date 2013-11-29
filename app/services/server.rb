@@ -19,14 +19,16 @@ class Server
   end
 
   def sendRequest(requestKey, withParameters:parameters)
+    parameters = parameters.clone
     unless NSJSONSerialization.isValidJSONObject(parameters)
-      parameters = parameters.clone
       for key, value in parameters
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(NSDate)
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
       end
     end
     Logger.info "Request %@ with %@", requestKey, parameters
+    parameters[:timestamp] = NSDate.date.ISO8601StringFromDate
+    parameters[:deviceUuid] = UIDevice.currentDevice.identifierForVendor.UUIDString
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
