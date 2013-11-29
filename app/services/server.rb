@@ -3,8 +3,7 @@ class Server
 
   attr_reader :firebaseEnvironment
   attr_reader :requestsFB
-  attr_reader :messagesFB
-  attr_reader :accountMessagesFB
+  attr_reader :userMessagesFB
 
   public
 
@@ -19,21 +18,25 @@ class Server
   end
 
   def sendRequest(requestKey, withParameters:parameters)
-    parameters = parameters.clone
     unless NSJSONSerialization.isValidJSONObject(parameters)
+      parameters = parameters.clone
       for key, value in parameters
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(NSDate)
         parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
       end
     end
     Logger.info "Request %@ with %@", requestKey, parameters
-    parameters[:timestamp] = NSDate.date.ISO8601StringFromDate
-    parameters[:deviceUuid] = UIDevice.currentDevice.identifierForVendor.UUIDString
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
       requestString = requestKey.gsub(/_(.)/) { $1.upcase } # snake_case -> camelCase
-      request = {requestType:requestString, accountKey:Account.instance.accountKey, parameters:parameters}
+      request = {
+        requestType:requestString,
+        deviceUuid: UIDevice.currentDevice.identifierForVendor.UUIDString,
+        parameters:parameters,
+        timestamp: NSDate.date.ISO8601StringFromDate,
+        userAuthId:Account.instance.accountKey
+      }
       requestsFB << request
       # ping the server to wake it
       BW::HTTP.get 'http://api.7sitters.com/ping' unless Device.simulator?
@@ -62,13 +65,13 @@ class Server
 
   def subscribeToMessagesForAccount(account)
     unsubscribeFromAccountMessages
-    @accountMessagesFB = firebaseEnvironment['message'][account.accountKey]
-    Logger.info "Subscribing to %@", accountMessagesFB
-    accountMessagesFB.on(:child_added) do |snapshot|
+    @userMessagesFB = firebaseEnvironment['message']['user']['auth'][account.accountKey]
+    Logger.info "Subscribing to %@", userMessagesFB
+    userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
       # messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:parameters)
       # App.alert message['messageTitle'], message:messageText
-      accountMessagesFB[snapshot.name].clear!
+      userMessagesFB[snapshot.name].clear!
       messageType = message['messageType']
       parameters = message['parameters']
       Logger.info "Relaying firebase #{messageType} with #{parameters}"
@@ -82,10 +85,10 @@ class Server
   end
 
   def unsubscribeFromAccountMessages
-    if accountMessagesFB
-      Logger.info "Unsubscribing from %@", accountMessagesFB
-      accountMessagesFB.off
-      @accountMessagesFB = nil
+    if userMessagesFB
+      Logger.info "Unsubscribing from %@", userMessagesFB
+      userMessagesFB.off
+      @userMessagesFB = nil
     end
   end
 
@@ -145,7 +148,7 @@ class EmulatedServer
   def messagesFB
     firebaseEnvironment = App.delegate.firebaseEnvironment
     # don't cache, since changes when account changes
-    return firebaseEnvironment['message'][Account.instance.accountKey]
+    return firebaseEnvironment['message']['user']['auth'][Account.instance.accountKey]
   end
 
   def simulateSitterConfirmationDelay

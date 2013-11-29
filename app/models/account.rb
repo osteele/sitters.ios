@@ -67,7 +67,7 @@ class Account
   def accountKey
     providerNames = [nil, 'password', 'facebook', 'twitter']
     userProvider = providerNames[user.provider]
-    "#{userProvider}/#{user.userId}"
+    "#{userProvider}-#{user.userId}"
   end
 
   def deviceToken=(token)
