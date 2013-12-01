@@ -112,7 +112,7 @@ class BookingController < UIViewController
 
   def performSitterAction(requestType, sitter:sitter)
     Logger.checkpoint 'Request sitter'
-    parameters = {sitterId: sitter.id, familyId: Family.instance.id}
+    parameters = {sitterId:sitter.id}
     if [:request_sitter, :reserve_sitter].include?(requestType)
       requestType = :reserve_sitter
       parameters = parameters.merge(startTime:timeSelection.startTime, endTime:timeSelection.endTime)
