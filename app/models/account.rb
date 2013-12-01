@@ -147,7 +147,7 @@ class Account
     Server.instance.subscribeToMessagesForAccount self
     Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
 
-    accountPath = "account/#{accountKey}"
+    accountPath = "user/auth/#{accountKey}"
     @currentAccountFB = firebaseEnvironment[accountPath]
     Storage.instance.onCachedFirebaseValue(accountPath) do |accountData|
       if accountData
