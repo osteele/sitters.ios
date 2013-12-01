@@ -31,14 +31,14 @@ class Server
     if shouldEmulateServer
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
-      requestString = requestKey.gsub(/_(.)/) { $1.upcase } # snake_case -> camelCase
       request = {
-        requestType:requestString,
-        apiVersion: API_VERSION,
-        deviceUuid: UIDevice.currentDevice.identifierForVendor.UUIDString,
-        parameters:parameters,
-        timestamp: NSDate.date.ISO8601StringFromDate,
-        userAuthId:Account.instance.accountKey
+        requestType: requestKey.gsub(/_(.)/) { $1.upcase }, # snake_case -> camelCase
+        apiVersion:  API_VERSION,
+        deviceUuid:  UIDevice.currentDevice.identifierForVendor.UUIDString,
+        ipAddress:   NetworkUtils.getIPAddress(true),
+        parameters:  parameters,
+        timestamp:   NSDate.date.ISO8601StringFromDate,
+        userAuthId:  Account.instance.accountKey
       }
       requestsFB << request
       # ping the server to wake it
