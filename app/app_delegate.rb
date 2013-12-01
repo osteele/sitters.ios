@@ -74,10 +74,10 @@ class AppDelegate
   end
 
   def firebaseEnvironment
-    @firebaseEnvironment ||= firebaseRoot[serverEnvironmentName]
+    @firebaseEnvironment ||= firebaseRoot[serviceEnvironmentName]
   end
 
-  def serverEnvironmentName
+  def serviceEnvironmentName
     return 'development' if Device.simulator?
     return 'development' if recordUserSettingDependency('useDevelopmentServer')
     return 'production'
@@ -250,12 +250,12 @@ class AppDelegate
   def initializeCrittercism
     return if Device.simulator?
     return unless Object.const_defined?(:Crittercism)
-    token = getAPIToken('CrittercismAppId')
-    return unless token
-    Crittercism.enableWithAppID token
+    apiToken = getAPIToken('CrittercismAppId')
+    return unless apiToken
+    Crittercism.enableWithAppID apiToken
     @crittercismEnabled = true
     Crittercism.setValue buildNumber, forKey:'build'
-    Crittercism.setValue serverEnvironmentName, forKey:'environment'
+    Crittercism.setValue serviceEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
         Crittercism.setUsername user.email
@@ -267,19 +267,19 @@ class AppDelegate
 
   def initializeMixpanel
     return unless Object.const_defined?(:Mixpanel)
-    token = getAPIToken('MixpanelToken')
-    return unless token
-    Mixpanel.sharedInstanceWithToken token
+    apiToken = getAPIToken('MixpanelToken')
+    return unless apiToken
+    Mixpanel.sharedInstanceWithToken apiToken
     @mixpanelEnabled = true
     mixpanel = Mixpanel.sharedInstance
+    mixpanel.identify mixpanel.distinctId
     mixpanel.registerSuperProperties({
       build:buildNumber,
-      environment:serverEnvironmentName
+      environment:serviceEnvironmentName
     })
     observe(Account.instance, :user) do |_, user|
       if user
         mixpanel.createAlias user.email, forDistinctID:mixpanel.distinctId
-        mixpanel.identify mixpanel.distinctId
         mixpanel.people.set({'$email' => user.email, accountKey:Account.instance.accountKey})
       end
     end
@@ -287,19 +287,19 @@ class AppDelegate
 
   def initializeStripe
     return unless Object.const_defined?(:Stripe)
-    token = getAPIToken('StripePublicKey')
-    return unless token
-    Stripe.setDefaultPublishableKey token
+    apiToken = getAPIToken('StripePublicKey')
+    return unless apiToken
+    Stripe.setDefaultPublishableKey apiToken
   end
 
   def initializeTestFlight
     return if Device.simulator?
     return unless Object.const_defined?(:TestFlight)
-    token = getAPIToken('TestflightAppToken')
-    return unless token
+    apiToken = getAPIToken('TestflightAppToken')
+    return unless apiToken
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.identifierForVendor.UUIDString # UIDevice.currentDevice.uniqueIdentifier
-    TestFlight.takeOff token
-    TestFlight.addCustomEnvironmentInformation serverEnvironmentName, forKey:'environment'
+    TestFlight.takeOff apiToken
+    TestFlight.addCustomEnvironmentInformation serviceEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
         TestFlight.addCustomEnvironmentInformation user.email, forKey:'email'
