@@ -1,6 +1,8 @@
 class Server
   private
 
+  API_VERSION = 1
+
   attr_reader :firebaseEnvironment
   attr_reader :requestsFB
   attr_reader :userMessagesFB
@@ -32,6 +34,7 @@ class Server
       requestString = requestKey.gsub(/_(.)/) { $1.upcase } # snake_case -> camelCase
       request = {
         requestType:requestString,
+        apiVersion: API_VERSION,
         deviceUuid: UIDevice.currentDevice.identifierForVendor.UUIDString,
         parameters:parameters,
         timestamp: NSDate.date.ISO8601StringFromDate,
@@ -69,13 +72,15 @@ class Server
     Logger.info "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
-      # messageText = MessageTemplate.messageTemplateToString(message['messageText'], withParameters:parameters)
-      # App.alert message['messageTitle'], message:messageText
-      userMessagesFB[snapshot.name].clear!
-      messageType = message['messageType']
-      parameters = message['parameters']
-      Logger.info "Relaying firebase #{messageType} with #{parameters}"
-      App.notification_center.postNotificationName messageType, object:self, userInfo:parameters
+      messageApiVersion = message['apiVersion']
+      if messageApiVersion == API_VERSION
+        # Clear it first, so that it will only crash the client once
+        userMessagesFB[snapshot.name].clear!
+        processMessage(message)
+      else
+        # Leave it place in case there's other clients at the old version
+        Logger.info "Ignoring with api version #{messageApiVersion}: %@", message
+      end
     end
   end
 
@@ -90,6 +95,15 @@ class Server
       userMessagesFB.off
       @userMessagesFB = nil
     end
+  end
+
+  private
+
+  def processMessage(message)
+    messageType = message['messageType']
+    parameters = message['parameters']
+    Logger.info "Relaying firebase #{messageType} with #{parameters}"
+    App.notification_center.postNotificationName messageType, object:self, userInfo:parameters
   end
 
   def shouldEmulateServer
