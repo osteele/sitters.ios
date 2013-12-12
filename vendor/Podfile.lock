@@ -1,10 +1,10 @@
 PODS:
-  - CardIO (3.4.0)
-  - CocoaLumberjack (1.6.4):
+  - CardIO (3.4.1)
+  - CocoaLumberjack (1.6.5.1):
     - CocoaLumberjack/Core
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.6.4)
-  - CocoaLumberjack/Extensions (1.6.4):
+  - CocoaLumberjack/Core (1.6.5.1)
+  - CocoaLumberjack/Extensions (1.6.5.1):
     - CocoaLumberjack/Core
   - CrittercismSDK (4.1.2)
   - Facebook-iOS-SDK (3.10.0)
@@ -17,17 +17,19 @@ PODS:
     - JRSwizzle (~> 1.0)
   - ISO8601DateFormatter (0.7)
   - JRSwizzle (1.0)
-  - Mixpanel (2.2.0)
+  - Mixpanel (2.2.1)
   - NSDate-Extensions (0.0.1)
-  - ReactiveCocoa (2.1.7):
+  - PaymentKit (1.0.2)
+  - ReactiveCocoa (2.1.8):
     - ReactiveCocoa/Core
     - ReactiveCocoa/no-arc
-  - ReactiveCocoa/Core (2.1.7):
+  - ReactiveCocoa/Core (2.1.8):
     - ReactiveCocoa/no-arc
-  - ReactiveCocoa/no-arc (2.1.7)
-  - Stripe (1.0.1)
+  - ReactiveCocoa/no-arc (2.1.8)
+  - Stripe (1.0.2):
+    - PaymentKit
   - SVProgressHUD (1.0)
-  - TestFlightSDK (2.1.1-beta)
+  - TestFlightSDK (2.1.3-noadid-beta)
 
 DEPENDENCIES:
   - CardIO
@@ -45,19 +47,20 @@ DEPENDENCIES:
   - TestFlightSDK
 
 SPEC CHECKSUMS:
-  CardIO: ffa662660a7ff2de6cde12cf1005640e9094a03e
-  CocoaLumberjack: a41a6cce03be251319e1ace1fdac5a610ce10467
+  CardIO: df7bd64f570de0f5d666beff29fbab5424dcb97c
+  CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
   CrittercismSDK: 6182966dc89b633611b1acb87201952d84224120
   Facebook-iOS-SDK: ef402579aeb30cf0c4a6370fb0a927e3dc3059e5
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
   ISO8601DateFormatter: 00944e437ea647f4244454ce8809d313861d08de
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
-  Mixpanel: 9f7312f3d29c58ea7067c5de79a922c6adccf846
+  Mixpanel: 488d700d4f769a351bb61afc7d4cabbdeef506e1
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
-  ReactiveCocoa: 1117f7968c8667d2ca00b5aa47156fabcb56af75
-  Stripe: 739fef5b9d2a0ec5c9e20bba21569bf70954dbbb
+  PaymentKit: be75a5398a9465edd84f7249a9e57d707da025fb
+  ReactiveCocoa: 0db710a0afa1c627a64470e5c912a3870d4854ae
+  Stripe: 8ce5fe9eca204058d325fcf08d4835585ab8d23b
   SVProgressHUD: 5e10939a296debf5fe5a5895eda9539b8b2114f1
-  TestFlightSDK: dea28c16f0bf65c49c4ed8939b2ae0b0ed9bf8b0
+  TestFlightSDK: 8f8941d0dd990508e127480b06cc6c36379c1b49
 
 COCOAPODS: 0.28.0
