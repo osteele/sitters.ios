@@ -9,8 +9,9 @@ Install these:
 * Download and install [RubyMotion](http://www.rubymotion.com/developer-center/guides/getting-started/)
 * Install [CocoaPods](http://cocoapods.org/): `gem install cocoapods && pod setup`
 * Install [Homebrew](http://brew.sh)
-* `brew install git node postgresql rbenv ruby ruby-build`
+* `brew install git node postgresql rbenv rbenv-bundler ruby ruby-build`
 * `npm install`
+* `gem install bundler`
 * `bundle install`
 * `rake pod:install`
 
