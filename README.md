@@ -5,11 +5,13 @@
 Install these:
 
 * Install XCode [from the App Store](https://itunes.apple.com/us/app/xcode/id497799835)
-* Install the XCode command line tools: enter `gcc -v` in the terminal and press the `Install` button in the dialog. If gcc instead prints version information, the XCode command line line tools are already installed.
+* Install the XCode command line tools: enter `gcc -v` in the terminal and press the `Install` button in the dialog.
+If gcc instead prints version information, the XCode command line line tools are already installed.
 * Download and install [RubyMotion](http://www.rubymotion.com/developer-center/guides/getting-started/)
 * Install [CocoaPods](http://cocoapods.org/): `gem install cocoapods && pod setup`
 * Install [Homebrew](http://brew.sh)
-* `brew install git node postgresql rbenv rbenv-bundler ruby ruby-build`
+* `brew install git node postgresql rbenv rbenv-bundler rbenv-gemset rbenv-gem-rehash ruby-build`
+* `rbenv install`
 * `npm install`
 * `gem install bundler`
 * `bundle install`
