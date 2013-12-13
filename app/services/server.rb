@@ -108,6 +108,7 @@ class Server
 
   def shouldEmulateServer
     return true if Account.instance.user.nil?
+    return true if App.delegate.recordUserSettingDependency('demo')
     return App.delegate.recordUserSettingDependency('emulateServer')
   end
 end

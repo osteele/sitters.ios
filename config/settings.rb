@@ -3,6 +3,8 @@ Motion::SettingsBundle.setup do |app|
   app.title 'Build date', key: 'buildDate', default: BUILD_DATE.strftime('%I:%M %p %x')
   # app.group "Built on #{BUILD_DATE.strftime('%I:%M %p %x')}."
 
+  app.toggle 'Demo mode', key: 'demo', default: true
+
   app.child 'Debug' do |section|
     section.toggle 'Use development server', key: 'useDevelopmentServer', default: false
     # section.group "Enable this to run against the development server. Only do this if you're coding the app."

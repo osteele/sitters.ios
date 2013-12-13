@@ -60,6 +60,9 @@ profile
 DerivedData
 *.hmap
 *.ipa
+*.xcworkspace
+
+ib.xcodeproj/project.pbxproj
 
 # CocoaPods
 Pods

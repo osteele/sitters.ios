@@ -10,6 +10,9 @@ gem 'require_all'
 gem 'rest-client'
 gem 'motion-logger'
 
+gem 'xcodeproj'
+gem 'ib'
+
 # docs
 gem 'yard'
 gem 'yard-tomdoc'

@@ -7,9 +7,11 @@ class AppDelegate
   FirebaseNS = 'https://sevensitters.firebaseio.com/'
   SplashFadeAnimationDuration = 0.3
 
-  attr_reader :window
-
   public
+
+  attr_accessor :window
+  # def window; @window; end
+  # def setWindow(window); @window = window; end
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     return true if RUBYMOTION_ENV == 'test'
@@ -28,24 +30,34 @@ class AppDelegate
     registerForRemoteNotifications
     application.applicationIconBadgeNumber = 0
 
-    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-    window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
-      controller.viewControllers = tabControllers
-      # attachSplashViewTo controller.view
-    end
-
     Storage.instance.onCachedFirebaseValue('sitter') do |sitterData|
       Sitter.updateFrom sitterData.compact
       App.notification_center.postNotification ApplicationDidLoadDataNotification
     end
 
+    @window = UIWindow.alloc.initWithFrame UIScreen.mainScreen.bounds
+
+    if App.delegate.recordUserSettingDependency('demo')
+      presentMainController
+      presentSplashView
+    else
+      storyboard = UIStoryboard.storyboardWithName 'Storyboard', bundle:nil
+      @window.rootViewController = storyboard.instantiateInitialViewController
+    end
+
     installExpirationObserver
     presentConnectionProgressHUD
 
-    window.rootViewController.wantsFullScreenLayout = true
-    window.makeKeyAndVisible
-    presentSplashView
+    @window.makeKeyAndVisible
     true
+  end
+
+  def presentMainController
+    window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+      controller.viewControllers = tabControllers
+      # attachSplashViewTo controller.view
+    end
+    window.rootViewController.wantsFullScreenLayout = true
   end
 
 
