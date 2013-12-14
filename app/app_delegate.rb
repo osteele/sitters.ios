@@ -43,19 +43,20 @@ class AppDelegate
       presentMainController
       presentSplashView
     else
-      storyboard = UIStoryboard.storyboardWithName 'Storyboard', bundle:nil
-      window.rootViewController = storyboard.instantiateInitialViewController
       Account.instance.logout
+      window.rootViewController = welcomeController
     end
 
     observe(self, :userRole) do |_, value|
-      presentMainController if value and not @userDisplayMode
+      unless value == @userRoleDisplayMode
+        case value
+        when :parent, :sitter
+          presentMainController
+        else
+          presentWelcomeController
+        end
+      end
     end
-
-    # App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
-    #   @userDisplayMode = userRole
-
-    # end
 
     installExpirationObserver
     presentConnectionProgressHUD
@@ -66,11 +67,23 @@ class AppDelegate
 
 
   #
-  # Roles
+  # User Roles
   #
 
+  def welcomeController
+    @welcomeController ||= begin
+      storyboard = UIStoryboard.storyboardWithName 'Storyboard', bundle:nil
+      storyboard.instantiateInitialViewController
+    end
+  end
+
+  def presentWelcomeController
+    @userRoleDisplayMode = nil
+    window.rootViewController = welcomeController
+  end
+
   def presentMainController
-    @userDisplayMode = userRole
+    @userRoleDisplayMode = userRole
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
       # attachSplashViewTo controller.view
