@@ -21,9 +21,11 @@ class AppDelegate
     DDLog.addLogger DDTTYLogger.sharedInstance
 
     # Initialize 3rd-party SDKs
-    initializeTestFlight
-    initializeCrittercism
-    initializeMixpanel
+    unless Device.simulator?
+      initializeTestFlight
+      initializeCrittercism
+      initializeMixpanel
+    end
     initializeStripe
 
     Account.instance.initializeLoginStatus
