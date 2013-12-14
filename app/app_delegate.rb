@@ -37,13 +37,25 @@ class AppDelegate
 
     @window = UIWindow.alloc.initWithFrame UIScreen.mainScreen.bounds
 
-    if App.delegate.recordUserSettingDependency('demo')
+    case userRole
+    when :parent, :sitter
+      Account.instance.loginAsRole userRole
       presentMainController
       presentSplashView
     else
       storyboard = UIStoryboard.storyboardWithName 'Storyboard', bundle:nil
-      @window.rootViewController = storyboard.instantiateInitialViewController
+      window.rootViewController = storyboard.instantiateInitialViewController
+      Account.instance.logout
     end
+
+    observe(self, :userRole) do |_, value|
+      presentMainController if value and not @userDisplayMode
+    end
+
+    # App.notification_center.observe ApplicationDidAttemptLoginNotification.name do |notification|
+    #   @userDisplayMode = userRole
+
+    # end
 
     installExpirationObserver
     presentConnectionProgressHUD
@@ -52,12 +64,35 @@ class AppDelegate
     true
   end
 
+
+  #
+  # Roles
+  #
+
   def presentMainController
+    @userDisplayMode = userRole
     window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
       # attachSplashViewTo controller.view
     end
     window.rootViewController.wantsFullScreenLayout = true
+  end
+
+  def userRole
+    return 'parent' if recordUserSettingDependency('demo')
+    role = App::Persistence['userRole']
+    role = role.intern if role
+    return role
+  end
+
+  def userRole=(role)
+    self.willChangeValueForKey :userRole
+    App::Persistence['userRole'] = role
+    self.didChangeValueForKey :userRole
+  end
+
+  def loginAsRole(role)
+    Account.instance.loginAsRole role
   end
 
 

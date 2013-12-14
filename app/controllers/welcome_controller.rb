@@ -6,11 +6,12 @@ class WelcomeController < UIViewController
   ib_action :sitterButtonTouched
 
   def parentButtonTouched(view)
-    NSLog 'parent'
-    App.delegate.presentMainController
+    NSLog 'touch parent'
+    App.delegate.loginAsRole :parent
   end
 
   def sitterButtonTouched(view)
-    NSLog 'sitter'
+    NSLog 'touch sitter'
+    App.delegate.loginAsRole :sitter
   end
 end

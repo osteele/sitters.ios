@@ -26,7 +26,10 @@ class Account
     firebaseRoot['.info/authenticated'].on(:value) do |snapshot|
       # value is 0 on initialization, and then true or false
       Logger.info "Auth status = #{snapshot.value}"
-      self.user = nil if snapshot.value == false
+      if snapshot.value == false
+        self.user = nil
+        didLogout
+      end
     end
   end
 
@@ -47,13 +50,14 @@ class Account
     updateUserDataSubscription
   end
 
-  def login
+  def loginAsRole(role)
     return if user
     Logger.checkpoint 'Login'
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
     # avoid auth.check because it never returns when the network is offline.
     facebookAppId = App.delegate.getAPIToken('FacebookAppId')
     auth.login_to_facebook(app_id:facebookAppId, permissions:FacebookPermissions) do |error, user|
+      App.delegate.userRole = role if user
       authDidReturnUser user, error:error
     end
   end
@@ -124,6 +128,10 @@ class Account
     App.notification_center.postNotificationName ApplicationDidAttemptLoginNotification.name,
       object:self,
       userInfo:{error:error, user:user}
+  end
+
+  def didLogout
+    App.delegate.userRole = nil
   end
 
   # TODO move some of this into storage manager

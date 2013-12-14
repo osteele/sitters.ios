@@ -14,8 +14,11 @@ class Family
 
   def initialize
     resetSitterList
+
     # recompute once the sitter list has loaded
-    observe(Sitter, :all) do resetSitterList if sitters.empty? end
+    observe(Sitter, :all) do
+      resetSitterList if sitters.empty?
+    end
   end
 
   def updateFrom(data)

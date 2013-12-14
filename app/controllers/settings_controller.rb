@@ -77,12 +77,6 @@ class SettingsController < Formotion::FormController
           row.type = :static
           row.title = user.locationName
         end if user.locationName
-      else
-        section.build_row do |row|
-          row.title = 'Sign In'
-          row.type = :button
-          row.key = :login
-        end
       end
     end
 
@@ -108,10 +102,6 @@ class SettingsController < Formotion::FormController
         end
       end
     end if user
-
-    form.row(:login).on_tap do |row|
-      account.login
-    end if form.row(:login)
 
     form.row(:logout).on_tap do |row|
       account.logout
