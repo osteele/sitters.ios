@@ -75,5 +75,5 @@ Motion::Project::App.setup do |app|
     app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FACEBOOK_APP_ID}"]}]
   end
 
-  sh "grunt update"
+  sh "grunt update" unless ENV['SKIP_GRUNT']
 end
