@@ -21,6 +21,7 @@
     "marked": "~0.2.9",
     "grunt-update": "~0.2.1",
     "grunt-contextualize": "~0.2.1",
-    "grunt-autowatch": "~0.1.0"
+    "grunt-autowatch": "~0.1.0",
+    "grunt-cli": "~0.1.11"
   }
 }
