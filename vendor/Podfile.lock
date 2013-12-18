@@ -6,7 +6,7 @@ PODS:
   - CocoaLumberjack/Core (1.6.5.1)
   - CocoaLumberjack/Extensions (1.6.5.1):
     - CocoaLumberjack/Core
-  - CrittercismSDK (4.1.2)
+  - CrittercismSDK (4.3.0)
   - Facebook-iOS-SDK (3.10.0)
   - FMDB (2.1):
     - FMDB/standard
@@ -49,7 +49,7 @@ DEPENDENCIES:
 SPEC CHECKSUMS:
   CardIO: df7bd64f570de0f5d666beff29fbab5424dcb97c
   CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
-  CrittercismSDK: 6182966dc89b633611b1acb87201952d84224120
+  CrittercismSDK: dca0047cf1e4211f3f9e11d1e92a085102d812c0
   Facebook-iOS-SDK: ef402579aeb30cf0c4a6370fb0a927e3dc3059e5
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
