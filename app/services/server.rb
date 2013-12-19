@@ -50,8 +50,8 @@ class Server
     sendRequest :register_payment_token, withParameters:{token:token, cardInfo:cardInfo}
   end
 
-  def registerUser(user)
-    sendRequest :register_user, withParameters:{displayName:user.displayName, email:user.email}
+  def registerUser(user, withRole:role)
+    sendRequest :register_user, withParameters:{displayName:user.displayName, email:user.email, role:role}
   end
 
   def removePaymentCard(cardInfo)

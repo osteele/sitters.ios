@@ -10,8 +10,6 @@ class AppDelegate
   public
 
   attr_accessor :window
-  # def window; @window; end
-  # def setWindow(window); @window = window; end
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     return true if RUBYMOTION_ENV == 'test'
@@ -32,18 +30,18 @@ class AppDelegate
     registerForRemoteNotifications
     application.applicationIconBadgeNumber = 0
 
-    Storage.instance.onCachedFirebaseValue('sitter') do |sitterData|
-      Sitter.updateFrom sitterData.compact
+    Storage.instance.onCachedFirebaseValue('sitter', {cacheVersion:2}) do |sitterData|
+      Sitter.updateFrom sitterData
       App.notification_center.postNotification ApplicationDidLoadDataNotification
     end
 
-    @window = UIWindow.alloc.initWithFrame UIScreen.mainScreen.bounds
+    @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
 
     case userRole
     when :parent, :sitter
-      Account.instance.loginAsRole userRole
+      Account.instance.loginWithRole userRole
       presentMainController
-      presentSplashView
+      # presentSplashView
     else
       Account.instance.logout
       window.rootViewController = welcomeController
@@ -74,7 +72,7 @@ class AppDelegate
 
   def welcomeController
     @welcomeController ||= begin
-      storyboard = UIStoryboard.storyboardWithName 'Storyboard', bundle:nil
+      storyboard = UIStoryboard.storyboardWithName('Storyboard', bundle:nil)
       storyboard.instantiateInitialViewController
     end
   end
@@ -106,8 +104,8 @@ class AppDelegate
     self.didChangeValueForKey :userRole
   end
 
-  def loginAsRole(role)
-    Account.instance.loginAsRole role
+  def loginWithRole(role)
+    Account.instance.loginWithRole role
   end
 
 

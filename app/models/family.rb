@@ -3,7 +3,6 @@ class Family
   InitialDemoSitterCount = 6
   MaxSitterCount = 7
 
-  attr_accessor :id
   attr_accessor :sitters
   attr_accessor :recommended_sitters
 

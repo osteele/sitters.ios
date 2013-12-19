@@ -50,7 +50,7 @@ class Account
     updateUserDataSubscription
   end
 
-  def loginAsRole(role)
+  def loginWithRole(role)
     return if user
     Logger.checkpoint 'Login'
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
@@ -125,6 +125,7 @@ class Account
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
     end
+    Server.instance.registerUser user, withRole:App.delegate.userRole if user
     App.notification_center.postNotificationName ApplicationDidAttemptLoginNotification.name,
       object:self,
       userInfo:{error:error, user:user}
@@ -142,32 +143,19 @@ class Account
       @currentAccountFB.off
       @currentAccountFB = nil
     end
-    if @currentFamilyFB
-      Logger.info "Unsubscribing from %@", @currentFamilyFB
-      @currentFamilyFB.off
-      @currentFamilyFB = nil
-    end
-    @familyData = nil
     Server.instance.unsubscribeFromAccountMessages
     return unless user
 
-    Server.instance.registerUser user
     Server.instance.subscribeToMessagesForAccount self
     Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "user/auth/#{accountKey}"
     @currentAccountFB = firebaseEnvironment[accountPath]
-    Storage.instance.onCachedFirebaseValue(accountPath) do |accountData|
+    Storage.instance.onCachedFirebaseValue(accountPath, {cacheVersion:2}) do |accountData|
+      @accountData = accountData
       if accountData
         self.cardInfo = accountData['cardInfo'] ? MotionMap::Map.new(accountData['cardInfo']) : nil
-        familyId = accountData['family_id']
-        familyPath = "family/#{familyId}"
-        @currentFamilyFB = firebaseEnvironment[familyPath]
-        Storage.instance.onCachedFirebaseValue(familyPath) do |familyData|
-          @familyData = familyData
-          family.id = familyId
-          family.updateFrom familyData if familyData
-        end
+        family.updateFrom accountData if accountData
       end
     end
   end

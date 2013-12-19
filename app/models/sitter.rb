@@ -1,8 +1,6 @@
 class Sitter
   attr_reader :id
   attr_reader :name
-  attr_reader :age
-  attr_reader :description
   attr_accessor :active
 
   def self.all
@@ -13,7 +11,7 @@ class Sitter
   def self.updateFrom(sitterData)
     self.willChangeValueForKey :all
     @sitters ||= []
-    @sitters = sitterData.map do |data|
+    @sitters = sitterData.values.map do |data|
       sitter = findSitterById(data['id'])
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end.reject(&:nil?)
@@ -38,8 +36,12 @@ class Sitter
 
   def firstName; self.name.split[0]; end
   def lastName; self.name[/\s(\S+)/, 1]; end
-  def description; @description; end
+
+  # Work around error e.g.:
+  #  method `description' created by attr_reader/writer or define_method cannot be called from Objective-C.
+  # Please manually define the method instead (using the `def' keyword)
   def age; @age; end
+  def description; @description; end
 
   def availableAt(timespan)
     @@hoursAvailableDateKey ||= NSDateFormatter.alloc.init.setDateFormat('E')
