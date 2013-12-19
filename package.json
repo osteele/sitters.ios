@@ -11,7 +11,6 @@
     "grunt": "~0.4.1",
     "grunt-coffeelint": "0.0.7",
     "grunt-contrib-clean": "~0.5.0",
-    "grunt-contrib-connect": "~0.5.0",
     "grunt-contrib-copy": "~0.4.1",
     "grunt-contrib-jade": "~0.8.0",
     "grunt-contrib-sass": "~0.5.0",
@@ -22,6 +21,8 @@
     "grunt-update": "~0.2.1",
     "grunt-contextualize": "~0.2.1",
     "grunt-autowatch": "~0.1.0",
-    "grunt-cli": "~0.1.11"
+    "grunt-cli": "~0.1.11",
+    "jade": "~0.35.0",
+    "sass": "~0.5.0"
   }
 }

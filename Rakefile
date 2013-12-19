@@ -76,6 +76,27 @@ Motion::Project::App.setup do |app|
     app.info_plist['FacebookDisplayName'] = 'Seven Sitters'
     app.info_plist['URL types'] = [{'URL Schemes' => ["fb#{FACEBOOK_APP_ID}"]}]
   end
-
-  sh "grunt update" unless ENV['SKIP_GRUNT']
 end
+
+WEB_ARTIFACTS = ['resources/sitter_details.html', 'resources/styles/sitter_details.css']
+
+task 'build:device' => WEB_ARTIFACTS
+task 'build:simulator' => WEB_ARTIFACTS
+
+task :clean do
+  WEB_ARTIFACTS.each do |file|
+    FileUtils.rm_f file
+  end
+end
+
+rule( /^resources\/.+\.html$/ => [
+  ->name { name.sub(/^resources\//, 'app/views/').sub(/\.[^.]+$/, '.jade') }
+  ]) do |task|
+    puts `./node_modules/.bin/jade < #{task.source} > #{task.name}`
+  end
+
+rule( /^resources\/.+\.css$/ => [
+  ->name { name.sub(/^resources\//, 'app/').sub(/\.[^.]+$/, '.scss') }
+  ]) do |task|
+    puts `sass #{task.source} #{task.name}`
+  end

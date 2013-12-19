@@ -9,6 +9,7 @@ gem 'motion-cocoapods'
 gem 'require_all'
 gem 'rest-client'
 gem 'motion-logger'
+gem 'sass'
 
 gem 'xcodeproj'
 gem 'ib'
