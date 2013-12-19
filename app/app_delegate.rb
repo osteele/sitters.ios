@@ -92,7 +92,7 @@ class AppDelegate
   end
 
   def userRole
-    return 'parent' if recordUserSettingDependency('demo')
+    return :parent if recordUserSettingDependency('demo')
     role = App::Persistence['userRole']
     role = role.intern if role
     return role
