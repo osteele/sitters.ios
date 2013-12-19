@@ -5,14 +5,11 @@ module.exports = (grunt) ->
       build: 'resources/build'
 
     clean:
-      target: ['<%= directories.build %>', 'resources/default.css']
+      target: ['<%= directories.build %>', 'resources/sitter_details.css', 'resources/sitter_details.html']
 
     coffeelint:
       gruntfile: 'Gruntfile.coffee'
       options: max_line_length: value: 120
-
-    connect:
-      server: options: base: 'resources'
 
     jade:
       app:
@@ -25,19 +22,17 @@ module.exports = (grunt) ->
     sass:
       sitter_details:
         files:
-          'resources/default.css': 'app/styles/default.scss'
+          'resources/sitter_details.css': 'app/styles/sitter_details.scss'
         options:
-          banner: "/* DO NOT EDIT. Grunt builds this from from app/styles/default.scss. */\n"
+          banner: "/* DO NOT EDIT. Grunt builds this from from app/styles/sitter_details.scss. */\n"
 
     update:
       tasks: ['jade', 'sass']
 
     watch:
-      options:
-        livereload: true
       gruntfile:
         tasks: ['coffeelint:gruntfile']
-      jade: {}
+      jade: {files: 'app/**/*.jade'}
       sass: {files: 'app/**/*.scss'}
 
   require('load-grunt-tasks')(grunt)
