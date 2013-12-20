@@ -134,6 +134,17 @@
 
 @end
 
+@interface SitterProfileEditController: UIViewController
+
+@property IBOutlet UILabel * fullName;
+@property IBOutlet UILabel * displayName;
+@property IBOutlet UIButton * birthDate;
+@property IBOutlet UITextView * description;
+
+-(IBAction) signOutButtonTouched:(id) sender;
+
+@end
+
 @interface SplashController: UIViewController
 -(IBAction) splashImage;
 
@@ -165,6 +176,7 @@
 
 @property IBOutlet UILabel * greeting;
 
+-(IBAction) backFromEditSitterProfile:(UIStoryboardSegue *) segue;
 -(IBAction) parentButtonTouched:(id) sender;
 -(IBAction) sitterButtonTouched:(id) sender;
 

@@ -83,6 +83,10 @@ class Account
 
   def injectUserInstanceMethods(user)
     class << user
+      def birthdayString
+        self.thirdPartyUserData['birthday']
+      end
+
       def displayName
         self.thirdPartyUserData['displayName']
       end

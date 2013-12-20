@@ -36,26 +36,19 @@ class AppDelegate
     end
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
-
-    case userRole
-    when :parent, :sitter
+    window.rootViewController = welcomeController
+    if userRole
       Account.instance.loginWithRole userRole
-      presentMainController
-      # presentSplashView
     else
       Account.instance.logout
-      window.rootViewController = welcomeController
+    end
+
+    observe(Account.instance, :user) do |_, value|
+      self.userRole = nil unless value
     end
 
     observe(self, :userRole) do |_, value|
-      unless value == @userRoleDisplayMode
-        case value
-        when :parent, :sitter
-          presentMainController
-        else
-          presentWelcomeController
-        end
-      end
+      setControllerForRole unless value == @userRoleDisplayMode
     end
 
     installExpirationObserver
@@ -67,29 +60,43 @@ class AppDelegate
 
 
   #
-  # User Roles
+  # Storyboard Controllers
   #
 
+  def storyboard
+    @storyboard ||= UIStoryboard.storyboardWithName('Storyboard', bundle:nil)
+  end
+
   def welcomeController
-    @welcomeController ||= begin
-      storyboard = UIStoryboard.storyboardWithName('Storyboard', bundle:nil)
-      storyboard.instantiateInitialViewController
-    end
+    @welcomeController ||= storyboard.instantiateInitialViewController
   end
 
-  def presentWelcomeController
-    @userRoleDisplayMode = nil
-    window.rootViewController = welcomeController
-  end
-
-  def presentMainController
-    @userRoleDisplayMode = userRole
-    window.rootViewController = UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
+  def parentController
+    @parentController ||= UITabBarController.alloc.initWithNibName(nil, bundle:nil).tap do |controller|
       controller.viewControllers = tabControllers
-      # attachSplashViewTo controller.view
+      controller.wantsFullScreenLayout = true
     end
-    window.rootViewController.wantsFullScreenLayout = true
   end
+
+  def setControllerForRole
+    @userRoleDisplayMode = userRole
+    case userRole
+    when :parent
+      window.rootViewController = parentController
+      # attachSplashViewTo window.rootViewController.view
+    when :sitter
+      # window.rootViewController = welcomeController
+      window.rootViewController.performSegueWithIdentifier 'editSitterProfile', sender:self
+      # presentSplashView
+    else
+      window.rootViewController = welcomeController
+    end
+  end
+
+
+  #
+  # User Roles and Controllers
+  #
 
   def userRole
     return :parent if recordUserSettingDependency('demo')
@@ -99,6 +106,7 @@ class AppDelegate
   end
 
   def userRole=(role)
+    return if recordUserSettingDependency('demo')
     self.willChangeValueForKey :userRole
     App::Persistence['userRole'] = role
     self.didChangeValueForKey :userRole
@@ -161,9 +169,9 @@ class AppDelegate
     }.keys.compact
     if changed.any?
       message = <<-TEXT
-        The following development setting(s) have changed.
+      The following development setting(s) have changed.
         You may need to quit and restart the application in order for it to recognize them.
-      TEXT
+        TEXT
       changed.each do |key|
         oldValue = @recordedUserSettings[key]
         newValue = NSUserDefaults.standardUserDefaults[key]
@@ -308,7 +316,6 @@ class AppDelegate
   private
 
   def initializeCrittercism
-    return if Device.simulator?
     return unless Object.const_defined?(:Crittercism)
     apiToken = getAPIToken('CrittercismAppId')
     return unless apiToken
@@ -333,10 +340,7 @@ class AppDelegate
     @mixpanelEnabled = true
     mixpanel = Mixpanel.sharedInstance
     mixpanel.identify mixpanel.distinctId
-    mixpanel.registerSuperProperties({
-      build:buildNumber,
-      environment:serviceEnvironmentName
-    })
+    mixpanel.registerSuperProperties build:buildNumber, environment:serviceEnvironmentName
     observe(Account.instance, :user) do |_, user|
       if user
         mixpanel.createAlias user.email, forDistinctID:mixpanel.distinctId
@@ -346,14 +350,12 @@ class AppDelegate
   end
 
   def initializeStripe
-    return unless Object.const_defined?(:Stripe)
     apiToken = getAPIToken('StripePublicKey')
     return unless apiToken
     Stripe.setDefaultPublishableKey apiToken
   end
 
   def initializeTestFlight
-    return if Device.simulator?
     return unless Object.const_defined?(:TestFlight)
     apiToken = getAPIToken('TestflightAppToken')
     return unless apiToken
