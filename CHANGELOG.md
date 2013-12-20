@@ -1,3 +1,9 @@
+## 0.2.13 (2013-12-20)
+* Demo mode no longer permits sign in and sign out.
+* In trial mode, app opens to Parent / Sitter selector.
+* Sitter mode presents (non-functional) sitter profile editor.
+* Updated to current server API.
+
 ## 0.2.12 (2013-11-27)
 * Credit card information is saved in the cloud.
 * Better analytics
