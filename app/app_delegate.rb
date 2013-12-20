@@ -37,10 +37,10 @@ class AppDelegate
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     window.rootViewController = welcomeController
-    if userRole
-      Account.instance.loginWithRole userRole
-    else
-      Account.instance.logout
+    case
+    when demo? then setControllerForCurrentRole
+    when userRole then Account.instance.loginWithRole userRole
+    else Account.instance.logout
     end
 
     observe(Account.instance, :user) do |_, value|
@@ -48,7 +48,7 @@ class AppDelegate
     end
 
     observe(self, :userRole) do |_, value|
-      setControllerForRole unless value == @userRoleDisplayMode
+      setControllerForCurrentRole unless value == @userRoleDisplayMode
     end
 
     installExpirationObserver
@@ -78,14 +78,14 @@ class AppDelegate
     end
   end
 
-  def setControllerForRole
+  def setControllerForCurrentRole
     @userRoleDisplayMode = userRole
     case userRole
     when :parent
       window.rootViewController = parentController
       # attachSplashViewTo window.rootViewController.view
     when :sitter
-      # window.rootViewController = welcomeController
+      window.rootViewController = welcomeController
       window.rootViewController.performSegueWithIdentifier 'editSitterProfile', sender:self
       # presentSplashView
     else
@@ -98,15 +98,19 @@ class AppDelegate
   # User Roles and Controllers
   #
 
+  def demo?
+    recordUserSettingDependency('demo')
+  end
+
   def userRole
-    return :parent if recordUserSettingDependency('demo')
+    return :parent if demo?
     role = App::Persistence['userRole']
     role = role.intern if role
     return role
   end
 
   def userRole=(role)
-    return if recordUserSettingDependency('demo')
+    return if demo?
     self.willChangeValueForKey :userRole
     App::Persistence['userRole'] = role
     self.didChangeValueForKey :userRole
