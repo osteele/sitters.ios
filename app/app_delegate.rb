@@ -29,11 +29,7 @@ class AppDelegate
     Account.instance.initializeLoginStatus
     registerForRemoteNotifications
     application.applicationIconBadgeNumber = 0
-
-    Storage.instance.onCachedFirebaseValue('sitter', {cacheVersion:2}) do |sitterData|
-      Sitter.updateFrom sitterData
-      App.notification_center.postNotification ApplicationDidLoadDataNotification
-    end
+    Sitter.loadRecommendedSitters
 
     @window = UIWindow.alloc.initWithFrame(UIScreen.mainScreen.bounds)
     window.rootViewController = welcomeController

@@ -8,10 +8,18 @@ class Sitter
     @sitters ||= []
   end
 
-  def self.updateFrom(sitterData)
+  def self.loadRecommendedSitters
+    Storage.instance.onCachedFirebaseValue('sitter', {cacheVersion:2}) do |sitterData|
+      sitterData = sitterData.values if sitterData.instance_of?(Hash)
+      Sitter.updateFromArray sitterData
+      App.notification_center.postNotification ApplicationDidLoadDataNotification
+    end
+  end
+
+  def self.updateFromArray(sitterData)
     self.willChangeValueForKey :all
     @sitters ||= []
-    @sitters = sitterData.values.map do |data|
+    @sitters = sitterData.map do |data|
       sitter = findSitterById(data['id'])
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end.reject(&:nil?)
