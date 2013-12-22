@@ -27,8 +27,6 @@
 -(IBAction) firebaseRoot;
 -(IBAction) firebaseEnvironment;
 -(IBAction) serviceEnvironmentName;
--(IBAction) recordUserSettingDependency:(id) key;
--(IBAction) applicationWillEnterForeground:(id) application;
 -(IBAction) registerForRemoteNotifications;
 -(IBAction) installExpirationObserver;
 -(IBAction) tabControllers;

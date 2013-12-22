@@ -95,7 +95,7 @@ class AppDelegate
   #
 
   def demo?
-    recordUserSettingDependency('demo')
+    NSUserDefaults.standardUserDefaults['demo']
   end
 
   def userRole
@@ -147,39 +147,8 @@ class AppDelegate
 
   def serviceEnvironmentName
     return 'development' if Device.simulator?
-    return 'development' if recordUserSettingDependency('useDevelopmentServer')
+    return 'development' if NSUserDefaults.standardUserDefaults['useDevelopmentServer']
     return 'production'
-  end
-
-
-  #
-  # Lifecycle
-  #
-
-  def recordUserSettingDependency(key)
-    @recordedUserSettings ||= {}
-    @recordedUserSettings[key] = NSUserDefaults.standardUserDefaults[key]
-  end
-
-  def applicationWillEnterForeground(application)
-    @recordedUserSettings ||= {}
-    changed = @recordedUserSettings.reject { |key, value|
-      newValue = NSUserDefaults.standardUserDefaults[key]
-      value == newValue
-    }.keys.compact
-    if changed.any?
-      message = <<-TEXT
-      The following development setting(s) have changed.
-        You may need to quit and restart the application in order for it to recognize them.
-        TEXT
-      changed.each do |key|
-        oldValue = @recordedUserSettings[key]
-        newValue = NSUserDefaults.standardUserDefaults[key]
-        message += "\n#{key}: #{oldValue} → #{newValue}"
-        @recordedUserSettings[key] = newValue
-      end
-      App.alert 'Development Setting(s) Changed', message:message
-    end
   end
 
 
