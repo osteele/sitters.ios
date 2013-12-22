@@ -12,7 +12,7 @@ class AppDelegate
   attr_accessor :window
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    return true if RUBYMOTION_ENV == 'test'
+    # return true if RUBYMOTION_ENV == 'test'
     # TODO: process launchOptions[UIApplicationLaunchOptionsLocalNotificationKey] ?
 
     DDLog.addLogger DDASLLogger.sharedInstance
