@@ -231,14 +231,12 @@ class AppDelegate
     splashController = SplashController.alloc.init
     splashController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve
     window.rootViewController.presentViewController splashController, animated:false, completion:nil
-    progress = nil
-    state = {loaded:false}
-    App.run_after(0.5) {
-      progress = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack unless state[:loaded]
-    }
+    App.run_after(0.5) do
+      @connectingHUD = SVProgressHUD.showWithStatus "Connecting", maskType:SVProgressHUDMaskTypeBlack unless @splashViewShown
+    end
     App.notification_center.observe ApplicationDidLoadDataNotification.name do |notification|
-      progress.dismiss if progress
-      state[:loaded] = true
+      @connectingHUD.dismiss if @connectingHUD
+      @connectingHUD = nil
       window.rootViewController.dismissViewControllerAnimated true, completion:nil
     end
   end
