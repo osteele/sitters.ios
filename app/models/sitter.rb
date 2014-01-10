@@ -9,14 +9,33 @@ class Sitter
   end
 
   def self.loadRecommendedSitters
+    if App.delegate.demo?
+      self.loadRecommendedSittersFromFile
+    else
+      self.loadRecommendedSittersFromNetwork
+    end
+  end
+
+  private
+
+  def self.loadRecommendedSittersFromFile
+    path = NSBundle.mainBundle.URLForResource('sitters', withExtension:'json')
+    error = Pointer.new(:id)
+    content = NSString.stringWithContentsOfFile(path, encoding:NSUTF8StringEncoding, error:error)
+    Logger.error error[0].description if error[0]
+    sitterData = NSJSONSerialization.JSONObjectWithData(content.dataUsingEncoding(NSUTF8StringEncoding), options:NSJSONReadingMutableLeaves, error:nil)
+    Logger.error error[0].description if error[0]
+    Sitter.updateFromArray sitterData
+  end
+
+  def self.loadRecommendedSittersFromNetwork
     Storage.instance.onCachedFirebaseValue('sitter', {cacheVersion:2}) do |sitterData|
-      sitterData = sitterData.values if sitterData.instance_of?(Hash)
       Sitter.updateFromArray sitterData
-      App.notification_center.postNotification ApplicationDidLoadDataNotification
     end
   end
 
   def self.updateFromArray(sitterData)
+    sitterData = sitterData.values if sitterData.instance_of?(Hash)
     self.willChangeValueForKey :all
     @sitters ||= []
     @sitters = sitterData.map do |data|
@@ -24,7 +43,10 @@ class Sitter
       sitter ? sitter.tap { |s| s.updateFrom(data) } : self.new(data)
     end.reject(&:nil?)
     self.didChangeValueForKey :all
+    App.notification_center.postNotification ApplicationDidLoadDataNotification
   end
+
+  public
 
   def self.findSitterById(sitter_id)
     return @sitters.find { |sitter| sitter.id.to_s == sitter_id.to_s }

@@ -45,7 +45,7 @@ class Storage
       json = results.dataNoCopyForColumn(:json)
       error = Pointer.new(:id)
       data = NSJSONSerialization.JSONObjectWithData(json, options:0, error:error)
-      Logger.info error[0].description if error[0]
+      Logger.error error[0].description if error[0]
       data = nil if error[0]
     end
     return data
