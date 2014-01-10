@@ -1,13 +1,13 @@
 PODS:
-  - CardIO (3.4.1)
-  - CocoaLumberjack (1.6.5.1):
+  - CardIO (3.4.3)
+  - CocoaLumberjack (1.7.0):
     - CocoaLumberjack/Core
     - CocoaLumberjack/Extensions
-  - CocoaLumberjack/Core (1.6.5.1)
-  - CocoaLumberjack/Extensions (1.6.5.1):
+  - CocoaLumberjack/Core (1.7.0)
+  - CocoaLumberjack/Extensions (1.7.0):
     - CocoaLumberjack/Core
   - CrittercismSDK (4.3.0)
-  - Facebook-iOS-SDK (3.10.0)
+  - Facebook-iOS-SDK (3.11.0)
   - FMDB (2.1):
     - FMDB/standard
   - FMDB/common (2.1)
@@ -17,7 +17,7 @@ PODS:
     - JRSwizzle (~> 1.0)
   - ISO8601DateFormatter (0.7)
   - JRSwizzle (1.0)
-  - Mixpanel (2.2.1)
+  - Mixpanel (2.2.2)
   - NSDate-Extensions (0.0.1)
   - PaymentKit (1.0.2)
   - ReactiveCocoa (2.1.8):
@@ -29,7 +29,7 @@ PODS:
   - Stripe (1.0.2):
     - PaymentKit
   - SVProgressHUD (1.0)
-  - TestFlightSDK (2.1.3-noadid-beta)
+  - TestFlightSDK (2.2.0-noadid-beta)
 
 DEPENDENCIES:
   - CardIO
@@ -47,20 +47,20 @@ DEPENDENCIES:
   - TestFlightSDK
 
 SPEC CHECKSUMS:
-  CardIO: df7bd64f570de0f5d666beff29fbab5424dcb97c
-  CocoaLumberjack: 17803afbade3126a377d32b8d23367264b44ced6
-  CrittercismSDK: dca0047cf1e4211f3f9e11d1e92a085102d812c0
-  Facebook-iOS-SDK: ef402579aeb30cf0c4a6370fb0a927e3dc3059e5
+  CardIO: 58ad3a112bed3b0fecbfc30224790f348166cefd
+  CocoaLumberjack: be87113f649942f020a37c061c58009b6ee5ff68
+  CrittercismSDK: 6ff2b59a0e1e6370df9c092f29d1024b79dc9399
+  Facebook-iOS-SDK: 2eb12f9ed04f3d3956f0a4fb0e4e60c824dcd101
   FMDB: 3fd5aaf632ca4ed39e3f101e0398504e6d5b0918
   GRMustache: 90fc77ae45a5b8b5a4cf13874cae811461a1c930
   ISO8601DateFormatter: 00944e437ea647f4244454ce8809d313861d08de
   JRSwizzle: 6242ff38485d870fc2636899048ee1ab883ae587
-  Mixpanel: 488d700d4f769a351bb61afc7d4cabbdeef506e1
+  Mixpanel: feb06062e703ac9e0da2c93e7327895c9b5d0a1f
   NSDate-Extensions: b78c2b3f363acdcd7b5d2547a6bef6656cd8ff70
   PaymentKit: be75a5398a9465edd84f7249a9e57d707da025fb
   ReactiveCocoa: 0db710a0afa1c627a64470e5c912a3870d4854ae
   Stripe: 8ce5fe9eca204058d325fcf08d4835585ab8d23b
   SVProgressHUD: 5e10939a296debf5fe5a5895eda9539b8b2114f1
-  TestFlightSDK: 8f8941d0dd990508e127480b06cc6c36379c1b49
+  TestFlightSDK: 64f333f91ab9d11985e6c4c188a71b22cc528097
 
-COCOAPODS: 0.28.0
+COCOAPODS: 0.29.0
