@@ -92,7 +92,9 @@ end
 rule( /^resources\/.+\.html$/ => [
   ->name { name.sub(/^resources\//, 'app/views/').sub(/\.[^.]+$/, '.jade') }
   ]) do |task|
-    puts `./node_modules/.bin/jade < #{task.source} > #{task.name}`
+    JADE_BIN = './node_modules/.bin/jade'
+    die "jade is not installed. Did you run `npm install`?" unless File.executable?(JADE_BIN)
+    puts `#{JADE_BIN} < #{task.source} > #{task.name}`
   end
 
 rule( /^resources\/.+\.css$/ => [
