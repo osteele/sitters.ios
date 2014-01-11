@@ -289,6 +289,7 @@ class AppDelegate
     Crittercism.enableWithAppID apiToken
     @crittercismEnabled = true
     Crittercism.setValue buildNumber, forKey:'build'
+    Crittercism.setValue self.demo?, forKey:'demo'
     Crittercism.setValue serviceEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
@@ -307,7 +308,9 @@ class AppDelegate
     @mixpanelEnabled = true
     mixpanel = Mixpanel.sharedInstance
     mixpanel.identify mixpanel.distinctId
-    mixpanel.registerSuperProperties build:buildNumber, environment:serviceEnvironmentName
+    mixpanel.registerSuperProperties build:buildNumber,
+      demo:self.demo?,
+      environment:serviceEnvironmentName
     observe(Account.instance, :user) do |_, user|
       if user
         mixpanel.createAlias user.email, forDistinctID:mixpanel.distinctId
@@ -328,6 +331,7 @@ class AppDelegate
     return unless apiToken
     TestFlight.setDeviceIdentifier UIDevice.currentDevice.identifierForVendor.UUIDString # UIDevice.currentDevice.uniqueIdentifier
     TestFlight.takeOff apiToken
+    TestFlight.addCustomEnvironmentInformation self.demo?, forKey:'demo'
     TestFlight.addCustomEnvironmentInformation serviceEnvironmentName, forKey:'environment'
     observe(Account.instance, :user) do |_, user|
       if user
