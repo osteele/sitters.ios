@@ -1,3 +1,7 @@
+## 0.2.14 (2014-01-10)
+* Remove server dependency from demo mode.
+* Update 3rd-party libraries.
+
 ## 0.2.13 (2013-12-20)
 * Demo mode no longer permits sign in and sign out.
 * In trial mode, app opens to Parent / Sitter selector.
