@@ -76,10 +76,14 @@ class Account
 
   def deviceToken=(token)
     @deviceToken = token
-    Server.instance.registerDeviceToken token, forUser:user if user and token
+    server.registerDeviceToken token, forUser:user if user and token
   end
 
   private
+
+  def server
+    Server.instance
+  end
 
   def injectUserInstanceMethods(user)
     class << user
@@ -147,11 +151,12 @@ class Account
       @currentAccountFB.off
       @currentAccountFB = nil
     end
-    Server.instance.unsubscribeFromAccountMessages
+    server.unsubscribeFromAccountMessages
     return unless user
+    return if App.delegate.demo?
 
-    Server.instance.subscribeToMessagesForAccount self
-    Server.instance.registerDeviceToken deviceToken, forUser:user if deviceToken
+    server.subscribeToMessagesForAccount self
+    server.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "user/auth/#{accountKey}"
     @currentAccountFB = firebaseEnvironment[accountPath]

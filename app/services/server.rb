@@ -1,3 +1,4 @@
+# A singleton of this class represents a local proxy to the remote server.
 class Server
   private
 
@@ -20,15 +21,9 @@ class Server
   end
 
   def sendRequest(requestKey, withParameters:parameters)
-    unless NSJSONSerialization.isValidJSONObject(parameters)
-      parameters = parameters.clone
-      for key, value in parameters
-        parameters[key] = value.ISO8601StringFromDate if value.instance_of?(NSDate)
-        parameters[key] = value.ISO8601StringFromDate if value.instance_of?(Time)
-      end
-    end
+    parameters = encodeDateValues(parameters)
     Logger.info "Request %@ with %@", requestKey, parameters
-    if shouldEmulateServer
+    if shouldEmulateServer?
       EmulatedServer.instance.handleRequest requestKey, withParameters:parameters
     else
       request = {
@@ -41,7 +36,7 @@ class Server
         userAuthId:  Account.instance.accountKey
       }
       requestsFB << request
-      # ping the server to wake it
+      # Wake the server by pinging it. Skip this on the simulator; it's too noisy.
       BW::HTTP.get 'http://api.7sitters.com/ping' unless Device.simulator?
     end
   end
@@ -68,15 +63,16 @@ class Server
 
   def subscribeToMessagesForAccount(account)
     unsubscribeFromAccountMessages
-    @userMessagesFB = firebaseEnvironment['message']['user']['auth'][account.accountKey]
+    return if App.delegate.demo?
+    @userMessagesFB = firebaseEnvironment['message/user/auth'][account.accountKey]
     Logger.info "Subscribing to %@", userMessagesFB
     userMessagesFB.on(:child_added) do |snapshot|
       message = snapshot.value
       messageApiVersion = message['apiVersion']
       if messageApiVersion == API_VERSION
-        # Clear it first, so that it will only crash the client once
+        # Clear it first, so that it will crash the client at most once
         userMessagesFB[snapshot.name].clear!
-        processMessage(message)
+        processMessageFromServer message
       else
         # Leave it place in case there's other clients at the old version
         Logger.info "Ignoring with api version #{messageApiVersion}: %@", message
@@ -99,15 +95,28 @@ class Server
 
   private
 
-  def processMessage(message)
+    # Recode date parameters as strings
+  def encodeDateValues(parameters)
+    unless NSJSONSerialization.isValidJSONObject(parameters)
+      parameters = parameters.clone
+      for key, value in parameters
+        case value
+        when NSDate, Time then
+          parameters[key] = value.ISO8601StringFromDate
+        end
+      end
+    end
+    return parameters
+  end
+
+  def processMessageFromServer(message)
     messageType = message['messageType']
     parameters = message['parameters']
     Logger.info "Relaying firebase #{messageType} with #{parameters}"
     App.notification_center.postNotificationName messageType, object:self, userInfo:parameters
   end
 
-  def shouldEmulateServer
-    return true if Account.instance.user.nil?
+  def shouldEmulateServer?
     return true if App.delegate.demo?
     return NSUserDefaults.standardUserDefaults['emulateServer']
   end
