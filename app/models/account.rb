@@ -52,7 +52,7 @@ class Account
 
   def loginWithRole(role)
     return if user
-    Logger.checkpoint 'Login'
+    Logger.checkpoint "Login #{role}"
     App.notification_center.postNotification ApplicationWillAttemptLoginNotification
     # avoid auth.check because it never returns when the network is offline.
     facebookAppId = App.delegate.getAPIToken('FacebookAppId')
