@@ -146,10 +146,10 @@ class Account
   # TODO move some of this into storage manager
   # TODO cache
   def updateUserDataSubscription
-    if @currentAccountFB
-      Logger.info "Unsubscribing from %@", @currentAccountFB
-      @currentAccountFB.off
-      @currentAccountFB = nil
+    if @userAccountRef
+      Logger.info "Unsubscribing from %@", @userAccountRef
+      @userAccountRef.off
+      @userAccountRef = nil
     end
     server.unsubscribeFromAccountMessages
     return unless user
@@ -159,7 +159,7 @@ class Account
     server.registerDeviceToken deviceToken, forUser:user if deviceToken
 
     accountPath = "user/auth/#{accountKey}"
-    @currentAccountFB = firebaseEnvironment[accountPath]
+    @userAccountRef = firebaseEnvironment[accountPath]
     Storage.instance.onCachedFirebaseValue(accountPath, {cacheVersion:2}) do |accountData|
       @accountData = accountData
       if accountData

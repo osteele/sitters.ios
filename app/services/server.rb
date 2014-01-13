@@ -5,8 +5,8 @@ class Server
   API_VERSION = 1
 
   attr_reader :firebaseEnvironment
-  attr_reader :requestsFB
-  attr_reader :userMessagesFB
+  attr_reader :serverRequestRef
+  attr_reader :userMessagesRef
 
   public
 
@@ -17,7 +17,7 @@ class Server
 
   def initialize
     @firebaseEnvironment = App.delegate.firebaseEnvironment
-    @requestsFB = firebaseEnvironment['request']
+    @serverRequestRef = firebaseEnvironment['request']
   end
 
   def sendRequest(requestKey, withParameters:parameters)
@@ -35,7 +35,7 @@ class Server
         timestamp:   NSDate.date.ISO8601StringFromDate,
         userAuthId:  Account.instance.accountKey
       }
-      requestsFB << request
+      serverRequestRef << request
       # Wake the server by pinging it. Skip this on the simulator; it's too noisy.
       BW::HTTP.get 'http://api.7sitters.com/ping' unless Device.simulator?
     end
@@ -64,14 +64,14 @@ class Server
   def subscribeToMessagesForAccount(account)
     unsubscribeFromAccountMessages
     return if App.delegate.demo?
-    @userMessagesFB = firebaseEnvironment['message/user/auth'][account.accountKey]
-    Logger.info "Subscribing to %@", userMessagesFB
-    userMessagesFB.on(:child_added) do |snapshot|
+    @userMessagesRef = firebaseEnvironment['message/user/auth'][account.accountKey]
+    Logger.info "Subscribing to %@", userMessagesRef
+    userMessagesRef.on(:child_added) do |snapshot|
       message = snapshot.value
       messageApiVersion = message['apiVersion']
       if messageApiVersion == API_VERSION
         # Clear it first, so that it will crash the client at most once
-        userMessagesFB[snapshot.name].clear!
+        userMessagesRef[snapshot.name].clear!
         processMessageFromServer message
       else
         # Leave it place in case there's other clients at the old version
@@ -86,10 +86,10 @@ class Server
   end
 
   def unsubscribeFromAccountMessages
-    if userMessagesFB
-      Logger.info "Unsubscribing from %@", userMessagesFB
-      userMessagesFB.off
-      @userMessagesFB = nil
+    if userMessagesRef
+      Logger.info "Unsubscribing from %@", userMessagesRef
+      userMessagesRef.off
+      @userMessagesRef = nil
     end
   end
 
@@ -169,10 +169,10 @@ class EmulatedServer
 
   private
 
-  def messagesFB
+  def userMessagesRef
     firebaseEnvironment = App.delegate.firebaseEnvironment
     # don't cache, since changes when account changes
-    return firebaseEnvironment['message']['user']['auth'][Account.instance.accountKey]
+    return firebaseEnvironment['message/user/auth'][Account.instance.accountKey]
   end
 
   def simulateSitterConfirmationDelay
@@ -189,7 +189,7 @@ class EmulatedServer
       messageText: MessageTemplate.messageTemplateToString(messageTemplate, withParameters:parameters),
       parameters: parameters
     }
-    App.run_after(delay) { messagesFB << message }
+    App.run_after(delay) { userMessagesRef << message }
   end
 
   def sendMessageToClientUsingLocalNotifications(messageType, messageTemplate:messageTemplate, withDelay:delay, withParameters:parameters)
