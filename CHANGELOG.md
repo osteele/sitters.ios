@@ -1,3 +1,7 @@
+## 0.2.15 (2014-01-14)
+* Solution message for Facebook authorization denied.
+* Add warning about trial mode.
+
 ## 0.2.14 (2014-01-10)
 * Remove server dependency from demo mode.
 * Update 3rd-party libraries.
