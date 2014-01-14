@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 class Account
   include BW::KVO
   FacebookPermissions = ['email']
@@ -127,8 +129,18 @@ class Account
     Logger.info "login: error=%@", error if error
     self.user = user
     if error
-      UIAlertView.alloc.initWithTitle(error.localizedDescription,
-        message:error.localizedRecoverySuggestion,
+      title = error.localizedDescription
+      message = error.localizedRecoverySuggestion
+      case title
+      when /User did not authorize the app/
+        # The error code for this is FAErrorUnknown = -9999, not
+        # the documented FAErrorAccessNotGranted = -3, so regex test.
+        # TODO figure out a better workaround or check for a fix if ever localized
+        title = "This app is not authorized to access your Facebook account."
+        message ||= "Check the “Allow these apps” in the Facebook section of the Settings app."
+      end
+      UIAlertView.alloc.initWithTitle(title,
+        message:message,
         delegate:nil,
         cancelButtonTitle:'OK',
         otherButtonTitles:error.localizedRecoveryOptions).show
