@@ -254,7 +254,7 @@ class AppDelegate
         else
           @loginProgress.showSuccessWithStatus 'Connection succeeded'
           App.run_after(0.5) {
-            @loginProgress.dismiss
+            @loginProgress.dismiss if @loginProgress
             @loginProgress = nil
           }
         end
